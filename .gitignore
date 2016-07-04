@@ -1,0 +1,82 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+.tags
+
+# Debug files
+*.dSYM/
+
+# Windows:
+Thumbs.db
+ehthumbs.db
+
+
+# keil
+*.d
+*.crf
+*.iex
+*.sct
+*.txt
+*.htm
+*.weyne
+*.bak
+*.uvopt
+*.ini
+*.dep
+*.bat
+*.uvguix.*
+*.uvmpw.*
+*.uvoptx
+*.json
+*.axf
+*.lnp
+*.map
+*.lst
+*.bin
+/listings
+/objects
+
+# IAR
+*.cout
+*.pbi
+*.dgbdt
+*.dni
+*.wsdt
+*.wspos
+*.dep
+*.ewd
+*.ewt
+*.icf
+/Debug
+/Release
+/settings
+
+# else
+*.tags
+*.pro.*
+*.pro

@@ -1,8 +1,8 @@
-;******************** (C) COPYRIGHT 2015 STMicroelectronics ********************
+;******************** (C) COPYRIGHT 2016 STMicroelectronics ********************
 ;* File Name          : startup_stm32f103xe.s
 ;* Author             : MCD Application Team
-;* Version            : V4.0.2
-;* Date               : 18-December-2015
+;* Version            : V4.1.0
+;* Date               : 29-April-2016
 ;* Description        : STM32F103xE Performance Line Devices vector table for EWARM toolchain.
 ;*                      This module performs:
 ;*                      - Set the initial SP
@@ -16,7 +16,7 @@
 ;*                      priority is Privileged, and the Stack is set to Main.
 ;********************************************************************************
 ;* 
-;* <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
+;* <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
 ;* 
 ;* Redistribution and use in source and binary forms, with or without modification,
 ;* are permitted provided that the following conditions are met:

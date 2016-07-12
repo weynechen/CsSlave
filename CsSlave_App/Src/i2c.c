@@ -65,6 +65,7 @@ void MX_I2C1_Init(void)
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
 {
+
   GPIO_InitTypeDef GPIO_InitStruct;
   if(i2cHandle->Instance==I2C1)
   {

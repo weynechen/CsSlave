@@ -39,19 +39,21 @@
 #include "sdio.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
+#include "usb_device.h"
 #include "gpio.h"
 #include "fsmc.h"
 
 /* USER CODE BEGIN Includes */
 #include "cdce913.h"
+#include "ssd2828.h"
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+extern uint8_t USB_Connect;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,13 +90,13 @@ int main(void)
   MX_DMA_Init();
   MX_CRC_Init();
   MX_FSMC_Init();
-  MX_I2C1_Init();
   MX_SDIO_SD_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
-  MX_USB_PCD_Init();
   MX_FATFS_Init();
+  MX_I2C1_Init();
+  MX_USB_DEVICE_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -103,14 +105,22 @@ int main(void)
 	printf("\n欢迎使用CD310\n");
 	InitSD();
 	CDCE_Init();
-	
+	SSD2828Init(0,0);
+    if(SSD2828ReadReg(0xB0)==0x2828)
+        printf("Info:SSD2828 OK\n");
+    else
+        printf("Error:SSD2828 init fail\n");	
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		
+			if(USB_Connect == 1)
+			{
+				printf("USB Connected\n");
+				HAL_Delay(1000);
+			}
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -180,12 +190,25 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_SetPriority(USART3_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* SDIO_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SDIO_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(SDIO_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(SDIO_IRQn);
+  /* USB_LP_CAN1_RX0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
 
 /* USER CODE BEGIN 4 */
-
+int fputc(int ch, FILE *file)
+{
+	uint8_t pData = (uint8_t)ch;
+	HAL_UART_Transmit(&huart1,&pData,1,10);
+		if(USB_Connect == 1)
+	{
+		CDC_Transmit_FS(&pData,1);
+		HAL_Delay(1);
+	}
+	return ch;
+}
 /* USER CODE END 4 */
 
 /**

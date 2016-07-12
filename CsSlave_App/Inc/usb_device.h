@@ -1,21 +1,21 @@
 /**
   ******************************************************************************
-  * File Name          : mxconstants.h
-  * Description        : This file contains the common defines of the application
+  * @file           : USB_DEVICE
+  * @version        : v1.0_Cube
+  * @brief          : Header for usb_device file.
   ******************************************************************************
-  *
   * COPYRIGHT(c) 2016 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
+  * 1. Redistributions of source code must retain the above copyright notice,
+  * this list of conditions and the following disclaimer.
+  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  * this list of conditions and the following disclaimer in the documentation
+  * and/or other materials provided with the distribution.
+  * 3. Neither the name of STMicroelectronics nor the names of its contributors
+  * may be used to endorse or promote products derived from this software
+  * without specific prior written permission.
   *
   * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
   * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -29,31 +29,35 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+*/
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __MXCONSTANT_H
-#define __MXCONSTANT_H
-  /* Includes ------------------------------------------------------------------*/
+#ifndef __usb_device_H
+#define __usb_device_H
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
-/* USER CODE BEGIN Includes */
+/* Includes ------------------------------------------------------------------*/
+#include "stm32f1xx.h"
+#include "stm32f1xx_hal.h"
+#include "usbd_def.h"
 
-/* USER CODE END Includes */
+extern USBD_HandleTypeDef hUsbDeviceFS;
 
-/* Private define ------------------------------------------------------------*/
+/* USB_Device init function */	
+void MX_USB_DEVICE_Init(void);
 
-#define USB_pull_up_Pin GPIO_PIN_13
-#define USB_pull_up_GPIO_Port GPIOC
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
+#ifdef __cplusplus
+}
+#endif
+#endif /*__usb_device_H */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+  */
 
-#endif /* __MXCONSTANT_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

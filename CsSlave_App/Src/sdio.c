@@ -135,21 +135,20 @@ void InitSD(void)
 	HAL_SD_TransferStateTypedef State;
 	HAL_SD_ErrorTypedef sd_status; 
 	HAL_SD_Init(&hsd, &SDCardInfo);
-  HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B); // 设置�?4bit SDIO
-  /* 获取SD卡初始化状�?? */
+  HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
   State = HAL_SD_GetStatus(&hsd);
   if(State == SD_TRANSFER_OK) 
 	{    
 		printf( "Info:SD card initial success\n");
-  /* 获取SD卡信�? */
+
   sd_status=HAL_SD_Get_CardInfo(&hsd,&SDCardInfo);
   if(sd_status==SD_OK)
   {
-    printf( "Card type is:%d\n", SDCardInfo.CardType );
+    //printf( "Card type is:%d\n", SDCardInfo.CardType );
     printf( "Card capacity is:%d Mb\n", (int)(SDCardInfo.CardCapacity/1024/1024) );
-    printf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
-    printf( "RCA is: %d\n", SDCardInfo.RCA);
-    printf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
+   // printf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
+   // printf( "RCA is: %d\n", SDCardInfo.RCA);
+   // printf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
   }		
 	}
 	else

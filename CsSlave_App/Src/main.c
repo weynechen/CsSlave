@@ -35,7 +35,6 @@
 #include "crc.h"
 #include "dma.h"
 #include "fatfs.h"
-#include "i2c.h"
 #include "sdio.h"
 #include "tim.h"
 #include "usart.h"
@@ -95,16 +94,15 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_FATFS_Init();
-  MX_I2C1_Init();
   MX_USB_DEVICE_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-	printf("\n欢迎使用CD310\n");
+	printf("\n--CD310--\n");
 	InitSD();
-	CDCE_Init();
+	CDCE_Init(30);
 	SSD2828Init(0,0);
     if(SSD2828ReadReg(0xB0)==0x2828)
         printf("Info:SSD2828 OK\n");

@@ -46,6 +46,7 @@
 #include "cdce913.h"
 #include "ssd2828.h"
 #include "usbd_cdc_if.h"
+#include "power.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -107,7 +108,11 @@ int main(void)
     if(SSD2828ReadReg(0xB0)==0x2828)
         printf("Info:SSD2828 OK\n");
     else
-        printf("Error:SSD2828 init fail\n");	
+        printf("Error:SSD2828 init fail\n");
+  PowerOn(POWER_1V8);
+	PowerOn(POWER_3V3);
+
+	SetBLCurrent(10);	
   /* USER CODE END 2 */
 
   /* Infinite loop */

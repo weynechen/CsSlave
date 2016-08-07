@@ -1,26 +1,26 @@
+/**
+ * @file        power.c
+ * @author      Weyne
+ * @version     V01
+ * @date        2016.08.07
+ * @brief       CD310电源驱动
+ * @attention   COYPRIGHT WEYNE
+ */
+ 
 #include "power.h"
 #include "tim.h"
 
-void PowerOff(PowerPinTypeDef power)
+void Power_SetState(PowerTypeDef power, StateTypeDef state)
 {
-	if(power==POWER_1V8)
-	  HAL_GPIO_WritePin(GPIOC,POWER_1V8,GPIO_PIN_RESET);
-	else
-	  HAL_GPIO_WritePin(GPIOB,power,GPIO_PIN_RESET);
+	MEM_ADDR(power) = (uint8_t)state;
 }
 
-void PowerOn(PowerPinTypeDef power)
+
+void Power_SetBLCurrent(uint16_t value)
 {
-	if(power==POWER_1V8)
-	  HAL_GPIO_WritePin(GPIOC,POWER_1V8,GPIO_PIN_SET);
-	else
-	  HAL_GPIO_WritePin(GPIOB,power,GPIO_PIN_SET);
+  TIM1->CCR1 = 200 - value;
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
-void SetBLCurrent(uint16_t value)
-{
-	PowerOn(POWER_P5V);	
-	TIM1->CCR1 = 200 - value;
-	HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);
-}
+/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 

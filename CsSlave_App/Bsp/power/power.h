@@ -1,21 +1,35 @@
+/**
+ * @file        power.h
+ * @author      Weyne
+ * @version     V01
+ * @date        2016.08.07
+ * @brief       CD310电源驱动配置
+ * @attention   COYPRIGHT WEYNE
+ */
 #ifndef _POWER_H_
 #define _POWER_H_
 
-#include "gpio.h"
+#include "sys.h"
+
+/* 修改下面BITBAND中宏，即可修改power控制脚 */
+typedef enum
+{
+	POWER_1V8 = BITBAND(GPIOC_ODR_Addr,0),
+	POWER_2V8 = BITBAND(GPIOB_ODR_Addr,15),
+	POWER_3V3 = BITBAND(GPIOB_ODR_Addr,14),
+	POWER_P5V = BITBAND(GPIOB_ODR_Addr,13),
+	POWER_N5V = BITBAND(GPIOB_ODR_Addr,12),	
+}PowerTypeDef;
+
 
 typedef enum
-{	
-	POWER_1V8=GPIO_PIN_0,
-	POWER_2V8=GPIO_PIN_15,
-	POWER_3V3=GPIO_PIN_14,
-	POWER_P5V=GPIO_PIN_13,
-	POWER_N5V=GPIO_PIN_12
+{
+  OFF,
+  ON
+} StateTypeDef;
 
-}PowerPinTypeDef;
 
-void PowerOff(PowerPinTypeDef power);
-void PowerOn(PowerPinTypeDef power);
-void SetBLCurrent(uint16_t value);
+void Power_SetState(PowerTypeDef power, StateTypeDef state);
+void Power_SetBLCurrent(uint16_t value);
 
 #endif
-

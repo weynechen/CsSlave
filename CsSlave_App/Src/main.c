@@ -104,15 +104,8 @@ int main(void)
 	printf("\n--CD310--\n");
 	InitSD();
 	CDCE_Init(30);
-	SSD2828Init(0,0);
-    if(SSD2828ReadReg(0xB0)==0x2828)
-        printf("Info:SSD2828 OK\n");
-    else
-        printf("Error:SSD2828 init fail\n");
-  PowerOn(POWER_1V8);
-	PowerOn(POWER_3V3);
-
-	SetBLCurrent(10);	
+	
+	SSD2828_Init(4,480);
   /* USER CODE END 2 */
 
   /* Infinite loop */

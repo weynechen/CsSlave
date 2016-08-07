@@ -1,3 +1,11 @@
+/**
+ * @file        sys.h
+ * @author      Weyne
+ * @version     V01
+ * @date        2016.08.07
+ * @brief       bit-bond操作
+ * @attention   COYPRIGHT WEYNE
+ */
 #ifndef __SYS_H
 #define __SYS_H	
 

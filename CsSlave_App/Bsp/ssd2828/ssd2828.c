@@ -1,168 +1,181 @@
-#include "stm32f1xx_hal.h"
+/**
+ * @file        ssd2828.c
+ * @author      Weyne
+ * @version     V01
+ * @date        2016.08.07
+ * @brief       SSD2828的驱动
+ * @note
+ * @attention   COYPRIGHT WEYNE
+ */
+ 
 #include "ssd2828.h"
+#include "sys.h"
 
-#define SPI_SDO_H      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2,GPIO_PIN_SET)
-#define SPI_SDO_L      HAL_GPIO_WritePin(GPIOE, GPIO_PIN_2,GPIO_PIN_RESET)
-#define SPI_SCLK_H     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3,GPIO_PIN_SET)
-#define SPI_SCLK_L     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3,GPIO_PIN_RESET)
-#define SPI_SDI        HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_1)
-#define SSD_RESET_H    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0,GPIO_PIN_SET)
-#define SSD_RESET_L    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_0,GPIO_PIN_RESET)
-#define SSD_SHUT_H     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5,GPIO_PIN_SET)
-#define SSD_SHUT_L     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5,GPIO_PIN_RESET)
+/* SSD2828 相关PIN 的配置区域 */
+#define SPI_SDO PEout(2)
+#define SPI_SCK PEout(3)
+#define SPI_SDI PEin(1)
 
-#define LP             0
-#define HS             1
-#define VD             2
+#define SPI_CS_U10 PEout(6) 
+#define SPI_CS_U11 PBout(5)
 
-uint16_t mode;
+#define SSD2828_RESET PEout(0)
+#define SSD2828_SHUT PEout(5) 
+
+static uint16_t mode;
 
 static void Delay_10us(volatile uint8_t t)
 {
-	volatile uint8_t i=15;
-	while(t--)
-	{
-		while(i--)
-		{
-			;
-		}
-	}
+  volatile uint8_t i = 15;
+
+  while (t--)
+  {
+    while (i--)
+    {
+    }
+  }
 }
 
 
-void SSD2828WriteCmd(uint8_t cmd)
+static void SSD2828WriteCmd(uint8_t cmd)
 {
   uint8_t i;
 
-  SPI_SDO_L;
+  SPI_SDO = 0;
   Delay_10us(2);
-  SPI_SCLK_L;
+  SPI_SCK = 0;
   Delay_10us(2);
-  SPI_SCLK_H;
+  SPI_SCK = 1;
   Delay_10us(2);
   for (i = 0; i < 8; i++)
   {
     if ((cmd & 0x80) == 0x80)
     {
-      SPI_SDO_H;
+      SPI_SDO = 1;
     }
     else
     {
-      SPI_SDO_L;
+      SPI_SDO = 0;
     }
     Delay_10us(2);
-    SPI_SCLK_L;
+    SPI_SCK = 0;
     Delay_10us(2);
-    SPI_SCLK_H;
+    SPI_SCK = 1;
     Delay_10us(2);
     cmd = cmd << 1;
   }
   Delay_10us(0);
 }
 
-
-void SSD2828WriteData(uint8_t dat)
+static void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2)
 {
   uint8_t i;
 
-  SPI_SDO_H;
-  Delay_10us(2);
-  SPI_SCLK_L;
-  Delay_10us(2);
-  SPI_SCLK_H;
-  Delay_10us(2);
-  for (i = 0; i < 8; i++)
-  {
-    if ((dat & 0x80) == 0x80)
-    {
-      SPI_SDO_H;
-    }
-    else
-    {
-      SPI_SDO_L;
-    }
-    Delay_10us(2);
-    SPI_SCLK_L;
-    Delay_10us(2);
-    SPI_SCLK_H;
-    Delay_10us(2);
-    dat = dat << 1;
-  }
-  Delay_10us(2);
-}
-
-
-void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2)
-{
-  uint8_t i;
-
-  SPI_SDO_L;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_H;
+  SPI_SDO = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 1;
   for (i = 0; i < 8; i++)
   {
     if ((cmd & 0x80) == 0x80)
     {
-      SPI_SDO_H;
+      SPI_SDO = 1;
     }
     else
     {
-      SPI_SDO_L;
+      SPI_SDO = 0;
     }
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_H;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 1;
     cmd = cmd << 1;
   }
-  SPI_SDO_H;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_H;
+  SPI_SDO = 1;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 1;
   for (i = 0; i < 8; i++)
   {
     if ((dat2 & 0x80) == 0x80)
     {
-      SPI_SDO_H;
+      SPI_SDO = 1;
     }
     else
     {
-      SPI_SDO_L;
+      SPI_SDO = 0;
     }
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_H;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 1;
     dat2 = dat2 << 1;
   }
-  SPI_SDO_H;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_L;
-  SPI_SCLK_H;
+  SPI_SDO = 1;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 0;
+  SPI_SCK = 1;
   for (i = 0; i < 8; i++)
   {
     if ((dat1 & 0x80) == 0x80)
     {
-      SPI_SDO_H;
+      SPI_SDO = 1;
     }
     else
     {
-      SPI_SDO_L;
+      SPI_SDO = 0;
     }
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_L;
-    SPI_SCLK_H;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 0;
+    SPI_SCK = 1;
     dat1 = dat1 << 1;
   }
 }
 
+static uint8_t SSD2828Read()
+{
+  uint16_t i;
+  uint8_t tmp = 0;
 
-void SSD2828DcsShortWrite(uint8_t n)
+  Delay_10us(1);
+  for (i = 0; i < 8; i++)
+  {
+    SPI_SCK = 0;
+    Delay_10us(1);
+    SPI_SCK = 1;
+    Delay_10us(1);
+    tmp <<= 1;
+    if (SPI_SDI)
+    {
+      tmp |= 0x01;
+    }
+  }
+  return tmp;
+}
+
+
+static uint16_t SSD2828ReadReg(uint8_t reg)
+{
+  uint16_t tmp;
+  uint8_t data_l, data_h;
+
+  SSD2828WriteReg(0xd4, 0x00, 0xfa);
+  SSD2828WriteCmd(reg);
+  SSD2828WriteCmd(0xfa);
+  data_l = SSD2828Read();
+  data_h = SSD2828Read();
+  tmp = data_h;
+  tmp <<= 8;
+  tmp |= data_l;
+  return tmp;
+}
+
+
+void SSD2828_DcsShortWrite(uint8_t n)
 {
   if (mode == LP)
   {
@@ -184,11 +197,11 @@ void SSD2828DcsShortWrite(uint8_t n)
 }
 
 
-void SSD2828DcsLongWrite(uint32_t n)
+void SSD2828_DcsLongWrite(uint32_t n)
 {
   if (mode == LP)
   {
-		SSD2828WriteReg(0x00b7, 0x06, 0x50);
+    SSD2828WriteReg(0x00b7, 0x06, 0x50);
   }
   else if (mode == HS)
   {
@@ -205,8 +218,7 @@ void SSD2828DcsLongWrite(uint32_t n)
   SSD2828WriteCmd(0xbf);
 }
 
-
-void SSD2828GenericShortWrite(uint8_t n)
+void SSD2828_GenericShortWrite(uint8_t n)
 {
   if (mode == LP)
   {
@@ -227,8 +239,7 @@ void SSD2828GenericShortWrite(uint8_t n)
   SSD2828WriteCmd(0xbf);
 }
 
-
-void SSD2828GenericLongWrite(uint32_t n)
+void SSD2828_GenericLongWrite(uint32_t n)
 {
   if (mode == LP)
   {
@@ -250,46 +261,7 @@ void SSD2828GenericLongWrite(uint32_t n)
 }
 
 
-uint8_t SSD2828Read()
-{
-  uint16_t i;
-  uint8_t tmp = 0;
-
-  Delay_10us(1);
-  for (i = 0; i < 8; i++)
-  {
-    SPI_SCLK_L;
-    Delay_10us(1);
-    SPI_SCLK_H;
-    Delay_10us(1);
-    tmp <<= 1;
-    if (SPI_SDI)
-    {
-      tmp |= 0x01;
-    }
-  }
-  return tmp;
-}
-
-
-uint16_t SSD2828ReadReg(uint8_t reg)
-{
-  uint16_t tmp;
-  uint8_t data_l, data_h;
-
-  SSD2828WriteReg(0xd4, 0x00, 0xfa);
-  SSD2828WriteCmd(reg);
-  SSD2828WriteCmd(0xfa);
-  data_l = SSD2828Read();
-  data_h = SSD2828Read();
-  tmp    = data_h;
-  tmp  <<= 8;
-  tmp   |= data_l;
-  return tmp;
-}
-
-
-uint16_t SSD2828DcsReadDT06(uint8_t adr, uint16_t l, uint8_t *p)
+MIPI_ReadTypeDef SSD2828_DcsReadDT06(uint8_t adr, uint16_t l, uint8_t *p)
 {
   uint16_t state;
   uint16_t i;
@@ -314,7 +286,7 @@ uint16_t SSD2828DcsReadDT06(uint8_t adr, uint16_t l, uint8_t *p)
     SSD2828WriteReg(0x00c0, 0x00, 0x01);
     SSD2828WriteReg(0x00BC, 0x00, 0x01);
     SSD2828WriteReg(0x00BF, 0x00, adr);
-	HAL_Delay(10);
+    HAL_Delay(10);
     state = SSD2828ReadReg(0xc6);
     if (++timeout_cnt > 10)
     {
@@ -338,7 +310,7 @@ uint16_t SSD2828DcsReadDT06(uint8_t adr, uint16_t l, uint8_t *p)
 }
 
 
-uint16_t SSD2828GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p)
+MIPI_ReadTypeDef SSD2828_GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p)
 {
   uint16_t state;
   uint16_t i;
@@ -363,7 +335,7 @@ uint16_t SSD2828GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p)
     SSD2828WriteReg(0x00c0, 0x00, 0x01);
     SSD2828WriteReg(0x00BC, 0x00, 1);
     SSD2828WriteReg(0x00BF, 0x00, adr);
-	HAL_Delay(10);
+    HAL_Delay(10);
     state = SSD2828ReadReg(0xc6);
     if (++timeout_cnt > 10)
     {
@@ -386,127 +358,106 @@ uint16_t SSD2828GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p)
   return MIPI_READ_SUCCEED;
 }
 
-
-void SSD2828LP()
+void SSD2828_SetMode(MIPI_ModeTypeDef m)
 {
-  mode = LP;
+	mode = m;
+	if(mode == VD)
+	{
+		  SSD2828WriteReg(0x00b7, 0x03, 0x0B);
+	}
 }
 
-
-void SSD2828Video()
+/**
+	* @brief  SSD2828 SPI CS控制，低电平有效
+	* @note   两个SSD2828通过同一个SPI接口接在一起，所以两者不能同时打开
+	* @param  name : 选择芯片
+	* @param state : DISABLE or ENABLE
+	* @retval None
+  */
+void SSD2828_ChipSel(SSD2828_NameTypeDef name , FunctionalState state)
 {
-  mode = VD;
-  SSD2828WriteReg(0x00b7, 0x03, 0x0B);
+	if(name == U11)
+	{
+		SPI_CS_U11 = state?0:1;
+		SPI_CS_U10 = 1;
+	}
+	if(name == U10)
+	{
+		SPI_CS_U10 = state?0:1;
+		SPI_CS_U10 = 1;
+	}
 }
 
-
-void SSD2828Init(uint8_t lane, uint16_t dataRate)
+/**
+	* @brief  SSD2828 初始化
+	* @param  lane : 通道数
+	* @param data_rate : 速率
+	* @retval None
+  */
+void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
-  SSD_RESET_L;
-  SSD_SHUT_L;
-	HAL_Delay(50);
-  SSD_RESET_H;
-	HAL_Delay(10);
-  SSD2828_IC1_CS_0();
-  SSD2828_IC2_CS_1();
-  SSD2828WriteReg(0x00b9, 0x00, 0x00);
-  SSD2828WriteReg(0x00b1, 0, 0);
-  SSD2828WriteReg(0x00b2, 0, 0 + 10);
-  SSD2828WriteReg(0x00b3, 0, 0);
-  SSD2828WriteReg(0xb4, (0 >> 8) & 0xff, 0 & 0xff);
-  SSD2828WriteReg(0xb5, (0 >> 8) & 0xff, 0 & 0xff);
-  SSD2828WriteReg(0x00b6, 0x00, 0x07);
-  if (dataRate < 500)
-  {
-    SSD2828WriteReg(0x00ba, 0x82, dataRate / 12);
-  }
-  else
-  {
-    SSD2828WriteReg(0x00ba, 0xc1, dataRate / 24);
-  }
-  SSD2828WriteReg(0x00bb, 0x00, 0x06);
-  SSD2828WriteReg(0x00b8, 0x00, 0x00);
-  SSD2828WriteReg(0x00c9, 0x25, 0x09);
-  SSD2828WriteReg(0x00ca, 0x23, 0x01);
-  SSD2828WriteReg(0x00cb, 0x05, 0x10);
-  SSD2828WriteReg(0x00cc, 0x10, 0x05);
-  SSD2828WriteReg(0x00de, 0x00, lane - 1);
-  SSD2828WriteReg(0x00d6, 0x00, 0x05);
-  SSD2828WriteReg(0x00c4, 0x00, 0x01);
-  SSD2828WriteReg(0x00eb, 0x80, 0x00);
-	HAL_Delay(10);
-  SSD2828WriteReg(0x00b9, 0x00, 0x01);
-	HAL_Delay(120);
+  uint8_t i;
+  SSD2828_RESET = 0;
+  SSD2828_SHUT = 0;
+  HAL_Delay(50);
+  SSD2828_RESET = 1;
+  HAL_Delay(10);
+
+	/* 轮流初始化两个SSD2828 */
+	for(i = 0; i<2; i++)
+	{
+		SSD2828_ChipSel((SSD2828_NameTypeDef)i , ENABLE);
+		
+		if(SSD2828ReadReg(0xB0)==0x2828)
+			printf("Info:SSD2828%d OK\n",i);
+		else
+			printf("Error:SSD2828%d configuration failed\n",i);
+
+
+		SSD2828WriteReg(0x00b9, 0x00, 0x00);
+		SSD2828WriteReg(0x00b1, 0, 0);
+		SSD2828WriteReg(0x00b2, 0, 0 + 10);
+		SSD2828WriteReg(0x00b3, 0, 0);
+		SSD2828WriteReg(0xb4, (0 >> 8) & 0xff, 0 & 0xff);
+		SSD2828WriteReg(0xb5, (0 >> 8) & 0xff, 0 & 0xff);
+		SSD2828WriteReg(0x00b6, 0x00, 0x07);
+		if (data_rate < 500)
+		{
+			SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
+		}
+		else
+		{
+			SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
+		}
+		SSD2828WriteReg(0x00bb, 0x00, 0x06);
+		SSD2828WriteReg(0x00b8, 0x00, 0x00);
+		SSD2828WriteReg(0x00c9, 0x25, 0x09);
+		SSD2828WriteReg(0x00ca, 0x23, 0x01);
+		SSD2828WriteReg(0x00cb, 0x05, 0x10);
+		SSD2828WriteReg(0x00cc, 0x10, 0x05);
+		SSD2828WriteReg(0x00de, 0x00, lane - 1);
+		SSD2828WriteReg(0x00d6, 0x00, 0x05);
+		SSD2828WriteReg(0x00c4, 0x00, 0x01);
+		SSD2828WriteReg(0x00eb, 0x80, 0x00);
+		HAL_Delay(10);
+		SSD2828WriteReg(0x00b9, 0x00, 0x01);
+		HAL_Delay(120);
+}
+	
+	  /*一般使用 U10 发送LCD初始化及回读*/
+		SSD2828_ChipSel(U10 , ENABLE);
 }
 
-
-void SSD2828_RST_H(void)
+/**
+	* @brief  是否关闭MIPI数据传输
+	* @param  state : ENABLE or DISABLE
+	* @retval None
+  */
+void SSD2828_ShutDown(FunctionalState state)
 {
-  SSD_RESET_H;
+	SSD2828_SHUT = (uint8_t)state & 0x01;
 }
 
-
-void SSD2828_RST_L(void)
-{
-  SSD_RESET_L;
-}
+/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 
 
-void SSD2828_IC1_CS_0(void)
-{
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6,GPIO_PIN_RESET);
-}
-
-
-void SSD2828_IC1_CS_1(void)
-{
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6,GPIO_PIN_SET);
-}
-
-
-void SSD2828_IC2_CS_0(void)
-{
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5,GPIO_PIN_RESET);
-}
-
-
-void SSD2828_IC2_CS_1(void)
-{
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5,GPIO_PIN_SET);
-}
-
-
-void WR_DT29(uint32_t n)
-{
-  SSD2828GenericLongWrite(n);
-}
-
-
-void WR_DT03_13_23(uint8_t n)
-{
-  SSD2828GenericShortWrite(n);
-}
-
-
-void WR_DT39(uint32_t n)
-{
-  SSD2828DcsLongWrite(n);
-}
-
-
-void WR_DT05_15(uint8_t n)
-{
-  SSD2828DcsShortWrite(n);
-}
-
-
-void RD_DT06(uint8_t adr, uint16_t l, uint8_t *p)
-{
-  SSD2828DcsReadDT06(adr, l, p);
-}
-
-
-void RD_DT14(uint8_t adr, uint16_t l, uint8_t *p)
-{
-  SSD2828GenericReadDT14(adr, l, p);
-}

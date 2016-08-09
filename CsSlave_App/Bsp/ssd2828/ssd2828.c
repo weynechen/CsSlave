@@ -11,16 +11,17 @@
 #include "ssd2828.h"
 #include "sys.h"
 
-/* SSD2828 相关PIN 的配置区域 */
-#define SPI_SDO PEout(2)
-#define SPI_SCK PEout(3)
-#define SPI_SDI PEin(1)
+/**
+ * @brief SSD2828 IO PIN 的配置区域
+ */
+#define SPI_SDO       PEout(2)  /*< SPI SDO */
+#define SPI_SCK       PEout(3)/*< SPI CLK */
+#define SPI_SDI       PEin(1)/*< SPI SDI */
+#define SPI_CS_U10    PEout(6) /*< 丝印为U10 的SSD2828 的SPI使能PIN，低电平有效 */
+#define SPI_CS_U11    PBout(5)/*< 丝印为U11 的SSD2828 的SPI使能PIN，低电平有效 */
+#define SSD2828_RESET PEout(0)/*< SSD2828 Reset pin */
+#define SSD2828_SHUT  PEout(5) /*< SPI Shut down 功能脚 */
 
-#define SPI_CS_U10 PEout(6) 
-#define SPI_CS_U11 PBout(5)
-
-#define SSD2828_RESET PEout(0)
-#define SSD2828_SHUT PEout(5) 
 
 static uint16_t mode;
 

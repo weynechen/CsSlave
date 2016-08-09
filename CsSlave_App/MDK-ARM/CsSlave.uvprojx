@@ -663,6 +663,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Protocol</GroupName>
+          <Files>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\protocol.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>

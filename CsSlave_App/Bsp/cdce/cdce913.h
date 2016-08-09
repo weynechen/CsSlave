@@ -16,18 +16,6 @@ typedef enum
   I2C_ACK
 } AckTypeDef;
 
-#define CDCE_ADDRESS    0x65
-#define CDCE_ID         0x81
-#define I2C_WRITE    CDCE_ADDRESS << 1
-#define I2C_READ     ((CDCE_ADDRESS << 1) | 0x01)
-
-#define I2C_SCL      PBout(8)
-#define I2C_SDA      PBout(9)
-#define READ_SDA     PBin(9)
-
-#define S0           PCout(6)
-
-
 void CDCE_Init(uint16_t f_out);
 
 #endif

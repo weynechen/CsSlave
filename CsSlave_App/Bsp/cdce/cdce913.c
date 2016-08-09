@@ -15,6 +15,21 @@
 #include "stdlib.h"
 #include "math.h"
 
+
+/**
+ * @brief SSD2828 接口 PIN 的配置区域
+ */
+#define CDCE_ADDRESS    0x65
+#define CDCE_ID         0x81
+#define I2C_SCL      PBout(8)
+#define I2C_SDA      PBout(9)
+#define READ_SDA     PBin(9)
+#define S0           PCout(6)
+#define I2C_WRITE    CDCE_ADDRESS << 1
+#define I2C_READ     ((CDCE_ADDRESS << 1) | 0x01)
+
+
+
 static void I2C_Delay(volatile uint8_t t)
 {
   uint8_t i, n;

@@ -666,9 +666,14 @@
           <GroupName>Protocol</GroupName>
           <Files>
             <File>
-              <FileName>protocol.c</FileName>
+              <FileName>parse.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Protocol\protocol.c</FilePath>
+              <FilePath>..\Protocol\parse.c</FilePath>
+            </File>
+            <File>
+              <FileName>action.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\action.c</FilePath>
             </File>
           </Files>
         </Group>

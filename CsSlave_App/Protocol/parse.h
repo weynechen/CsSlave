@@ -1,5 +1,5 @@
 /**
- * @file        protocol.h
+ * @file        parse.h
  * @author      Weyne
  * @version     V01
  * @date        2016.08.09
@@ -7,8 +7,8 @@
  * @note
  * @attention   COYPRIGHT WEYNE
  */
-#ifndef _PROTOCOL_H_
-#define _PROTOCOL_H_
+#ifndef _PARSE_H_
+#define _PARSE_H_
 #include "stm32f1xx_hal.h"
 
 #define LCD_PARA_LEN       18

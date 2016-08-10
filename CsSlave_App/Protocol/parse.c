@@ -1,5 +1,5 @@
 /**
- * @file        protocol.c
+ * @file        parse.c
  * @author      Weyne
  * @version     V01
  * @date        2016.08.09
@@ -13,7 +13,8 @@
  * @attention   COYPRIGHT WEYNE
  */
 
-#include "protocol.h"
+#include "parse.h"
+#include "action.h"
 
 static DataStateTypeDef CheckData(void)
 {
@@ -29,6 +30,8 @@ PackFlagTypeDef ParseComData(uint8_t *p)
 {
 	if(CheckData() != DATA_OK)
 		return P_FAIL;
+	
+	
 	
 }
 

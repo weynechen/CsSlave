@@ -47,12 +47,16 @@
 #include "ssd2828.h"
 #include "usbd_cdc_if.h"
 #include "power.h"
+#include "parse.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+/* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
+uint8_t SystemBuf[BUFFER_SIZE];
+ConfigTypeDef SystemConfig;
 extern uint8_t USB_Connect;
 /* USER CODE END PV */
 
@@ -102,7 +106,8 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 	printf("\n--CD310--\n");
-	InitSD();
+	UART_SetDMA();	
+	SDCart_Init();
 	CDCE_Init(30);
 	
 	SSD2828_Init(4,480);

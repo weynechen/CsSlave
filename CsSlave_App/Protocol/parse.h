@@ -11,8 +11,11 @@
 #define _PARSE_H_
 #include "stm32f1xx_hal.h"
 
+/**
+ * @brief  系统配置数据长度
+ */
 #define LCD_PARA_LEN       18
-#define LCD_INIT_LEN       4096
+#define LCD_INIT_LEN       3000
 #define PATTERN_LEN        1024
 #define MIPI_CONFIG_LEN    2
 
@@ -31,6 +34,7 @@ typedef struct
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
 } ConfigTypeDef;
 
+extern ConfigTypeDef SystemConfig;
 
 /**
  * @brief  系统配置数据包ID号
@@ -62,6 +66,9 @@ typedef enum
 	UPDATE_FIRMWARE,    /*< 更新固件 */
 }ActionIDTypeDef;
 
+/**
+ * @brief  数据包头尾控制字
+ */
 typedef enum
 {
   P_HEAD = 0xAA,
@@ -69,17 +76,32 @@ typedef enum
   P_CTRL = 0xA5,
 } PackCtrlWordTypeDef;
 
+/**
+ * @brief  解包标志位
+ */
 typedef enum
 {
   P_SUCCESS = 0xFF,
   P_FAIL = 0x00	
 }PackFlagTypeDef;
 
+/**
+ * @brief  数据校验标志
+ */
 typedef enum
 {
 	DATA_NG,	
 	DATA_OK,
 }DataStateTypeDef;
+
+/**
+ * @brief  数据是否准备好标志
+ */
+typedef enum
+{
+	DATA_NULL,	
+	DATA_READY,
+}ComStateTypedef;
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

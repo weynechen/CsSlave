@@ -57,7 +57,7 @@ extern void Error_Handler(void);
 void MX_SDIO_SD_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-void InitSD(void);
+void SDCart_Init(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

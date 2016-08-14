@@ -39,13 +39,14 @@
 #include "dma.h"
 
 /* USER CODE BEGIN 0 */
+#include "sys.h"
 
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart1_rx;
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USART1 init function */
 
 void MX_USART1_UART_Init(void)
@@ -129,7 +130,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart1_rx);
 
   /* USER CODE BEGIN USART1_MspInit 1 */
-
+		__HAL_UART_ENABLE_IT(uartHandle,UART_IT_IDLE);
+		__HAL_DMA_ENABLE_IT(&hdma_usart1_rx,DMA_IT_TC);
   /* USER CODE END USART1_MspInit 1 */
   }
   else if(uartHandle->Instance==USART3)
@@ -213,7 +215,37 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 } 
 
 /* USER CODE BEGIN 1 */
+void UART_SetDMA(void)
+{
+	if(HAL_UART_Receive_DMA(&huart1,SystemBuf,BUFFER_SIZE) == HAL_OK)
+	{
+		printf("Info:Com1 OK\n");
+	}
+	else
+	{
+		printf("Error:Com1 NG\n");
+	}	
+}
 
+
+/**
+	* @brief  串口DMA接收完成中断的回调函数
+	* @note   每次解包完成后会重置DMA，所以只有当串口有错误发生才会触发此回调
+	* @param  None
+	* @retval None
+  */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	printf("Error:Com1 overflow,please check serial port\n");
+	if(HAL_UART_Receive_DMA(&huart1,SystemBuf,BUFFER_SIZE) == HAL_OK)
+	{
+		printf("Info:Restart Com1\n");
+	}
+	else
+	{
+		printf("Error:Com1 NG\n");
+	}	
+}
 /* USER CODE END 1 */
 
 /**

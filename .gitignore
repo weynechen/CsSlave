@@ -58,6 +58,7 @@ ehthumbs.db
 *.map
 *.lst
 *.bin
+*.__i
 /listings
 /objects
 

@@ -130,7 +130,7 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-void InitSD(void)
+void SDCart_Init(void)
 {
 	HAL_SD_TransferStateTypedef State;
 	HAL_SD_ErrorTypedef sd_status; 

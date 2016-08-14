@@ -17,7 +17,7 @@
 
 
 /**
- * @brief SSD2828 接口 PIN 的配置区域
+ * @brief CDCE913 接口 PIN 的配置区域
  */
 #define CDCE_ADDRESS    0x65
 #define CDCE_ID         0x81

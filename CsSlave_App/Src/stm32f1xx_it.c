@@ -36,7 +36,8 @@
 #include "stm32f1xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "parse.h"
+ComStateTypedef UartState = DATA_NULL;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -167,9 +168,9 @@ void SysTick_Handler(void)
 */
 void DMA1_Channel5_IRQHandler(void)
 {
-  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
-
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */		
   /* USER CODE END DMA1_Channel5_IRQn 0 */
+	
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
 
@@ -196,7 +197,11 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-
+if(__HAL_UART_GET_IT_SOURCE(&huart1,UART_IT_IDLE))
+{
+	UartState = DATA_READY;
+	__HAL_UART_CLEAR_IDLEFLAG(&huart1);	
+}
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */

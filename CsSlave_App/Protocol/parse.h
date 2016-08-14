@@ -11,13 +11,26 @@
 #define _PARSE_H_
 #include "stm32f1xx_hal.h"
 
+
+/**
+ * @brief  接口定义
+ */
+typedef enum
+{
+	IF_UART1,
+	IF_USB,
+	IF_UART3,
+}InterfaceTypeDef;
+
+
 /**
  * @brief  系统配置数据长度
  */
 #define LCD_PARA_LEN       18
 #define LCD_INIT_LEN       3000
 #define PATTERN_LEN        1024
-#define MIPI_CONFIG_LEN    2
+#define MIPI_CONFIG_LEN    256
+#define MAX_NAME_LEN 128
 
 /**
  * @brief  系统配置数据结构体，这一部分数据会被烧录到flash
@@ -30,7 +43,7 @@ typedef struct
   uint8_t LCDInitCode[LCD_INIT_LEN];   /*< LCD 初始化设置 */
   uint8_t MIPIConfig[MIPI_CONFIG_LEN]; /*< MIPI 参数设置 */
   uint8_t Pattern[PATTERN_LEN];        /*< pattern 设置 */
-  uint8_t ProjectName[128];            /*< 项目名称设置 */
+  uint8_t ProjectName[MAX_NAME_LEN];   /*< 项目名称设置 */
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
 } ConfigTypeDef;
 

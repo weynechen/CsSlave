@@ -36,22 +36,23 @@ static DataStateTypeDef CheckData(void)
 {
 	uint16_t i;
 	uint16_t len;
-	uint32_t crc32;
+	volatile uint32_t crc32 = 0;
+	volatile uint32_t crc32_result = 0;
 	len = (uint32_t)(SystemBuf[0]<<8 | SystemBuf[1]);
 	if(len % 4 != 0)
 		return	DATA_NG;
 	if(len > BUFFER_SIZE)
 		return DATA_NG;
 	
-	crc32 = (uint32_t)(SystemBuf[len]<<24 | SystemBuf[len+1]<<16 | SystemBuf[len+2]<<8 | SystemBuf[len+3]);
+	crc32 = (uint32_t)((uint32_t)SystemBuf[len]<<24 | (uint32_t)SystemBuf[len+1]<<16 | (uint32_t)SystemBuf[len+2]<<8 | (uint32_t)SystemBuf[len+3]);
 	
 	__HAL_CRC_DR_RESET(&hcrc);
 	
 	for(i=0;i<len;i+=4)
 	{
-		hcrc.Instance->DR = (uint32_t)(SystemBuf[i]<<24 | SystemBuf[i+1]<<16 | SystemBuf[i+2]<<8 | SystemBuf[i+3]);
+		hcrc.Instance->DR = (uint32_t)((uint32_t)SystemBuf[i+3]<<24 | (uint32_t)SystemBuf[i+2]<<16 | (uint32_t)SystemBuf[i+1]<<8 | (uint32_t)SystemBuf[i]);
 	}
-	
+	crc32_result = hcrc.Instance->DR;
 	if(crc32 != hcrc.Instance->DR)
 		return DATA_NG;
 	
@@ -79,9 +80,10 @@ PackFlagTypeDef ParseComData(void)
 		switch(id)
 		{
 			case RE_INIT_START:
-					memcpy(&SystemConfig , &SystemBuf[3] , sizeof(SystemConfig));
+					memcpy(&SystemConfig , &SystemBuf[4] , sizeof(SystemConfig));
+					TaskID = RE_INIT_START;
 				break;
-			
+
 			default:
 				break;
 		}

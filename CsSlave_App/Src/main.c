@@ -58,6 +58,8 @@
 uint8_t SystemBuf[BUFFER_SIZE];
 ConfigTypeDef SystemConfig;
 extern uint8_t USB_Connect;
+extern ComStateTypedef UartState;
+ActionIDTypeDef TaskID = ACTION_NULL;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -121,6 +123,12 @@ int main(void)
 			{
 				printf("USB Connected\n");
 				HAL_Delay(1000);
+			}
+			
+			if(UartState == DATA_READY)
+			{
+				UartState = DATA_NULL;
+				ParseComData();
 			}
   /* USER CODE END WHILE */
 

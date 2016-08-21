@@ -47,7 +47,6 @@ typedef struct
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
 } ConfigTypeDef;
 
-extern ConfigTypeDef SystemConfig;
 
 /**
  * @brief  系统配置数据包ID号
@@ -77,6 +76,7 @@ typedef enum
   FLASH_CONFIG_FILE, /*< 烧录配置文件 */
   CHANNEL_SEL,        /*< 选择通道 */
 	UPDATE_FIRMWARE,    /*< 更新固件 */
+	ACTION_NULL = 0xff /*< 空动作*/
 }ActionIDTypeDef;
 
 /**
@@ -115,6 +115,13 @@ typedef enum
 	DATA_NULL,	
 	DATA_READY,
 }ComStateTypedef;
+
+
+extern ConfigTypeDef SystemConfig;
+extern ActionIDTypeDef TaskID ;
+
+
+PackFlagTypeDef ParseComData(void);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

@@ -52,7 +52,5 @@
 #define PGout(n)   BIT_ADDR(GPIOG_ODR_Addr,n)  
 #define PGin(n)    BIT_ADDR(GPIOG_IDR_Addr,n)  
 
-#define BUFFER_SIZE 5120
-extern uint8_t SystemBuf[];
 #endif
 

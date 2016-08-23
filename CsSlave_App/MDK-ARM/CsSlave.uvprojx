@@ -332,7 +332,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\power;..\Protocol</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\power;..\Protocol;..\Bsp\sysconfig</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -618,7 +618,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Bsp</GroupName>
+          <GroupName>Application/Bsp</GroupName>
           <Files>
             <File>
               <FileName>cdce913.c</FileName>
@@ -634,6 +634,16 @@
               <FileName>power.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\power\power.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\lcd\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>sysconfig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\sysconfig\sysconfig.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -663,17 +673,17 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Protocol</GroupName>
+          <GroupName>Application/Protocol</GroupName>
           <Files>
             <File>
-              <FileName>parse.c</FileName>
+              <FileName>ack.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Protocol\parse.c</FilePath>
+              <FilePath>..\Protocol\ack.c</FilePath>
             </File>
             <File>
-              <FileName>action.c</FileName>
+              <FileName>rec.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Protocol\action.c</FilePath>
+              <FilePath>..\Protocol\rec.c</FilePath>
             </File>
           </Files>
         </Group>

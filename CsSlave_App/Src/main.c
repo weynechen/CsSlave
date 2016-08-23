@@ -47,16 +47,13 @@
 #include "ssd2828.h"
 #include "usbd_cdc_if.h"
 #include "power.h"
-#include "parse.h"
+#include "rec.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-/* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
-uint8_t SystemBuf[BUFFER_SIZE];
-ConfigTypeDef SystemConfig;
 extern uint8_t USB_Connect;
 extern ComStateTypedef UartState;
 ActionIDTypeDef TaskID = ACTION_NULL;
@@ -130,6 +127,20 @@ int main(void)
 				UartState = DATA_NULL;
 				ParseComData();
 			}
+			
+			switch(TaskID)
+			{
+				case RE_INIT_START:
+					
+					break;
+				
+				default:
+					break;
+			}
+			
+			
+			
+			
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */

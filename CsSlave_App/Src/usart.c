@@ -39,7 +39,7 @@
 #include "dma.h"
 
 /* USER CODE BEGIN 0 */
-#include "sys.h"
+#include "sysconfig.h"
 
 /* USER CODE END 0 */
 

@@ -36,7 +36,7 @@
 #include "stm32f1xx_it.h"
 
 /* USER CODE BEGIN 0 */
-#include "parse.h"
+#include "rec.h"
 ComStateTypedef UartState = DATA_NULL;
 /* USER CODE END 0 */
 

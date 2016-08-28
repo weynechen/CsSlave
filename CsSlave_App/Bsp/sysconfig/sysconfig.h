@@ -34,9 +34,9 @@ typedef struct
   uint8_t PowerSettings;               /*< 电源设置 */
   uint8_t Backlight;                   /*< 背光电流设置 */
   uint8_t LCDTimingPara[LCD_PARA_LEN]; /*< LCD 时序参数设置 */
-  uint8_t LCDInitCode[LCD_INIT_LEN];   /*< LCD 初始化设置 */
-  uint8_t MIPIConfig[MIPI_CONFIG_LEN]; /*< MIPI 参数设置 */
-  uint8_t Pattern[PATTERN_LEN];        /*< pattern 设置 */
+  uint8_t LCDInitCode[LCD_INIT_LEN];   /*< LCD 初始化设置,第一个和第二个字节表示长度*/
+  uint8_t MIPIConfig[MIPI_CONFIG_LEN]; /*< MIPI 参数设置 第一个和第二个字节表示长度*/
+  uint8_t Pattern[PATTERN_LEN];        /*< pattern 设置 第一个和第二个字节表示长度*/
   uint8_t ProjectName[MAX_NAME_LEN];   /*< 项目名称设置 */
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
 } ConfigTypeDef;

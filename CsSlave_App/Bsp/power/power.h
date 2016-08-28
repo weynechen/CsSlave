@@ -11,6 +11,9 @@
 
 #include "sys.h"
 
+
+#define POWER_AMOUT 5
+
 /* 修改下面BITBAND中宏，即可修改power控制脚 */
 typedef enum
 {

@@ -131,7 +131,7 @@ int main(void)
 			switch(TaskID)
 			{
 				case RE_INIT_START:
-					
+					Lcd_ReInit();
 					break;
 				
 				default:

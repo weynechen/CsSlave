@@ -1,4 +1,3 @@
-
 /**
  * @file        lcd.h
  * @author      Weyne
@@ -10,6 +9,7 @@
  */
 #ifndef _LCD_H_
 #define _LCD_H_
+
 typedef enum
 {
 		MIPI_START,
@@ -27,7 +27,28 @@ typedef enum
 		GP,
 		DCS
 }MipiPackageDef;
-		
+
+typedef enum
+{
+  PATTERN_START,
+  RGB,
+  FLICKERV,
+  FLICKERH,
+  COLORBARV,
+  COLORBARH,
+  GRAYLEVEL_V,
+  GRAYLEVEL_H,
+  CROSSTALK,
+  PIC,
+  FRAME,
+	CHESSBOARD,
+	RGBBAR,
+	RGBLEVEL,
+  PATTERN_STAY,
+  NULL_PATTERN,
+  PATTERN_END
+} PatternTypeDef;
+
 		
 void Lcd_ReInit(void);
 #endif

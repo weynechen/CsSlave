@@ -89,6 +89,7 @@ PackFlagTypeDef ParseComData(void)
 
 	}
 	
+	return P_SUCCESS;
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

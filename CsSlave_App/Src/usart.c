@@ -227,6 +227,16 @@ void UART_SetDMA(void)
 	}	
 }
 
+void UART_RestartDMA(void)
+{
+	__HAL_DMA_DISABLE(&hdma_usart1_rx);
+	hdma_usart1_rx.Instance->CNDTR = BUFFER_SIZE;
+	__HAL_DMA_ENABLE(&hdma_usart1_rx);
+}
+
+
+
+
 
 /**
 	* @brief  串口DMA接收完成中断的回调函数

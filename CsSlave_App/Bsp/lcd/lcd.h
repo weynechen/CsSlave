@@ -9,24 +9,29 @@
  */
 #ifndef _LCD_H_
 #define _LCD_H_
+#include "stm32f1xx_hal.h"
+
+
+#define RESET_PINA     GPIO_PIN_2
+#define RESET_PORTA    GPIOA
 
 typedef enum
 {
-		MIPI_START,
-		MIPI_DCS,
-		MIPI_GP,
-		MIPI_DELAY,
-		MIPI_WRITE,
-		MIPI_READ,
-		MIPI_END
-}MipiTypeDef;
+  MIPI_START,
+  MIPI_DCS,
+  MIPI_GP,
+  MIPI_DELAY,
+  MIPI_WRITE,
+  MIPI_READ,
+  MIPI_END
+} MipiTypeDef;
 
 typedef enum
 {
-		NO_PACKAGE,
-		GP,
-		DCS
-}MipiPackageDef;
+  NO_PACKAGE,
+  GP,
+  DCS
+} MipiPackageDef;
 
 typedef enum
 {
@@ -41,16 +46,17 @@ typedef enum
   CROSSTALK,
   PIC,
   FRAME,
-	CHESSBOARD,
-	RGBBAR,
-	RGBLEVEL,
+  CHESSBOARD,
+  RGBBAR,
+  RGBLEVEL,
   PATTERN_STAY,
   NULL_PATTERN,
   PATTERN_END
 } PatternTypeDef;
 
-		
+
+
 void Lcd_ReInit(void);
+
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
-

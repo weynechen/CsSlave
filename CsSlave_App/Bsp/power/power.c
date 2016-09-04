@@ -6,13 +6,13 @@
  * @brief       CD310电源驱动
  * @attention   COYPRIGHT WEYNE
  */
- 
+
 #include "power.h"
 #include "tim.h"
 
 void Power_SetState(PowerTypeDef power, StateTypeDef state)
 {
-	MEM_ADDR(power) = (uint8_t)state;
+  MEM_ADDR(power) = (uint8_t)state;
 }
 
 
@@ -22,5 +22,5 @@ void Power_SetBLCurrent(uint16_t value)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
-/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 
+/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

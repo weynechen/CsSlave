@@ -48,6 +48,8 @@
 #include "usbd_cdc_if.h"
 #include "power.h"
 #include "rec.h"
+#include "lcd.h"
+#include "sysconfig.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -125,13 +127,21 @@ int main(void)
 			if(UartState == DATA_READY)
 			{
 				UartState = DATA_NULL;
-				ParseComData();
+				if(ParseComData() == P_SUCCESS)
+				{
+					UART_RestartDMA();
+				}
+				else
+				{
+					printf("Error: error data\n");
+				}
 			}
 			
 			switch(TaskID)
 			{
 				case RE_INIT_START:
 					Lcd_ReInit();
+					TaskID = ACTION_NULL;
 					break;
 				
 				default:

@@ -21,12 +21,12 @@
  */
 #define CDCE_ADDRESS    0x65
 #define CDCE_ID         0x81
-#define I2C_SCL      PBout(8)
-#define I2C_SDA      PBout(9)
-#define READ_SDA     PBin(9)
-#define S0           PCout(6)
-#define I2C_WRITE    CDCE_ADDRESS << 1
-#define I2C_READ     ((CDCE_ADDRESS << 1) | 0x01)
+#define I2C_SCL         PBout(8)
+#define I2C_SDA         PBout(9)
+#define READ_SDA        PBin(9)
+#define S0              PCout(6)
+#define I2C_WRITE       CDCE_ADDRESS << 1
+#define I2C_READ        ((CDCE_ADDRESS << 1) | 0x01)
 
 
 
@@ -38,7 +38,6 @@ static void I2C_Delay(volatile uint8_t t)
   {
     for (i = 0; i < 35; i++)
     {
-		;
     }
   }
 }
@@ -320,7 +319,7 @@ void CDCE_Init(uint16_t f_out)
   if (read_back != CDCE_ID)
   {
     printf("Error:clk device ID error");
-	  return;
+    return;
   }
 
   CDCE_WriteByte(0x02, 0xB4);
@@ -351,8 +350,8 @@ void CDCE_Init(uint16_t f_out)
   CDCE_WriteByte(0x1F, ((Q & 0x07) << 5) | ((P & 0x07) << 2) | (fvco & 0x03));
 
   S0 = 1;
-  printf("Info:clk well configured\n");  
+  printf("Info:clk well configured\n");
 }
 
-/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 
+/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

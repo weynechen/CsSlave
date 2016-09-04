@@ -12,9 +12,9 @@
 #include "stm32f1xx_hal.h"
 
 /**
-* @brief 系统缓冲区的长度
-*/
-#define BUFFER_SIZE 5120
+ * @brief 系统缓冲区的长度
+ */
+#define BUFFER_SIZE    5120
 
 
 /**
@@ -24,7 +24,7 @@
 #define LCD_INIT_LEN       3000
 #define PATTERN_LEN        1024
 #define MIPI_CONFIG_LEN    256
-#define MAX_NAME_LEN 128
+#define MAX_NAME_LEN       128
 
 /**
  * @brief  系统配置数据结构体，这一部分数据会被烧录到flash
@@ -42,9 +42,45 @@ typedef struct
 } ConfigTypeDef;
 
 
+/**
+ * @breif  LCD时序参数定义
+ */
+typedef struct
+{
+  uint16_t DCLK;
+  uint16_t LCDH;
+  uint16_t LCDV;
+
+  uint16_t HBPD;
+  uint16_t HFPD;
+  uint16_t HSPW;
+
+  uint16_t VBPD;
+  uint16_t VFPD;
+  uint16_t VSPW;
+} LCDTimingParaTypeDef;
+
+
+/**
+ * @breif  pattern 属性
+ */
+#define PATTERN_AMOUNT      20
+#define PATTERN_NAME_LEN    30
+
+typedef struct
+{
+  char     Name[PATTERN_AMOUNT][PATTERN_NAME_LEN];
+  uint16_t StayTime[PATTERN_AMOUNT];
+  uint8_t  Counter;
+  uint8_t  CurrentPattern;
+} PatternPropertyTypeDef;
+
+
+
 extern uint8_t SystemBuf[];
 extern ConfigTypeDef SystemConfig;
-#endif 
- /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
+extern LCDTimingParaTypeDef LCDTiming;
+extern PatternPropertyTypeDef PatternProperty;
 
-
+#endif
+/************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

@@ -7,23 +7,23 @@
  * @note
  * @attention   COYPRIGHT WEYNE
  */
- 
+
 #include "ssd2828.h"
 #include "sys.h"
 
 /**
  * @brief SSD2828 IO PIN 的配置区域
  */
-#define SPI_SDO       PEout(2)  /*< SPI SDO */
-#define SPI_SCK       PEout(3)/*< SPI CLK */
-#define SPI_SDI       PEin(1)/*< SPI SDI */
-#define SPI_CS_U10    PEout(6) /*< 丝印为U10 的SSD2828 的SPI使能PIN，低电平有效 */
-#define SPI_CS_U11    PBout(5)/*< 丝印为U11 的SSD2828 的SPI使能PIN，低电平有效 */
-#define SSD2828_RESET PEout(0)/*< SSD2828 Reset pin */
-#define SSD2828_SHUT  PEout(5) /*< SPI Shut down 功能脚 */
+#define SPI_SDO          PEout(2) /*< SPI SDO */
+#define SPI_SCK          PEout(3) /*< SPI CLK */
+#define SPI_SDI          PEin(1)  /*< SPI SDI */
+#define SPI_CS_U10       PEout(6) /*< 丝印为U10 的SSD2828 的SPI使能PIN，低电平有效 */
+#define SPI_CS_U11       PBout(5) /*< 丝印为U11 的SSD2828 的SPI使能PIN，低电平有效 */
+#define SSD2828_RESET    PEout(0) /*< SSD2828 Reset pin */
+#define SSD2828_SHUT     PEout(5) /*< SPI Shut down 功能脚 */
 
 
-static uint16_t mode;
+static uint16_t mode = LP;
 
 static void Delay_10us(volatile uint8_t t)
 {
@@ -67,6 +67,7 @@ static void SSD2828WriteCmd(uint8_t cmd)
   }
   Delay_10us(0);
 }
+
 
 void SSD2828WriteData(uint8_t data)
 {
@@ -168,6 +169,7 @@ static void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2)
   }
 }
 
+
 static uint8_t SSD2828Read()
 {
   uint16_t i;
@@ -250,6 +252,7 @@ void SSD2828_DcsLongWrite(uint32_t n)
   SSD2828WriteCmd(0xbf);
 }
 
+
 void SSD2828_GenericShortWrite(uint8_t n)
 {
   if (mode == LP)
@@ -270,6 +273,7 @@ void SSD2828_GenericShortWrite(uint8_t n)
   SSD2828WriteReg(0xbe, 0x00, n);
   SSD2828WriteCmd(0xbf);
 }
+
 
 void SSD2828_GenericLongWrite(uint32_t n)
 {
@@ -390,106 +394,114 @@ MIPI_ReadTypeDef SSD2828_GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p)
   return MIPI_READ_SUCCEED;
 }
 
+
 void SSD2828_SetMode(MIPI_ModeTypeDef m)
 {
-	mode = m;
-	if(mode == VD)
-	{
-		  SSD2828WriteReg(0x00b7, 0x03, 0x0B);
-	}
+  mode = m;
+  if (mode == VD)
+  {
+    SSD2828WriteReg(0x00b7, 0x03, 0x0B);
+  }
 }
 
+
 /**
-	* @brief  SSD2828 SPI CS控制，低电平有效
-	* @note   两个SSD2828通过同一个SPI接口接在一起，所以两者不能同时打开
-	* @param  name : 选择芯片
-	* @param state : DISABLE or ENABLE
-	* @retval None
-  */
-void SSD2828_ChipSel(SSD2828_NameTypeDef name , FunctionalState state)
+ * @brief  SSD2828 SPI CS控制，低电平有效
+ * @note   两个SSD2828通过同一个SPI接口接在一起，所以两者不能同时打开
+ * @param  name : 选择芯片
+ * @param state : DISABLE or ENABLE
+ * @retval None
+ */
+void SSD2828_ChipSel(SSD2828_NameTypeDef name, FunctionalState state)
 {
-	if(name == U11)
-	{
-		SPI_CS_U11 = state?0:1;
-		SPI_CS_U10 = 1;
-	}
-	if(name == U10)
-	{
-		SPI_CS_U10 = state?0:1;
-		SPI_CS_U10 = 1;
-	}
+  if (name == U11)
+  {
+    SPI_CS_U11 = state ? 0 : 1;
+    SPI_CS_U10 = 1;
+  }
+  if (name == U10)
+  {
+    SPI_CS_U10 = state ? 0 : 1;
+    SPI_CS_U11 = 1;
+  }
 }
 
+
 /**
-	* @brief  SSD2828 初始化
-	* @param  lane : 通道数
-	* @param data_rate : 速率
-	* @retval None
-  */
+ * @brief  SSD2828 初始化
+ * @param  lane : 通道数
+ * @param data_rate : 速率
+ * @retval None
+ */
 void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
   uint8_t i;
+
   SSD2828_RESET = 0;
   SSD2828_SHUT = 0;
   HAL_Delay(50);
   SSD2828_RESET = 1;
   HAL_Delay(10);
 
-	/* 轮流初始化两个SSD2828 */
-	for(i = 0; i<2; i++)
-	{
-		SSD2828_ChipSel((SSD2828_NameTypeDef)i , ENABLE);
-		
-		if(SSD2828ReadReg(0xB0)==0x2828)
-			printf("Info:SSD2828%d OK\n",i);
-		else
-			printf("Error:SSD2828%d configuration failed\n",i);
+  /* 轮流初始化两个SSD2828 */
+  for (i = 0; i < 2; i++)
+  {
+    SSD2828_ChipSel((SSD2828_NameTypeDef)i, ENABLE);
+
+    if (SSD2828ReadReg(0xB0) == 0x2828)
+    {
+      printf("Info:SSD2828%d OK\n", i);
+    }
+    else
+    {
+      printf("Error:SSD2828%d configuration failed\n", i);
+    }
 
 
-		SSD2828WriteReg(0x00b9, 0x00, 0x00);
-		SSD2828WriteReg(0x00b1, 0, 0);
-		SSD2828WriteReg(0x00b2, 0, 0 + 10);
-		SSD2828WriteReg(0x00b3, 0, 0);
-		SSD2828WriteReg(0xb4, (0 >> 8) & 0xff, 0 & 0xff);
-		SSD2828WriteReg(0xb5, (0 >> 8) & 0xff, 0 & 0xff);
-		SSD2828WriteReg(0x00b6, 0x00, 0x07);
-		if (data_rate < 500)
-		{
-			SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
-		}
-		else
-		{
-			SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
-		}
-		SSD2828WriteReg(0x00bb, 0x00, 0x06);
-		SSD2828WriteReg(0x00b8, 0x00, 0x00);
-		SSD2828WriteReg(0x00c9, 0x25, 0x09);
-		SSD2828WriteReg(0x00ca, 0x23, 0x01);
-		SSD2828WriteReg(0x00cb, 0x05, 0x10);
-		SSD2828WriteReg(0x00cc, 0x10, 0x05);
-		SSD2828WriteReg(0x00de, 0x00, lane - 1);
-		SSD2828WriteReg(0x00d6, 0x00, 0x05);
-		SSD2828WriteReg(0x00c4, 0x00, 0x01);
-		SSD2828WriteReg(0x00eb, 0x80, 0x00);
-		HAL_Delay(10);
-		SSD2828WriteReg(0x00b9, 0x00, 0x01);
-		HAL_Delay(120);
+    SSD2828WriteReg(0x00b9, 0x00, 0x00);
+    SSD2828WriteReg(0x00b1, 0, 0);
+    SSD2828WriteReg(0x00b2, 0, 0 + 10);
+    SSD2828WriteReg(0x00b3, 0, 0);
+    SSD2828WriteReg(0xb4, (0 >> 8) & 0xff, 0 & 0xff);
+    SSD2828WriteReg(0xb5, (0 >> 8) & 0xff, 0 & 0xff);
+    SSD2828WriteReg(0x00b6, 0x00, 0x07);
+    if (data_rate < 500)
+    {
+      SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
+    }
+    else
+    {
+      SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
+    }
+    SSD2828WriteReg(0x00bb, 0x00, 0x06);
+    SSD2828WriteReg(0x00b8, 0x00, 0x00);
+    SSD2828WriteReg(0x00c9, 0x25, 0x09);
+    SSD2828WriteReg(0x00ca, 0x23, 0x01);
+    SSD2828WriteReg(0x00cb, 0x05, 0x10);
+    SSD2828WriteReg(0x00cc, 0x10, 0x05);
+    SSD2828WriteReg(0x00de, 0x00, lane - 1);
+    SSD2828WriteReg(0x00d6, 0x00, 0x05);
+    SSD2828WriteReg(0x00c4, 0x00, 0x01);
+    SSD2828WriteReg(0x00eb, 0x80, 0x00);
+    HAL_Delay(10);
+    SSD2828WriteReg(0x00b9, 0x00, 0x01);
+    HAL_Delay(120);
+  }
+
+  /*一般使用 U10 发送LCD初始化及回读*/
+  SSD2828_ChipSel(U10, ENABLE);
 }
-	
-	  /*一般使用 U10 发送LCD初始化及回读*/
-		SSD2828_ChipSel(U10 , ENABLE);
-}
+
 
 /**
-	* @brief  是否关闭MIPI数据传输
-	* @param  state : ENABLE or DISABLE
-	* @retval None
-  */
+ * @brief  是否关闭MIPI数据传输
+ * @param  state : ENABLE or DISABLE
+ * @retval None
+ */
 void SSD2828_ShutDown(FunctionalState state)
 {
-	SSD2828_SHUT = (uint8_t)state & 0x01;
+  SSD2828_SHUT = (uint8_t)state & 0x01;
 }
 
+
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
-
-

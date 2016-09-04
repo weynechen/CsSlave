@@ -12,17 +12,17 @@
 #include "sys.h"
 
 
-#define POWER_AMOUT 5
+#define POWER_AMOUT    5
 
 /* 修改下面BITBAND中宏，即可修改power控制脚 */
 typedef enum
 {
-	POWER_1V8 = BITBAND(GPIOC_ODR_Addr,0),
-	POWER_2V8 = BITBAND(GPIOB_ODR_Addr,15),
-	POWER_3V3 = BITBAND(GPIOB_ODR_Addr,14),
-	POWER_P5V = BITBAND(GPIOB_ODR_Addr,13),
-	POWER_N5V = BITBAND(GPIOB_ODR_Addr,12),	
-}PowerTypeDef;
+  POWER_1V8 = BITBAND(GPIOC_ODR_Addr, 0),
+  POWER_2V8 = BITBAND(GPIOB_ODR_Addr, 15),
+  POWER_3V3 = BITBAND(GPIOB_ODR_Addr, 14),
+  POWER_P5V = BITBAND(GPIOB_ODR_Addr, 13),
+  POWER_N5V = BITBAND(GPIOB_ODR_Addr, 12),
+} PowerTypeDef;
 
 
 typedef enum

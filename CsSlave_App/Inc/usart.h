@@ -59,6 +59,7 @@ void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 void UART_SetDMA(void);
+void UART_RestartDMA(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

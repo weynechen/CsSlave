@@ -58,7 +58,7 @@
 /* Private variables ---------------------------------------------------------*/
 extern uint8_t USB_Connect;
 extern ComStateTypedef UartState;
-ActionIDTypeDef TaskID = ACTION_NULL;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -140,10 +140,13 @@ int main(void)
 			switch(TaskID)
 			{
 				case RE_INIT_START:
+				  TaskID = ACTION_NULL;
 					Lcd_ReInit();
-					TaskID = ACTION_NULL;
 					break;
 				
+				case FLASH_PARA:
+				  TaskID = ACTION_NULL;
+					FlashConfig();
 				default:
 					break;
 			}

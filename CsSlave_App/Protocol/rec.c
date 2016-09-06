@@ -36,8 +36,7 @@ static DataStateTypeDef CheckData(void)
 {
 	uint16_t i;
 	uint16_t len;
-	volatile uint32_t crc32 = 0;
-	volatile uint32_t crc32_result = 0;
+	uint32_t crc32 = 0;
 	len = (uint32_t)(SystemBuf[0]<<8 | SystemBuf[1]);
 	if(len % 4 != 0)
 		return	DATA_NG;
@@ -52,7 +51,6 @@ static DataStateTypeDef CheckData(void)
 	{
 		hcrc.Instance->DR = (uint32_t)((uint32_t)SystemBuf[i+3]<<24 | (uint32_t)SystemBuf[i+2]<<16 | (uint32_t)SystemBuf[i+1]<<8 | (uint32_t)SystemBuf[i]);
 	}
-	crc32_result = hcrc.Instance->DR;
 	if(crc32 != hcrc.Instance->DR)
 		return DATA_NG;
 	
@@ -76,6 +74,7 @@ PackFlagTypeDef ParseComData(void)
 	if((interface == IF_UART1) || (interface == IF_USB))
 	{
 		ActionIDTypeDef id = (ActionIDTypeDef) SystemBuf[3];
+		TaskID = id;
 		switch(id)
 		{
 			case RE_INIT_START:

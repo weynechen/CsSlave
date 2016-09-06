@@ -10,7 +10,7 @@
 #ifndef _SYSCONFIG_H
 #define _SYSCONFIG_H
 #include "stm32f1xx_hal.h"
-
+#include "rec.h"
 /**
  * @brief 系统缓冲区的长度
  */
@@ -81,6 +81,10 @@ extern uint8_t SystemBuf[];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;
 extern PatternPropertyTypeDef PatternProperty;
+extern ActionIDTypeDef TaskID;
+
+
+void FlashConfig(void);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

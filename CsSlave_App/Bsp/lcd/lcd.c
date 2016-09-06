@@ -197,7 +197,7 @@ void SetPattern(void)
 
       break;
 
-    case RGB:     //AA AA ID R G B 55 55
+    case RGB: 
       r = *(p + i++);
       g = *(p + i++);
       b = *(p + i++);
@@ -294,6 +294,10 @@ void SetPattern(void)
       printf("Error:pattern syntax error\n");
 			break;
     }
+		
+		if(TaskID != ACTION_NULL)
+			break;
+		
     HAL_Delay(100);
   }
 }

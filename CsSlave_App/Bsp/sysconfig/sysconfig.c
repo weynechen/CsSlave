@@ -9,11 +9,20 @@
  */
 #include "sysconfig.h"
 
+
 /* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
 uint8_t SystemBuf[BUFFER_SIZE];
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;
 PatternPropertyTypeDef PatternProperty;
+ActionIDTypeDef TaskID = ACTION_NULL;
+
+
+
+void FlashConfig(void)
+{
+}
+
 
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

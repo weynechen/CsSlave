@@ -10,6 +10,7 @@
 #include "sysconfig.h"
 
 
+
 /* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
 uint8_t SystemBuf[BUFFER_SIZE];
 ConfigTypeDef SystemConfig;
@@ -18,9 +19,25 @@ PatternPropertyTypeDef PatternProperty;
 ActionIDTypeDef TaskID = ACTION_NULL;
 
 
-
 void FlashConfig(void)
 {
+	if(FLASH_If_Erase(CONFIG_BASE_ADDRESS,NUMBER_OF_CONFIG_PAGES) == FLASHIF_ERASEKO)
+	{
+		printf("Error:flash config error\n");
+	}
+	else
+	{
+		FLASH_If_Write(CONFIG_BASE_ADDRESS,(uint32_t *)&SystemConfig, sizeof(SystemConfig)/sizeof(uint32_t));
+	}
+}
+
+void ReadSystemConfig(void)
+{
+		SystemConfig = *((ConfigTypeDef *)CONFIG_BASE_ADDRESS);	
+		if(SystemConfig.Backlight < 200)
+		{
+			TaskID = RE_INIT_START;
+		}
 }
 
 

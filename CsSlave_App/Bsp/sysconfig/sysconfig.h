@@ -11,6 +11,11 @@
 #define _SYSCONFIG_H
 #include "stm32f1xx_hal.h"
 #include "rec.h"
+#include "flash_if.h"
+
+#define APP_BASE_ADDRESS 0x0801C800
+#define CONFIG_BASE_ADDRESS ADDR_FLASH_PAGE_11
+#define NUMBER_OF_CONFIG_PAGES 5
 /**
  * @brief 系统缓冲区的长度
  */
@@ -85,6 +90,6 @@ extern ActionIDTypeDef TaskID;
 
 
 void FlashConfig(void);
-
+void ReadSystemConfig(void);
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

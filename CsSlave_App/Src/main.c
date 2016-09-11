@@ -79,7 +79,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -112,6 +112,8 @@ int main(void)
 	CDCE_Init(30);
 	
 	SSD2828_Init(4,480);
+	ReadSystemConfig();
+	
   /* USER CODE END 2 */
 
   /* Infinite loop */

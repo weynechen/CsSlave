@@ -56,8 +56,6 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-extern uint8_t USB_Connect;
-extern ComStateTypedef UartState;
 
 /* USER CODE END PV */
 
@@ -114,16 +112,17 @@ int main(void)
 	SSD2828_Init(4,480);
 	ReadSystemConfig();
 	
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-			if(USB_Connect == 1)
+			if(USBConnect == 1)
 			{
-				printf("USB Connected\n");
-				HAL_Delay(1000);
+				USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+				USBConnect = 0;
 			}
 			
 			if(UartState == DATA_READY)
@@ -137,6 +136,12 @@ int main(void)
 				{
 					printf("Error: error data\n");
 				}
+			}
+			
+		  if(USBState == DATA_READY)
+			{
+				UartState = DATA_NULL;
+				printf("USB Data%d %d %d %d",SystemBuf[0],SystemBuf[1],SystemBuf[2],SystemBuf[3]);
 			}
 			
 			switch(TaskID)
@@ -237,11 +242,6 @@ int fputc(int ch, FILE *file)
 {
 	uint8_t pData = (uint8_t)ch;
 	HAL_UART_Transmit(&huart1,&pData,1,10);
-		if(USB_Connect == 1)
-	{
-		CDC_Transmit_FS(&pData,1);
-		HAL_Delay(1);
-	}
 	return ch;
 }
 /* USER CODE END 4 */

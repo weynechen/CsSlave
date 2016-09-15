@@ -45,7 +45,7 @@ PCD_HandleTypeDef hpcd_USB_FS;
 void Error_Handler(void);
 
 /* USER CODE BEGIN 0 */
-
+#include "sysconfig.h"
 /* USER CODE END 0 */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -114,6 +114,10 @@ void HAL_PCD_SetupStageCallback(PCD_HandleTypeDef *hpcd)
 void HAL_PCD_DataOutStageCallback(PCD_HandleTypeDef *hpcd, uint8_t epnum)
 {
   USBD_LL_DataOutStage((USBD_HandleTypeDef*)hpcd->pData, epnum, hpcd->OUT_ep[epnum].xfer_buff);
+	if(epnum == 1)
+	{
+		USBState = DATA_READY;
+	}
 }
 
 /**

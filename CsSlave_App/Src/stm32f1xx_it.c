@@ -37,7 +37,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "rec.h"
-ComStateTypedef UartState = DATA_NULL;
+#include "sysconfig.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/

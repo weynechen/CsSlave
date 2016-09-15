@@ -80,14 +80,23 @@ typedef struct
   uint8_t  CurrentPattern;
 } PatternPropertyTypeDef;
 
-
+/**
+ * @brief  数据是否准备好标志
+ */
+typedef enum
+{
+	DATA_NULL,	
+	DATA_READY,
+}ComStateTypeDef;
 
 extern uint8_t SystemBuf[];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;
 extern PatternPropertyTypeDef PatternProperty;
 extern ActionIDTypeDef TaskID;
-
+extern ComStateTypeDef UartState;
+extern ComStateTypeDef USBState;
+extern uint8_t USBConnect;
 
 void FlashConfig(void);
 void ReadSystemConfig(void);

@@ -18,6 +18,10 @@ LCDTimingParaTypeDef LCDTiming;
 PatternPropertyTypeDef PatternProperty;
 ActionIDTypeDef TaskID = ACTION_NULL;
 
+//信号量
+ComStateTypeDef UartState = DATA_NULL;
+ComStateTypeDef USBState =  DATA_NULL;
+uint8_t USBConnect =0;
 
 void FlashConfig(void)
 {

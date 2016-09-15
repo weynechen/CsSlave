@@ -33,6 +33,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 /* USER CODE BEGIN INCLUDE */
+#include "sysconfig.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -99,7 +100,7 @@ uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
   */ 
   extern USBD_HandleTypeDef hUsbDeviceFS;
 /* USER CODE BEGIN EXPORTED_VARIABLES */
-uint8_t USB_Connect =0;
+
 /* USER CODE END EXPORTED_VARIABLES */
 
 /**
@@ -141,8 +142,8 @@ static int8_t CDC_Init_FS(void)
   /* USER CODE BEGIN 3 */ 
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
-	USB_Connect =1;
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, SystemBuf);
+	USBConnect =1;
   return (USBD_OK);
   /* USER CODE END 3 */ 
 }
@@ -156,7 +157,7 @@ static int8_t CDC_Init_FS(void)
 static int8_t CDC_DeInit_FS(void)
 {
   /* USER CODE BEGIN 4 */ 
-		USB_Connect =0;
+		USBConnect =0;
   return (USBD_OK);
   /* USER CODE END 4 */ 
 }

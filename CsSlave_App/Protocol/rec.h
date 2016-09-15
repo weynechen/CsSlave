@@ -66,14 +66,7 @@ typedef enum
 	DATA_OK,
 }DataStateTypeDef;
 
-/**
- * @brief  数据是否准备好标志
- */
-typedef enum
-{
-	DATA_NULL,	
-	DATA_READY,
-}ComStateTypedef;
+
 
 extern ActionIDTypeDef TaskID ;
 

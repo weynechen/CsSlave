@@ -1,7 +1,7 @@
 ## flash分布
 当前用的 MCU Flash 容量为 256k,所以地址为0x08000000 - 0x0803FFFF
 总共128个page(page0~page127)，每个page的大小为2K。
-![flash](doc\flash.png)
+![flash](Doc\flash.png)
 
 ### bootloader
 page0 ~ page9 总大小控制在20kb以内，主要为解密和烧写APP

@@ -20,7 +20,8 @@ ActionIDTypeDef TaskID = ACTION_NULL;
 
 //信号量
 ComStateTypeDef UartState = DATA_NULL;
-ComStateTypeDef USBState =  DATA_NULL;
+ComStateTypeDef USBState = DATA_NULL;
+uint16_t USBDataShift =  0;
 uint8_t USBConnect =0;
 
 void FlashConfig(void)

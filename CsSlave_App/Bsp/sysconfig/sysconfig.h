@@ -96,6 +96,7 @@ extern PatternPropertyTypeDef PatternProperty;
 extern ActionIDTypeDef TaskID;
 extern ComStateTypeDef UartState;
 extern ComStateTypeDef USBState;
+extern uint16_t USBDataShift;
 extern uint8_t USBConnect;
 
 void FlashConfig(void);

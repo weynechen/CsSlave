@@ -140,8 +140,11 @@ int main(void)
 			
 		  if(USBState == DATA_READY)
 			{
-				UartState = DATA_NULL;
-				printf("USB Data%d %d %d %d",SystemBuf[0],SystemBuf[1],SystemBuf[2],SystemBuf[3]);
+				USBState = DATA_NULL;
+				if(ParseComData() == P_SUCCESS)
+				{
+					printf("Info: config success\n");
+				}
 			}
 			
 			switch(TaskID)

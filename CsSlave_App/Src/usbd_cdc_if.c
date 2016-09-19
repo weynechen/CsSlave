@@ -255,7 +255,12 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
 	USBState = DATA_READY;
-	printf("0x%x\n",(uint32_t)Buf+*Len);
+	if((uint32_t)(Buf+*Len) - (uint32_t)(SystemBuf) >	BUFFER_SIZE)
+	{
+		Buf = SystemBuf;
+		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, SystemBuf);		
+	}
+	else
 	USBD_CDC_SetRxBuffer(&hUsbDeviceFS, Buf+*Len);
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);

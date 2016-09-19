@@ -295,7 +295,7 @@ void SetPattern(void)
 			break;
     }
 		
-		if(TaskID != ACTION_NULL)
+		if(USBConnect ==1)
 			break;
 		
     HAL_Delay(100);

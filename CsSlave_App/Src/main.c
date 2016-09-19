@@ -63,7 +63,7 @@
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_NVIC_Init(void);
-
+extern PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -143,6 +143,7 @@ int main(void)
 				USBState = DATA_NULL;
 				if(ParseComData() == P_SUCCESS)
 				{
+					hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
 					printf("Info: config success\n");
 				}
 			}

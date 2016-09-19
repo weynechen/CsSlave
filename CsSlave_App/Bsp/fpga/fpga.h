@@ -12,6 +12,11 @@
 #define _FPGA_H_
 #include "stm32f1xx_hal.h"
 
+#define FSMC_LCD_CMD                   ((uint32_t)0x60020000)	    //A16
+#define FSMC_LCD_DATA                  ((uint32_t)0x60000000)      
+#define FPGA_WRITE_CMD(x)               *(__IO uint16_t *)FSMC_LCD_CMD  = x 
+#define FPGA_WRITE_DATA(x)              *(__IO uint16_t *)FSMC_LCD_DATA = x
+#define FPGA_READ_DATA()                *(__IO uint16_t *)FSMC_LCD_DATA
 
 void LcdDrvWriteData(uint8_t para);
 

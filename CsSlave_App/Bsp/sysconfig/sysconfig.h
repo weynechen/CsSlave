@@ -19,7 +19,7 @@
 /**
  * @brief 系统缓冲区的长度
  */
-#define BUFFER_SIZE    5120
+#define BUFFER_SIZE    8192
 
 
 /**

@@ -43,6 +43,8 @@
 
 #define USB_pull_up_Pin GPIO_PIN_13
 #define USB_pull_up_GPIO_Port GPIOC
+#define Ctrl_1V8_Pin GPIO_PIN_10
+#define Ctrl_1V8_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

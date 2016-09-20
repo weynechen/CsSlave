@@ -46,7 +46,7 @@
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart1_rx;
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
 /* USART1 init function */
 
 void MX_USART1_UART_Init(void)
@@ -239,7 +239,7 @@ void UART_RestartDMA(void)
 
 
 /**
-	* @brief  串口DMA接收完成中断的回调函数
+	* @brief  串口DMA接收完成中断的回调函�?
 	* @note   每次解包完成后会重置DMA，所以只有当串口有错误发生才会触发此回调
 	* @param  None
 	* @retval None

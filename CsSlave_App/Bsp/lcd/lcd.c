@@ -323,7 +323,7 @@ void Lcd_ReInit(void)
 	ResetLcd();
 	SetLcdInitCode();
 	Power_SetBLCurrent(SystemConfig.Backlight);
-	SetPattern();
+	//SetPattern();
 	
 }
 

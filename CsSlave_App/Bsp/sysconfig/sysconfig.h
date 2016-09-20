@@ -98,6 +98,7 @@ extern ComStateTypeDef UartState;
 extern ComStateTypeDef USBState;
 extern uint16_t USBDataShift;
 extern uint8_t USBConnect;
+extern uint8_t USBIdle;
 
 void FlashConfig(void);
 void ReadSystemConfig(void);

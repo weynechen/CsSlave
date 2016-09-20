@@ -63,10 +63,10 @@
 void SystemClock_Config(void);
 void Error_Handler(void);
 static void MX_NVIC_Init(void);
-extern PCD_HandleTypeDef hpcd_USB_FS;
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+extern PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -99,6 +99,8 @@ int main(void)
   MX_USART3_UART_Init();
   MX_FATFS_Init();
   MX_USB_DEVICE_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -138,12 +140,13 @@ int main(void)
 				}
 			}
 			
-		  if(USBState == DATA_READY)
+		  if((USBState == DATA_READY) && (USBIdle == 0))
 			{
 				USBState = DATA_NULL;
 				if(ParseComData() == P_SUCCESS)
 				{
 					hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
+					USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);
 					printf("Info: config success\n");
 				}
 			}

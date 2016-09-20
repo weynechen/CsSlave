@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'CsSlave_app' 
- * Target:  'CsSlave' 
+ * Target:  'CsSlave_app' 
  */
 
 #ifndef RTE_COMPONENTS_H

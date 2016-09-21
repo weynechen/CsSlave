@@ -145,10 +145,10 @@ int main(void)
 				USBState = DATA_NULL;
 				if(ParseComData() == P_SUCCESS)
 				{
-					hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
-					USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);
 					printf("Info: config success\n");
 				}
+				hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
+				USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);
 			}
 			
 			switch(TaskID)

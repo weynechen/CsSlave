@@ -15,7 +15,7 @@
 #include "in_img.h"
 #include "res.h"
 #include "cdce913.h"
-
+#include "fpga.h"
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -53,6 +53,7 @@ void SetLcdTiming(void)
 {
 	memcpy((uint16_t *)&LCDTiming,(uint16_t *)SystemConfig.LCDTimingPara,sizeof(SystemConfig.LCDTimingPara));
 	CDCE_Init(LCDTiming.DCLK);
+	LcdDrvSetTiming();
 }
 
 
@@ -189,6 +190,7 @@ void SetPattern(void)
   uint8_t r, g, b;
   uint16_t stay_time;
 
+	LcdDrvSetPattern();
   while (i < size)
   {
     switch ((PatternTypeDef) * (p + i++))
@@ -298,8 +300,10 @@ void SetPattern(void)
 		if(USBConnect ==1)
 			break;
 		
-    HAL_Delay(100);
+    HAL_Delay(500);
   }
+	
+	LcdDrvShowPattern(0);
 }
 
 void ResetLcd(void)
@@ -316,14 +320,14 @@ void ResetLcd(void)
 void Lcd_ReInit(void)
 {
   memset(&PatternProperty, 0, sizeof(PatternProperty));
-	SetLcdPower(OFF);
+	SetLcdPower(OFF);	
+	SetLcdPower(ON);
 	SetLcdTiming();
 	SetMipiPara();
-	SetLcdPower(ON);
 	ResetLcd();
 	SetLcdInitCode();
 	Power_SetBLCurrent(SystemConfig.Backlight);
-	//SetPattern();
+	SetPattern();
 	
 }
 

@@ -145,6 +145,7 @@ void SetLcdInitCode(void)
           i++;
         }
         printf("error: not specified package\n");
+				return ;
       }
       break;
 
@@ -327,6 +328,9 @@ void Lcd_ReInit(void)
 	ResetLcd();
 	SetLcdInitCode();
 	Power_SetBLCurrent(SystemConfig.Backlight);
+		LcdDrvOpenRGB();
+	SSD2828_SetMode(VD);
+
 	SetPattern();
 	
 }

@@ -15,61 +15,34 @@ void LcdDrvWriteData(uint8_t para)
 	FPGA_WRITE_DATA(para);
 }
 
+static void FPGAWrite16BitData(uint16_t data)
+{
+	data = data -1;
+	FPGA_WRITE_DATA(data>>8);
+	FPGA_WRITE_DATA(data);	
+}
+
+
 void LcdDrvSetTiming(void)
 {
 	FPGA_WRITE_CMD(0xB0);
-	FPGA_WRITE_DATA(LCDTiming.LCDH>>8);
-	FPGA_WRITE_DATA(LCDTiming.LCDH);
-	FPGA_WRITE_DATA(LCDTiming.LCDV>>8);
-	FPGA_WRITE_DATA(LCDTiming.LCDV);
+	FPGAWrite16BitData(LCDTiming.LCDH);
+	FPGAWrite16BitData(LCDTiming.LCDV);	
   
 	FPGA_WRITE_CMD(0xB4);
-	FPGA_WRITE_DATA(LCDTiming.HSPW>>8);
-	FPGA_WRITE_DATA(LCDTiming.HSPW);
-	FPGA_WRITE_DATA(LCDTiming.HFPD>>8);
-	FPGA_WRITE_DATA(LCDTiming.HFPD);
-	FPGA_WRITE_DATA(LCDTiming.HBPD>>8);		
-	FPGA_WRITE_DATA(LCDTiming.HBPD);
-
-
-	FPGA_WRITE_CMD(0xB6);
-	FPGA_WRITE_DATA(LCDTiming.VSPW>>8);
-	FPGA_WRITE_DATA(LCDTiming.VSPW);
-	FPGA_WRITE_DATA(LCDTiming.VFPD>>8);
-	FPGA_WRITE_DATA(LCDTiming.VFPD);
-	FPGA_WRITE_DATA(LCDTiming.VBPD>>8);	
-	FPGA_WRITE_DATA(LCDTiming.VBPD);
+	FPGAWrite16BitData(LCDTiming.HSPW);
+	FPGAWrite16BitData(LCDTiming.HFPD);	
+	FPGAWrite16BitData(LCDTiming.HBPD);	
 	
-	FPGA_WRITE_CMD(0x29);	
+	FPGA_WRITE_CMD(0xB6);
+	FPGAWrite16BitData(LCDTiming.VSPW);
+	FPGAWrite16BitData(LCDTiming.VFPD);	
+	FPGAWrite16BitData(LCDTiming.VBPD);	
+	
+	FPGA_WRITE_CMD(0x28);	
 }
 
-//void LcdDrvSetTiming(void)
-//{
-//	FPGA_WRITE_CMD(0xB0);
-//	FPGA_WRITE_DATA(LCDTiming.LCDH);
-//	FPGA_WRITE_DATA(LCDTiming.LCDH>>8);
-//	FPGA_WRITE_DATA(LCDTiming.LCDV);
-//	FPGA_WRITE_DATA(LCDTiming.LCDV>>8);
-//  
-//	FPGA_WRITE_CMD(0xB4);
-//	FPGA_WRITE_DATA(LCDTiming.HSPW);
-//	FPGA_WRITE_DATA(LCDTiming.HSPW>>8);
-//	FPGA_WRITE_DATA(LCDTiming.HFPD);
-//	FPGA_WRITE_DATA(LCDTiming.HFPD>>8);
-//	FPGA_WRITE_DATA(LCDTiming.HBPD);
-//	FPGA_WRITE_DATA(LCDTiming.HBPD>>8);		
 
-
-//	FPGA_WRITE_CMD(0xB6);
-//	FPGA_WRITE_DATA(LCDTiming.VSPW);
-//	FPGA_WRITE_DATA(LCDTiming.VSPW>>8);
-//	FPGA_WRITE_DATA(LCDTiming.VFPD);
-//	FPGA_WRITE_DATA(LCDTiming.VFPD>>8);
-//	FPGA_WRITE_DATA(LCDTiming.VBPD);
-//	FPGA_WRITE_DATA(LCDTiming.VBPD>>8);	
-//	
-//	FPGA_WRITE_CMD(0x29);	
-//}
 
 void LcdDrvOpenRGB(void)
 {

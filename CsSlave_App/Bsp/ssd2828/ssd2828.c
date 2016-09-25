@@ -10,7 +10,7 @@
 
 #include "ssd2828.h"
 #include "sys.h"
-
+#include "sysconfig.h"
 /**
  * @brief SSD2828 IO PIN 的配置区域
  */
@@ -459,11 +459,11 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 
 
     SSD2828WriteReg(0x00b9, 0x00, 0x00);
-    SSD2828WriteReg(0x00b1, 0, 0);
-    SSD2828WriteReg(0x00b2, 0, 0 + 10);
-    SSD2828WriteReg(0x00b3, 0, 0);
-    SSD2828WriteReg(0xb4, (0 >> 8) & 0xff, 0 & 0xff);
-    SSD2828WriteReg(0xb5, (0 >> 8) & 0xff, 0 & 0xff);
+    SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
+    SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD+10);
+    SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
+    SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
+    SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
     SSD2828WriteReg(0x00b6, 0x00, 0x07);
     if (data_rate < 500)
     {

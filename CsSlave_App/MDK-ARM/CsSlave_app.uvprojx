@@ -332,7 +332,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;    ../Drivers/STM32F1xx_HAL_Driver/Inc;    ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;    ../Middlewares/Third_Party/FatFs/src/drivers;    ../Middlewares/Third_Party/FatFs/src;    ../Drivers/CMSIS/Include;    ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;    ..\Bsp\cdce;    ..\Bsp\ssd2828;    ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;    ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;    ..\Bsp\power;    ..\Protocol;    ..\Bsp\sysconfig;    ..\Algorithm\pattern;    ..\Bsp\fpga;    ..\Bsp\res;    ..\Bsp\lcd;    ..\Bsp\flash_if</IncludePath>
+              <IncludePath>../Inc;     ../Drivers/STM32F1xx_HAL_Driver/Inc;     ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;     ../Middlewares/Third_Party/FatFs/src/drivers;     ../Middlewares/Third_Party/FatFs/src;     ../Drivers/CMSIS/Include;     ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;     ..\Bsp\cdce;     ..\Bsp\ssd2828;     ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;     ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;     ..\Bsp\power;     ..\Protocol;     ..\Bsp\sysconfig;     ..\Algorithm\pattern;     ..\Bsp\fpga;     ..\Bsp\res;     ..\Bsp\lcd;     ..\Bsp\flash_if</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -474,6 +474,26 @@
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_desc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_desc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usbd_cdc_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/usb_device.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -689,31 +709,6 @@
               <FileName>in_img.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Algorithm\pattern\in_img.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/USBConfig</GroupName>
-          <Files>
-            <File>
-              <FileName>usbd_cdc_if.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_cdc_if.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_desc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_desc.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_conf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usbd_conf.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_device.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/usb_device.c</FilePath>
             </File>
           </Files>
         </Group>

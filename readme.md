@@ -150,4 +150,10 @@ page57~page127 ，共112K
 #define ADDR_FLASH_PAGE_125   ((uint32_t)0x0803E800) /* Base @ of Page 125, 2 Kbytes */
 #define ADDR_FLASH_PAGE_126   ((uint32_t)0x0803F000) /* Base @ of Page 126, 2 Kbytes */
 #define ADDR_FLASH_PAGE_127   ((uint32_t)0x0803F800) /* Base @ of Page 127, 2 Kbytes */
+
 ```
+
+## Timer
+1. Timer1 -- 背光PWM
+2. Timer2 -- USB idle判断
+3. Timer3 -- auto run 功能

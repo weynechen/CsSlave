@@ -127,30 +127,6 @@ int main(void)
 				USBConnect = 0;
 			}
 			
-			if(UartState == DATA_READY)
-			{
-				UartState = DATA_NULL;
-				if(ParseComData() == P_SUCCESS)
-				{
-					UART_RestartDMA();
-				}
-				else
-				{
-					printf("Error: error data\n");
-				}
-			}
-			
-		  if((USBState == DATA_READY) && (USBIdle == 0))
-			{
-				USBState = DATA_NULL;
-				if(ParseComData() == P_SUCCESS)
-				{
-					printf("Info: config success\n");
-				}
-				hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
-				USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);
-			}
-			
 			switch(TaskID)
 			{
 				case RE_INIT_START:
@@ -251,6 +227,25 @@ int fputc(int ch, FILE *file)
 	HAL_UART_Transmit(&huart1,&pData,1,10);
 	return ch;
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim == &htim2)
+	{	
+		USBIdle = 0;
+		if(USBState == DATA_READY)
+		{
+			USBState = DATA_NULL;
+			if(ParseComData() == P_SUCCESS)
+			{
+				printf("Info: config success\n");
+			}
+			hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
+			USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);		
+		}
+	}
+}
+
 /* USER CODE END 4 */
 
 /**

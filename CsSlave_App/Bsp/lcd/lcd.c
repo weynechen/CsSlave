@@ -298,7 +298,7 @@ void SetPattern(void)
 			break;
     }
 		
-		if(USBConnect ==1)
+		if(TaskID != ACTION_NULL)
 			break;
 		
     HAL_Delay(500);
@@ -328,7 +328,7 @@ void Lcd_ReInit(void)
 	ResetLcd();
 	SetLcdInitCode();
 	Power_SetBLCurrent(SystemConfig.Backlight);
-		LcdDrvOpenRGB();
+	LcdDrvOpenRGB();
 	SSD2828_SetMode(VD);
 
 	SetPattern();

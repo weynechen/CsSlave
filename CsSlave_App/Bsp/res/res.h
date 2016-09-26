@@ -7,7 +7,7 @@
  * @note
  * @attention   COYPRIGHT WEYNE
  */
-
+#include "stm32f1xx_hal.h"
 void Res_ReadPic(char *file_name);
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

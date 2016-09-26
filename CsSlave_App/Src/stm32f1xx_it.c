@@ -38,6 +38,7 @@
 /* USER CODE BEGIN 0 */
 #include "rec.h"
 #include "sysconfig.h"
+#include "usart.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -211,11 +212,21 @@ void TIM2_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-if(__HAL_UART_GET_IT_SOURCE(&huart1,UART_IT_IDLE))
-{
-	UartState = DATA_READY;
-	__HAL_UART_CLEAR_IDLEFLAG(&huart1);	
-}
+	if(__HAL_UART_GET_IT_SOURCE(&huart1,UART_IT_IDLE))
+	{
+		__HAL_UART_CLEAR_IDLEFLAG(&huart1);	
+
+		if(ParseComData() == P_SUCCESS)
+		{
+			printf("Info: config success\n");
+			UART_RestartDMA();
+		}
+		else
+		{
+			printf("Error: error data\n");
+		}
+
+	}
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */

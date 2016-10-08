@@ -37,7 +37,7 @@ uint8_t retSD;    /* Return value for SD */
 char SD_Path[4];  /* SD logical drive path */
 
 /* USER CODE BEGIN Variables */
-
+FATFS SDFatFs;  /* File system object for SD card logical drive */
 /* USER CODE END Variables */    
 
 void MX_FATFS_Init(void) 
@@ -46,7 +46,23 @@ void MX_FATFS_Init(void)
   retSD = FATFS_LinkDriver(&SD_Driver, SD_Path);
 
   /* USER CODE BEGIN Init */
-  /* additional user code for init */     
+  /* additional user code for init */
+		if(retSD == 0)
+		{
+			if(f_mount(&SDFatFs, (TCHAR const*)SD_Path, 0) != FR_OK)
+			{
+				/* FatFs Initialization Error */
+				printf("Error: bad SDCard\n");
+			}
+			else
+			{
+				printf("Info:SDCard OK\n");
+			}
+		}
+		else
+		{
+			printf("Waring: SDCard Not Found\n");
+		}
   /* USER CODE END Init */
 }
 

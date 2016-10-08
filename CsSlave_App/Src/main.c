@@ -108,7 +108,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	printf("\n--CD310--\n");
 	UART_SetDMA();	
-	SDCart_Init();
 	CDCE_Init(30);
 	
 	SSD2828_Init(4,480);

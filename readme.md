@@ -156,4 +156,4 @@ page57~page127 ，共112K
 ## Timer
 1. Timer1 -- 背光PWM
 2. Timer2 -- USB idle判断
-3. Timer3 -- auto run 功能
+3. Timer3 -- auto run 功能(时基：100us)

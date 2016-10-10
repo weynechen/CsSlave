@@ -16,6 +16,7 @@
 #include "res.h"
 #include "cdce913.h"
 #include "fpga.h"
+#include "tim.h"
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -194,6 +195,11 @@ void SetPattern(void)
 	LcdDrvSetPattern();
   while (i < size)
   {
+		if(PatternProperty.Counter > PATTERN_AMOUNT)
+		{
+			break;
+		}
+		
     switch ((PatternTypeDef) * (p + i++))
     {
     case PATTERN_START:
@@ -290,7 +296,10 @@ void SetPattern(void)
     case PATTERN_STAY:
       stay_time = *(p + i++);
       stay_time = (stay_time << 8) | *(p + i++);
-      PatternProperty.StayTime[PatternProperty.Counter] = stay_time;
+			if(PatternProperty.Counter != 0)
+			{
+				PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;
+			}
 			break;
 		
     default:
@@ -305,6 +314,22 @@ void SetPattern(void)
   }
 	
 	LcdDrvShowPattern(0);
+}
+
+uint8_t IsStayTimeOver(uint8_t frame)
+{
+  if (PatternProperty.StayTime[frame] == 0)
+  {
+    return 0;
+  }
+
+  if (htim3.Instance->CNT > PatternProperty.StayTime[frame] * 10)
+  {
+    htim3.Instance->CNT = 0;
+    return 1;
+  }
+
+  return 0;
 }
 
 void ResetLcd(void)

@@ -61,11 +61,22 @@ void LcdDrvSetPattern(void)
 
 void LcdDrvShowPattern(uint8_t frame)
 {
+	uint32_t address = 0;
+	uint8_t i = 0;
+	uint8_t *p = (uint8_t *)&address;
+	
+	address = LCDTiming.LCDH;
+	address *= LCDTiming.LCDV;
+	address *= frame;
+
+	
 	FPGA_WRITE_CMD(0x0B);
-	FPGA_WRITE_DATA(0);
-	FPGA_WRITE_DATA(0);
-	FPGA_WRITE_DATA(0);	
-	FPGA_WRITE_DATA(frame);	
+	
+	for(;i<sizeof(address);i++)
+	{
+			FPGA_WRITE_DATA(*(p+3-i));
+	}
+	
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

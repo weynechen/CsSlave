@@ -50,6 +50,7 @@
 #include "rec.h"
 #include "lcd.h"
 #include "sysconfig.h"
+#include "fpga.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -77,6 +78,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	uint8_t current_frame = 0;
 	SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -106,7 +108,7 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-	printf("\n--CD310--\n");
+	printf("\n--CD310--\n %d",sizeof(ConfigTypeDef));
 	UART_SetDMA();	
 	CDCE_Init(30);
 	
@@ -138,6 +140,19 @@ int main(void)
 					FlashConfig();
 				default:
 					break;
+			}
+			
+			
+			if(SystemConfig.IsAutoRun == 1)
+			{
+				if(IsStayTimeOver(current_frame) == 1)
+				{
+					LcdDrvShowPattern(current_frame++);
+					if(current_frame == PatternProperty.Counter)
+					{
+						current_frame = 0;
+					}
+				}
 			}
 			
 			

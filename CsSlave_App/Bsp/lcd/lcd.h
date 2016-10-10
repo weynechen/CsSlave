@@ -57,6 +57,7 @@ typedef enum
 
 
 void Lcd_ReInit(void);
+uint8_t IsStayTimeOver(uint8_t frame);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

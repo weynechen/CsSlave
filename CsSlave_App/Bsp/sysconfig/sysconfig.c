@@ -32,7 +32,8 @@ void FlashConfig(void)
 	}
 	else
 	{
-		FLASH_If_Write(CONFIG_BASE_ADDRESS,(uint32_t *)&SystemConfig, sizeof(SystemConfig)/sizeof(uint32_t));
+		uint16_t config_size = sizeof(SystemConfig)/sizeof(uint32_t) + 1; // 防止不能被4整除
+		FLASH_If_Write(CONFIG_BASE_ADDRESS,(uint32_t *)&SystemConfig, config_size);
 	}
 }
 

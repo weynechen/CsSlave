@@ -146,7 +146,7 @@ void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 7200;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 0;
+  htim3.Init.Period = 65535;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
@@ -206,7 +206,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     /* Peripheral clock enable */
     __HAL_RCC_TIM3_CLK_ENABLE();
   /* USER CODE BEGIN TIM3_MspInit 1 */
-
+		  __HAL_TIM_ENABLE(tim_baseHandle);
   /* USER CODE END TIM3_MspInit 1 */
   }
 }

@@ -39,7 +39,7 @@
 #include "dma.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "ack.h"
 /* USER CODE END 0 */
 
 SD_HandleTypeDef hsd;
@@ -55,9 +55,9 @@ void MX_SDIO_SD_Init(void)
   hsd.Init.ClockEdge = SDIO_CLOCK_EDGE_RISING;
   hsd.Init.ClockBypass = SDIO_CLOCK_BYPASS_DISABLE;
   hsd.Init.ClockPowerSave = SDIO_CLOCK_POWER_SAVE_DISABLE;
-  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;
-  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_DISABLE;
-  hsd.Init.ClockDiv = 5;
+  hsd.Init.BusWide = SDIO_BUS_WIDE_1B;//SDIO_BUS_WIDE_1B;
+  hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_ENABLE;
+  hsd.Init.ClockDiv = 2;
 
 }
 
@@ -167,16 +167,16 @@ void SDCart_Init(void)
   State = HAL_SD_GetStatus(&hsd);
   if(State == SD_TRANSFER_OK) 
 	{    
-		printf( "Info:SD card initial success\n");
+		UserPrintf( "Info:SD card initial success\n");
 
   sd_status=HAL_SD_Get_CardInfo(&hsd,&SDCardInfo);
   if(sd_status==SD_OK)
   {
-    //printf( "Card type is:%d\n", SDCardInfo.CardType );
-    printf( "Card capacity is:%d Mb\n", (int)(SDCardInfo.CardCapacity/1024/1024) );
-   // printf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
-   // printf( "RCA is: %d\n", SDCardInfo.RCA);
-   // printf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
+    //UserPrintf( "Card type is:%d\n", SDCardInfo.CardType );
+    UserPrintf( "Card capacity is:%d Mb\n", (int)(SDCardInfo.CardCapacity/1024/1024) );
+   // UserPrintf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
+   // UserPrintf( "RCA is: %d\n", SDCardInfo.RCA);
+   // UserPrintf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
   }		
 	}
 	else

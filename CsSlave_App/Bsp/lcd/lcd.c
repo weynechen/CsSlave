@@ -17,6 +17,7 @@
 #include "cdce913.h"
 #include "fpga.h"
 #include "tim.h"
+#include "ack.h"
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -145,7 +146,7 @@ void SetLcdInitCode(void)
         {
           i++;
         }
-        printf("error: not specified package\n");
+        UserPrintf("error: not specified package\n");
 				return ;
       }
       break;
@@ -164,15 +165,15 @@ void SetLcdInitCode(void)
 
       if (result == MIPI_READ_SUCCEED)
       {
-        printf("Info:read 0x%x\n", para);
+        UserPrintf("Info:read 0x%x\n", para);
         for (j = 0; j < para_amount; j++)
         {
-          printf("para%d = 0x%x\n", j + 1, SystemBuf[j]);
+          UserPrintf("para%d = 0x%x\n", j + 1, SystemBuf[j]);
         }
       }
       else
       {
-        printf("Waring:MIPI read failed!\n");
+        UserPrintf("Waring:MIPI read failed!\n");
       }
       break;
 
@@ -192,6 +193,8 @@ void SetPattern(void)
   uint8_t r, g, b;
   uint16_t stay_time;
 
+	memset(&PatternProperty,0,sizeof(PatternProperty));
+	
 	LcdDrvSetPattern();
   while (i < size)
   {
@@ -303,7 +306,7 @@ void SetPattern(void)
 			break;
 		
     default:
-      printf("Error:pattern syntax error\n");
+      UserPrintf("Error:pattern syntax error\n");
 			break;
     }
 		

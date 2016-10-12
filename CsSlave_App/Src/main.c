@@ -51,6 +51,7 @@
 #include "lcd.h"
 #include "sysconfig.h"
 #include "fpga.h"
+#include "ack.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -108,7 +109,7 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-	printf("\n--CD310--\n %d",sizeof(ConfigTypeDef));
+	UserPrintf("\n--CD310--\n");
 	UART_SetDMA();	
 	CDCE_Init(30);
 	
@@ -122,10 +123,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-			if(USBConnect == 1)
+			if(USBPlugin == 1)
 			{
+				USBConnect = 1;
 				USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-				USBConnect = 0;
+				USBPlugin = 0;
 			}
 			
 			switch(TaskID)
@@ -133,6 +135,7 @@ int main(void)
 				case RE_INIT_START:
 				  TaskID = ACTION_NULL;
 					Lcd_ReInit();
+					UserPrintf("Info: ReInit success!\n");
 					break;
 				
 				case FLASH_PARA:
@@ -252,7 +255,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			USBState = DATA_NULL;
 			if(ParseComData() == P_SUCCESS)
 			{
-				printf("Info: config success\n");
+				UserPrintf("Info: config success\n");
 			}
 			hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
 			USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);		
@@ -290,7 +293,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    ex: UserPrintf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 
 }

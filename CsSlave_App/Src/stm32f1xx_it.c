@@ -39,6 +39,7 @@
 #include "rec.h"
 #include "sysconfig.h"
 #include "usart.h"
+#include "ack.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -219,12 +220,12 @@ void USART1_IRQHandler(void)
 
 		if(ParseComData() == P_SUCCESS)
 		{
-			printf("Info: config success\n");
+			UserPrintf("Info: config success\n");
 			UART_RestartDMA();
 		}
 		else
 		{
-			printf("Error: error data\n");
+			UserPrintf("Error: error data\n");
 		}
 
 	}

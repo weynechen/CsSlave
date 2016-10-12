@@ -8,7 +8,7 @@
  * @attention   COYPRIGHT WEYNE
  */
 #include "sysconfig.h"
-
+#include "ack.h"
 
 
 /* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
@@ -21,6 +21,7 @@ ActionIDTypeDef TaskID = ACTION_NULL;
 //信号量
 ComStateTypeDef USBState = DATA_NULL;
 uint16_t USBDataShift =  0;
+uint8_t USBPlugin = 0;
 uint8_t USBConnect =0;
 uint8_t USBIdle = 0;
 
@@ -28,7 +29,7 @@ void FlashConfig(void)
 {
 	if(FLASH_If_Erase(CONFIG_BASE_ADDRESS,NUMBER_OF_CONFIG_PAGES) == FLASHIF_ERASEKO)
 	{
-		printf("Error:flash config error\n");
+		UserPrintf("Error:flash config error\n");
 	}
 	else
 	{

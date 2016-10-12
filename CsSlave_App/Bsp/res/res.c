@@ -12,6 +12,7 @@
 #include "diskio.h"
 #include "sysconfig.h"
 #include "fpga.h"
+#include "ack.h"
 
 void Res_ReadPic(char *file_name)
 {
@@ -24,13 +25,13 @@ void Res_ReadPic(char *file_name)
   res = f_open(&fsrc, file_name, FA_OPEN_EXISTING | FA_READ); //打开对应文件
   if (res != 0)
   {
-    printf("Error:open file error,error code %d \n", res);
+    UserPrintf("Error:open file error,error code %d \n", res);
     return;
   }
-  br = 1;
 
   for ( ; ; )
   {
+		br = 1;
     res = f_read(&fsrc, SystemBuf, BUFFER_SIZE - 1, &br);
     if (res || (br == 0))
     {
@@ -49,7 +50,7 @@ void Res_ReadPic(char *file_name)
 	temp1 = (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV *3 ;
 	if(pic_size != temp1)
 	{
-		printf("Error:picture size %d\n", pic_size);		
+		UserPrintf("Error:picture size %d\n", pic_size);		
 	}
 
   f_close(&fsrc);	

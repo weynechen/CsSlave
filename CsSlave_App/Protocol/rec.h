@@ -38,15 +38,7 @@ typedef enum
 	ACTION_NULL = 0xff /*< 空动作*/
 }ActionIDTypeDef;
 
-/**
- * @brief  数据包头尾控制字
- */
-typedef enum
-{
-  P_HEAD = 0xAA,
-  P_TAIL = 0x55,
-  P_CTRL = 0xA5,
-} PackCtrlWordTypeDef;
+
 
 /**
  * @brief  解包标志位

@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "math.h"
-
+#include "ack.h"
 
 /**
  * @brief CDCE913 接口 PIN 的配置区域
@@ -252,7 +252,7 @@ void CDCE_Init(uint16_t f_out)
 
     if (t > 28.75)
     {
-      printf("Error:unsupport pclk\n");
+      UserPrintf("Error:unsupport pclk\n");
       return;
     }
   }
@@ -276,7 +276,7 @@ void CDCE_Init(uint16_t f_out)
 
   if (N == 0)
   {
-    printf("Error:unsupport pclk\n");
+    UserPrintf("Error:unsupport pclk\n");
     return;
   }
 
@@ -312,13 +312,13 @@ void CDCE_Init(uint16_t f_out)
   ack = CDCE_Read8bit(0x00, 1, &read_back);
   if (ack != I2C_ACK)
   {
-    printf("Error:clk configuration failed , maybe no pullup res\n");
+    UserPrintf("Error:clk configuration failed , maybe no pullup res\n");
     return;
   }
 
   if (read_back != CDCE_ID)
   {
-    printf("Error:clk device ID error");
+    UserPrintf("Error:clk device ID error");
     return;
   }
 
@@ -350,7 +350,7 @@ void CDCE_Init(uint16_t f_out)
   CDCE_WriteByte(0x1F, ((Q & 0x07) << 5) | ((P & 0x07) << 2) | (fvco & 0x03));
 
   S0 = 1;
-  printf("Info:clk well configured\n");
+  UserPrintf("Info:clk well configured\n");
 }
 
 

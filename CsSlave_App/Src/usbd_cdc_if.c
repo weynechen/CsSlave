@@ -143,7 +143,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, SystemBuf);
-	USBConnect =1;
+	USBPlugin =1;
   return (USBD_OK);
   /* USER CODE END 3 */ 
 }
@@ -157,8 +157,9 @@ static int8_t CDC_Init_FS(void)
 static int8_t CDC_DeInit_FS(void)
 {
   /* USER CODE BEGIN 4 */ 
-		USBConnect =0;
-  return (USBD_OK);
+	USBPlugin = 0;
+	USBConnect =0;
+	return (USBD_OK);
   /* USER CODE END 4 */ 
 }
 

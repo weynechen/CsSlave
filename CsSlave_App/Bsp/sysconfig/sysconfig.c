@@ -11,8 +11,10 @@
 #include "ack.h"
 
 
-/* 数据缓冲区，接收串口，USB，以及读写SDCard,flash用*/
+/* 数据缓冲区，读写SDCard,flash等用*/
 uint8_t SystemBuf[BUFFER_SIZE];
+/*接收串口和USB口数据用*/
+uint8_t RecBuffer[BUFFER_SIZE];
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;
 PatternPropertyTypeDef PatternProperty;
@@ -34,7 +36,14 @@ void FlashConfig(void)
 	else
 	{
 		uint16_t config_size = sizeof(SystemConfig)/sizeof(uint32_t) + 1; // 防止不能被4整除
-		FLASH_If_Write(CONFIG_BASE_ADDRESS,(uint32_t *)&SystemConfig, config_size);
+		if(FLASH_If_Write(CONFIG_BASE_ADDRESS,(uint32_t *)&SystemConfig, config_size) == 0)
+		{
+			UserPrintf("Info:Flash success\n");
+		}
+		else
+		{
+			UserPrintf("Error:Flash error!Please retry\n");
+		}
 	}
 }
 

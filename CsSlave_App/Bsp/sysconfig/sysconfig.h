@@ -90,6 +90,7 @@ typedef enum
 }ComStateTypeDef;
 
 extern uint8_t SystemBuf[];
+extern uint8_t RecBuffer[];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;
 extern PatternPropertyTypeDef PatternProperty;

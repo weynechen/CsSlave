@@ -142,7 +142,7 @@ static int8_t CDC_Init_FS(void)
   /* USER CODE BEGIN 3 */ 
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, SystemBuf);
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);
 	USBPlugin =1;
   return (USBD_OK);
   /* USER CODE END 3 */ 
@@ -257,10 +257,10 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
   /* USER CODE BEGIN 6 */
 	USBState = DATA_READY;
 	USBIdle = 1;
-	if((uint32_t)(Buf+*Len) - (uint32_t)(SystemBuf) >	BUFFER_SIZE)
+	if((uint32_t)(Buf+*Len) - (uint32_t)(RecBuffer) >	BUFFER_SIZE)
 	{
-		Buf = SystemBuf;
-		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, SystemBuf);		
+		Buf = RecBuffer;
+		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);		
 	}
 	else
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, Buf+*Len);

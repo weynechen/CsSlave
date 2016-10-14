@@ -220,7 +220,7 @@ void USART1_IRQHandler(void)
 
 		if(ParseComData() == P_SUCCESS)
 		{
-			UserPrintf("Info: config success\n");
+			UserPrintf("Info: transfer success\n");
 			UART_RestartDMA();
 		}
 		else

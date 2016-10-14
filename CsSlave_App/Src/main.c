@@ -255,10 +255,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			USBState = DATA_NULL;
 			if(ParseComData() == P_SUCCESS)
 			{
-				UserPrintf("Info: config success\n");
+				UserPrintf("Info: transfer success\n");
 			}
-			hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = SystemBuf;
-			USBD_CDC_SetRxBuffer(&hUsbDeviceFS,SystemBuf);		
+			hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = RecBuffer;
+			USBD_CDC_SetRxBuffer(&hUsbDeviceFS,RecBuffer);		
 		}
 	}
 }

@@ -333,7 +333,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;           ../Drivers/STM32F1xx_HAL_Driver/Inc;           ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;           ../Middlewares/Third_Party/FatFs/src/drivers;           ../Middlewares/Third_Party/FatFs/src;           ../Drivers/CMSIS/Include;           ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;           ..\Bsp\cdce;           ..\Bsp\ssd2828;           ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;           ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;           ..\Bsp\power;           ..\Protocol;           ..\Bsp\sysconfig;           ..\Algorithm\pattern;           ..\Bsp\fpga;           ..\Bsp\res;           ..\Bsp\lcd;           ..\Bsp\flash_if</IncludePath>
+              <IncludePath>../Inc;            ../Drivers/STM32F1xx_HAL_Driver/Inc;            ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;            ../Middlewares/Third_Party/FatFs/src/drivers;            ../Middlewares/Third_Party/FatFs/src;            ../Drivers/CMSIS/Include;            ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;            ..\Bsp\cdce;            ..\Bsp\ssd2828;            ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;            ../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;            ..\Bsp\power;            ..\Protocol;            ..\Bsp\sysconfig;            ..\Algorithm\pattern;            ..\Bsp\fpga;            ..\Bsp\res;            ..\Bsp\lcd;            ..\Bsp\flash_if</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -501,6 +501,16 @@
               <FileType>1</FileType>
               <FilePath>../Src/usb_device.c</FilePath>
             </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/spi.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -610,6 +620,26 @@
               <FileName>stm32f1xx_hal_rcc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_adc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f1xx_hal_spi_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi_ex.c</FilePath>
             </File>
           </Files>
         </Group>

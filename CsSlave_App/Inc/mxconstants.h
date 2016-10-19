@@ -36,15 +36,63 @@
   /* Includes ------------------------------------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-
+#include "stm32f1xx_hal_gpio.h"
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
 
 #define USB_pull_up_Pin GPIO_PIN_13
 #define USB_pull_up_GPIO_Port GPIOC
-#define Ctrl_1V8_Pin GPIO_PIN_10
-#define Ctrl_1V8_GPIO_Port GPIOD
+#define EN_5V_Pin GPIO_PIN_0
+#define EN_5V_GPIO_Port GPIOC
+#define TF_DET_Pin GPIO_PIN_2
+#define TF_DET_GPIO_Port GPIOC
+#define MIPIRESET_Pin GPIO_PIN_2
+#define MIPIRESET_GPIO_Port GPIOA
+#define TPINT_Pin GPIO_PIN_4
+#define TPINT_GPIO_Port GPIOA
+#define DIR_CTRL1_Pin GPIO_PIN_6
+#define DIR_CTRL1_GPIO_Port GPIOA
+#define LS245_OE_Pin GPIO_PIN_7
+#define LS245_OE_GPIO_Port GPIOA
+#define IO_EN_Pin GPIO_PIN_4
+#define IO_EN_GPIO_Port GPIOC
+#define EN_3V3_Pin GPIO_PIN_5
+#define EN_3V3_GPIO_Port GPIOC
+#define EN_1V8_Pin GPIO_PIN_0
+#define EN_1V8_GPIO_Port GPIOB
+#define ON_OFF_Pin GPIO_PIN_11
+#define ON_OFF_GPIO_Port GPIOE
+#define DOWN_Pin GPIO_PIN_12
+#define DOWN_GPIO_Port GPIOE
+#define UP_STOP_Pin GPIO_PIN_13
+#define UP_STOP_GPIO_Port GPIOE
+#define EN_VSP_Pin GPIO_PIN_14
+#define EN_VSP_GPIO_Port GPIOE
+#define SPI2_CS_Pin GPIO_PIN_15
+#define SPI2_CS_GPIO_Port GPIOE
+#define EN_VSN_Pin GPIO_PIN_12
+#define EN_VSN_GPIO_Port GPIOB
+#define RST_24LCD_Pin GPIO_PIN_10
+#define RST_24LCD_GPIO_Port GPIOD
+#define RS_24LCD_Pin GPIO_PIN_12
+#define RS_24LCD_GPIO_Port GPIOD
+#define CDCE_SO_Pin GPIO_PIN_6
+#define CDCE_SO_GPIO_Port GPIOC
+#define EN_2V8_Pin GPIO_PIN_7
+#define EN_2V8_GPIO_Port GPIOC
+#define EN_MTP_Pin GPIO_PIN_3
+#define EN_MTP_GPIO_Port GPIOD
+#define TP_RESET_Pin GPIO_PIN_5
+#define TP_RESET_GPIO_Port GPIOB
+#define TP_SCL_Pin GPIO_PIN_6
+#define TP_SCL_GPIO_Port GPIOB
+#define TP_SDA_Pin GPIO_PIN_7
+#define TP_SDA_GPIO_Port GPIOB
+#define CDCE_SCL_Pin GPIO_PIN_8
+#define CDCE_SCL_GPIO_Port GPIOB
+#define CDCE_SDA_Pin GPIO_PIN_9
+#define CDCE_SDA_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

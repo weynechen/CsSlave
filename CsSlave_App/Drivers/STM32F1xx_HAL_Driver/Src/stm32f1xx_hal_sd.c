@@ -3160,8 +3160,8 @@ static HAL_SD_ErrorTypedef SD_WideBus_Disable(SD_HandleTypeDef *hsd)
   */
 static HAL_SD_ErrorTypedef SD_FindSCR(SD_HandleTypeDef *hsd, uint32_t *pSCR)
 {
-  SDIO_CmdInitTypeDef  sdio_cmdinitstructure = {0,0,0,0,0};
-  SDIO_DataInitTypeDef sdio_datainitstructure = {0,0,0,0,0,0};
+  SDIO_CmdInitTypeDef  sdio_cmdinitstructure = {0};
+  SDIO_DataInitTypeDef sdio_datainitstructure = {0};
   HAL_SD_ErrorTypedef errorstate = SD_OK;
   uint32_t index = 0;
   uint32_t tempscr[2] = {0, 0};

@@ -53,16 +53,12 @@ void MX_FATFS_Init(void)
 			if(f_mount(&SDFatFs, (TCHAR const*)SD_Path, 0) != FR_OK)
 			{
 				/* FatFs Initialization Error */
-				UserPrintf("Error: bad SDCard\n");
-			}
-			else
-			{
-				UserPrintf("Info:SDCard OK\n");
+				UserPrintf("Error : FATFS amount error\n");
 			}
 		}
 		else
 		{
-			UserPrintf("Waring: SDCard Not Found\n");
+			UserPrintf("Error: FATFS nbr error\n");
 		}
   /* USER CODE END Init */
 }

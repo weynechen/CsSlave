@@ -41,6 +41,16 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define SSD_SHUT_Pin GPIO_PIN_2
+#define SSD_SHUT_GPIO_Port GPIOE
+#define SSD_SCK_Pin GPIO_PIN_3
+#define SSD_SCK_GPIO_Port GPIOE
+#define SSD_SDO_Pin GPIO_PIN_4
+#define SSD_SDO_GPIO_Port GPIOE
+#define SSD_SDI_Pin GPIO_PIN_5
+#define SSD_SDI_GPIO_Port GPIOE
+#define SSD_RESET_Pin GPIO_PIN_6
+#define SSD_RESET_GPIO_Port GPIOE
 #define USB_pull_up_Pin GPIO_PIN_13
 #define USB_pull_up_GPIO_Port GPIOC
 #define EN_5V_Pin GPIO_PIN_0
@@ -93,6 +103,10 @@
 #define CDCE_SCL_GPIO_Port GPIOB
 #define CDCE_SDA_Pin GPIO_PIN_9
 #define CDCE_SDA_GPIO_Port GPIOB
+#define SSD1_CS_Pin GPIO_PIN_0
+#define SSD1_CS_GPIO_Port GPIOE
+#define SSD2_CS_Pin GPIO_PIN_1
+#define SSD2_CS_GPIO_Port GPIOE
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -101,7 +101,7 @@ int main(void)
   MX_SDIO_SD_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-  MX_USART3_UART_Init();
+//  MX_USART3_UART_Init();
   MX_FATFS_Init();
   MX_USB_DEVICE_Init();
   MX_TIM2_Init();
@@ -114,6 +114,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 	UserPrintf("\n--CD310--\n");
+	SDCardCheck();
 	UART_SetDMA();	
 	CDCE_Init(30);
 	
@@ -145,6 +146,7 @@ int main(void)
 				case FLASH_PARA:
 				  TaskID = ACTION_NULL;
 					FlashConfig();
+//				UserPrintf("Info: Flash success!\n");
 				default:
 					break;
 			}

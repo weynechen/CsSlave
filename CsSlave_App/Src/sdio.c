@@ -158,30 +158,30 @@ void HAL_SD_MspDeInit(SD_HandleTypeDef* sdHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-void SDCart_Init(void)
+void SDCardCheck(void)
 {
-	HAL_SD_TransferStateTypedef State;
-	HAL_SD_ErrorTypedef sd_status; 
+	HAL_SD_TransferStateTypedef sd_init_status;
+	HAL_SD_ErrorTypedef sd_read_status; 
 	HAL_SD_Init(&hsd, &SDCardInfo);
   HAL_SD_WideBusOperation_Config(&hsd, SDIO_BUS_WIDE_4B);
-  State = HAL_SD_GetStatus(&hsd);
-  if(State == SD_TRANSFER_OK) 
+  sd_init_status = HAL_SD_GetStatus(&hsd);
+  if(sd_init_status == SD_TRANSFER_OK) 
 	{    
 		UserPrintf( "Info:SD card initial success\n");
 
-  sd_status=HAL_SD_Get_CardInfo(&hsd,&SDCardInfo);
-  if(sd_status==SD_OK)
-  {
-    //UserPrintf( "Card type is:%d\n", SDCardInfo.CardType );
-    UserPrintf( "Card capacity is:%d Mb\n", (int)(SDCardInfo.CardCapacity/1024/1024) );
-   // UserPrintf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
-   // UserPrintf( "RCA is: %d\n", SDCardInfo.RCA);
-   // UserPrintf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
-  }		
+		sd_read_status=HAL_SD_Get_CardInfo(&hsd,&SDCardInfo);
+		if(sd_read_status==SD_OK)
+		{
+			//UserPrintf( "Card type is:%d\n", SDCardInfo.CardType );
+			UserPrintf( "Card capacity is:%d Mb\n", (int)(SDCardInfo.CardCapacity/1024/1024) );
+		 // UserPrintf( "CardBlockSize is:%d byte\n", SDCardInfo.CardBlockSize );
+		 // UserPrintf( "RCA is: %d\n", SDCardInfo.RCA);
+		 // UserPrintf( "Manufacturer ID is:%d \n", SDCardInfo.SD_cid.ManufacturerID ); 
+		}		
 	}
 	else
 	{
-		printf("Error:SD card initial fail\n" );
+		UserPrintf("Error:SD card not found\n" );
 		//while(1); // 停机
 	}
 

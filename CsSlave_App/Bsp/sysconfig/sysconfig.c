@@ -54,6 +54,10 @@ void ReadSystemConfig(void)
 		{
 			TaskID = RE_INIT_START;
 		}
+		else
+		{
+			UserPrintf("Error: LCD config not found or wrong\n");
+		}
 }
 
 

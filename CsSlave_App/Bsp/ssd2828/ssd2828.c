@@ -11,16 +11,16 @@
 #include "ssd2828.h"
 #include "sys.h"
 #include "sysconfig.h"
+#include "ack.h"
 /**
  * @brief SSD2828 IO PIN 的配置区域
  */
-#define SPI_SDO          PEout(2) /*< SPI SDO */
+#define SPI_SDI          PEin(5)  /*< SPI SDI */
+#define SPI_SDO          PEout(4) /*< SPI SDO */
 #define SPI_SCK          PEout(3) /*< SPI CLK */
-#define SPI_SDI          PEin(1)  /*< SPI SDI */
-#define SPI_CS_U10       PEout(6) /*< 丝印为U10 的SSD2828 的SPI使能PIN，低电平有效 */
-#define SPI_CS_U11       PBout(5) /*< 丝印为U11 的SSD2828 的SPI使能PIN，低电平有效 */
-#define SSD2828_RESET    PEout(0) /*< SSD2828 Reset pin */
-#define SSD2828_SHUT     PEout(5) /*< SPI Shut down 功能脚 */
+#define SPI_CS           PEout(0) /*< SSD2828 1 的SPI使能PIN，低电平有效 */
+#define SSD2828_RESET    PEout(6) /*< SSD2828 Reset pin */
+#define SSD2828_SHUT     PEout(2) /*< SPI Shut down 功能脚 */
 
 
 static uint16_t mode = LP;
@@ -405,27 +405,6 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
 }
 
 
-/**
- * @brief  SSD2828 SPI CS控制，低电平有效
- * @note   两个SSD2828通过同一个SPI接口接在一起，所以两者不能同时打开
- * @param  name : 选择芯片
- * @param state : DISABLE or ENABLE
- * @retval None
- */
-void SSD2828_ChipSel(SSD2828_NameTypeDef name, FunctionalState state)
-{
-  if (name == U11)
-  {
-    SPI_CS_U11 = state ? 0 : 1;
-    SPI_CS_U10 = 1;
-  }
-  if (name == U10)
-  {
-    SPI_CS_U10 = state ? 0 : 1;
-    SPI_CS_U11 = 1;
-  }
-}
-
 
 /**
  * @brief  SSD2828 初始化
@@ -442,54 +421,47 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   HAL_Delay(50);
   SSD2828_RESET = 1;
   HAL_Delay(10);
-
-  /* 轮流初始化两个SSD2828 */
-  for (i = 0; i < 2; i++)
-  {
-    SSD2828_ChipSel((SSD2828_NameTypeDef)i, ENABLE);
-
-    if (SSD2828ReadReg(0xB0) == 0x2828)
-    {
-      printf("Info:SSD2828%d OK\n", i);
-    }
-    else
-    {
-      printf("Error:SSD2828%d configuration failed\n", i);
-    }
+	SPI_CS = 0;
+	HAL_Delay(10);	
+	if (SSD2828ReadReg(0xB0) == 0x2828)
+	{
+		UserPrintf("Info:SSD2828 OK\n", i);
+	}
+	else
+	{
+		UserPrintf("Error:SSD2828 configuration failed\n", i);
+	}
 
 
-    SSD2828WriteReg(0x00b9, 0x00, 0x00);
-    SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
-    SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD+10);
-    SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
-    SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
-    SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
-    SSD2828WriteReg(0x00b6, 0x00, 0x07);
-    if (data_rate < 500)
-    {
-      SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
-    }
-    else
-    {
-      SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
-    }
-    SSD2828WriteReg(0x00bb, 0x00, 0x06);
-    SSD2828WriteReg(0x00b8, 0x00, 0x00);
-    SSD2828WriteReg(0x00c9, 0x25, 0x09);
-    SSD2828WriteReg(0x00ca, 0x23, 0x01);
-    SSD2828WriteReg(0x00cb, 0x05, 0x10);
-    SSD2828WriteReg(0x00cc, 0x10, 0x05);
-    SSD2828WriteReg(0x00de, 0x00, lane - 1);
-    SSD2828WriteReg(0x00d6, 0x00, 0x05);
-    SSD2828WriteReg(0x00c4, 0x00, 0x01);
-    SSD2828WriteReg(0x00eb, 0x80, 0x00);
-    HAL_Delay(10);
-    SSD2828WriteReg(0x00b9, 0x00, 0x01);
-    HAL_Delay(120);
-  }
-
-  /*一般使用 U10 发送LCD初始化及回读*/
-  SSD2828_ChipSel(U10, ENABLE);
+	SSD2828WriteReg(0x00b9, 0x00, 0x00);
+	SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
+	SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD+10);
+	SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
+	SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
+	SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
+	SSD2828WriteReg(0x00b6, 0x00, 0x07);
+	if (data_rate < 500)
+	{
+		SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
+	}
+	else
+	{
+		SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
+	}
+	SSD2828WriteReg(0x00bb, 0x00, 0x06);
+	SSD2828WriteReg(0x00b8, 0x00, 0x00);
+	SSD2828WriteReg(0x00c9, 0x25, 0x09);
+	SSD2828WriteReg(0x00ca, 0x23, 0x01);
+	SSD2828WriteReg(0x00cb, 0x05, 0x10);
+	SSD2828WriteReg(0x00cc, 0x10, 0x05);
+	SSD2828WriteReg(0x00de, 0x00, lane - 1);
+	SSD2828WriteReg(0x00d6, 0x00, 0x05);
+	SSD2828WriteReg(0x00c4, 0x00, 0x01);
+	SSD2828WriteReg(0x00eb, 0x80, 0x00);
+	HAL_Delay(10);
+	SSD2828WriteReg(0x00b9, 0x00, 0x01);
+	HAL_Delay(120);
+  
 }
 
 

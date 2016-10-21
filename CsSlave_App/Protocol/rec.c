@@ -27,6 +27,109 @@
 #include "string.h"
 #include "sysconfig.h"
  
+ 
+ 
+ /**
+ * @file        rec.c
+ * @author      陈维
+ * @version     V01
+ * @date        2016.09.21
+ * @brief       解包
+ * @note
+ *
+ * @attention   COYPRIGHT WEYNE
+ **/
+#include "rec.h"
+#include "pro.h"
+
+static uint8_t ParseBuffer[PARSE_LEN];                    // 存放解包后的数据
+
+/**
+ * @brief  解包函数
+ * @param  待解包数据指针
+ * @retval 返回解包成功或者失败
+  */
+ResultTypeDef Unpacking(PackageDataStruct *package)
+{
+    uint16_t i = 0;
+
+    if ((package->DataInBuff == NULL) && (package->DataInLen < MIN_PRO_NUM))
+    {
+        return PACK_FAIL;
+    }
+
+    if (package->DataInLen >= MIN_PRO_NUM)
+    {
+        if ((*(package->DataInBuff + package->DataInLen - 1) == P_TAIL) && (*(package->DataInBuff + package->DataInLen - 2) == P_TAIL))
+        {
+            i = MIN_PRO_NUM - 2;
+            while (i++)
+            {
+                if (*(package->DataInBuff + package->DataInLen - i) == P_HEADER)
+                {
+                    if (*(package->DataInBuff + package->DataInLen - (i + 1)) == P_HEADER)
+                    {
+                        uint8_t *pbuff = package->DataInBuff + package->DataInLen - (i - 1); // pbuff指向DataInBuff有效数据起始位置(即AA AA 后面的一位)
+                        uint16_t len = i - 3; //i 的长度为数据包(AA AA ... 55 55) 长度减一，len为有效数据长度(除去AA AA 55 55部分，包含checksum)
+                        uint16_t j = 0;
+                        uint8_t checksum = 0;
+                        uint16_t data_out_count = 0;
+						
+						if(len > sizeof(ParseBuffer)) //ParseBuffer的size要足够大
+							return PACK_FAIL;
+						
+                        for (j = 0 ; j < len; j++)
+                        {
+                            if (*(pbuff + j) == P_CTRL)
+                            {
+                                j++;
+                            }
+                            ParseBuffer[data_out_count++] = *(pbuff + j);
+                            if (data_out_count == PARSE_LEN)
+                            {
+                                package->DataID = ACK_NULL;
+                                return PACK_FAIL;
+                            }
+                        }
+
+                        for(j = 0 ; j < data_out_count-1;j++)
+                        {
+                            checksum += ParseBuffer[j];
+                        }
+
+                        if (checksum == ParseBuffer[data_out_count-1])
+                        {
+                            SdkProtocolHeaderTypeDef *sdk = (SdkProtocolHeaderTypeDef *)ParseBuffer;
+                            *package->DataOutLen = data_out_count - 1 - sizeof(SdkProtocolHeaderTypeDef);
+                            package->DataOutBuff = ParseBuffer + sizeof(SdkProtocolHeaderTypeDef);
+							
+							if(sdk->DeviceAddr == LIDAR_ADDRESS)
+                                package->DataID = (AckDataIDTypeDef)sdk->FunctionCode;
+							else
+                                package->DataID = ACK_NULL;
+                            
+							return PACK_OK;
+                        }
+                        else
+                        {
+                            package->DataID = ACK_NULL;
+                            *package->DataOutLen = 0;
+                            return PACK_FAIL;
+                        }
+                    }
+                }
+                if (i == package->DataInLen)
+                {
+                    package->DataID = ACK_NULL;
+                    return PACK_FAIL;
+                }
+            }
+        }
+    }
+
+    return PACK_FAIL;
+} 
+ 
 /**
 	* @brief  CRC检查通讯数据
 	* @param  None
@@ -64,29 +167,29 @@ static DataStateTypeDef CheckData(void)
   */
 PackFlagTypeDef ParseComData(void)
 {
-	InterfaceTypeDef interface;
+//	InterfaceTypeDef interface;
 
-	if(CheckData() != DATA_OK)
-		return P_FAIL;
+//	if(CheckData() != DATA_OK)
+//		return P_FAIL;
 
-  interface = (InterfaceTypeDef)RecBuffer[2];
+//  interface = (InterfaceTypeDef)RecBuffer[2];
 
-	if((interface == IF_UART1) || (interface == IF_USB))
-	{
-		TaskID = (ActionIDTypeDef) RecBuffer[3];
-		switch(TaskID)
-		{
-			case RE_INIT_START:
-					memcpy(&SystemConfig , &RecBuffer[4] , sizeof(SystemConfig));
-				break;
+//	if((interface == IF_UART1) || (interface == IF_USB))
+//	{
+//		TaskID = (ActionIDTypeDef) RecBuffer[3];
+//		switch(TaskID)
+//		{
+//			case RE_INIT_START:
+//					memcpy(&SystemConfig , &RecBuffer[4] , sizeof(SystemConfig));
+//				break;
 
-			default:
-				break;
-		}
+//			default:
+//				break;
+//		}
 
-	}
-	
-	return P_SUCCESS;
+//	}
+//	
+//	return P_SUCCESS;
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

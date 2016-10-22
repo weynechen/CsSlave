@@ -89,8 +89,24 @@ typedef enum
 	DATA_READY,
 }ComStateTypeDef;
 
-extern uint8_t SystemBuf[];
-extern uint8_t RecBuffer[];
+/**
+ * @brief  操作数据包ID号，同一个数据包只能有一个ACTION.
+ */
+typedef enum
+{
+  RE_INIT_START,     /*< 重新初始化开始标志*/
+  LCD_READ,          /*< 回读LCD寄存器，高速*/
+  LCD_WRITE,         /*< 写LCD寄存器，高速模式*/
+  SET_FRAME,         /*< 选择显示的画面*/
+  FLASH_PARA,        /*< 固化调试好的参数到Flash*/
+  FLASH_CONFIG_FILE, /*< 烧录配置文件 */
+  CHANNEL_SEL,        /*< 选择通道 */
+	UPDATE_FIRMWARE,    /*< 更新固件 */
+	ACTION_NULL = 0xff /*< 空动作*/
+}ActionIDTypeDef;
+
+extern uint8_t SystemBuf[BUFFER_SIZE];
+extern uint8_t RecBuffer[BUFFER_SIZE];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;
 extern PatternPropertyTypeDef PatternProperty;
@@ -100,8 +116,12 @@ extern uint16_t USBDataShift;
 extern uint8_t USBConnect;
 extern uint8_t USBIdle;
 extern uint8_t USBPlugin;
+extern uint32_t RecCounter;
+extern PackageDataStruct RecPackage;
 
 void FlashConfig(void);
 void ReadSystemConfig(void);
+void InitSystemConfig(void);
+
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

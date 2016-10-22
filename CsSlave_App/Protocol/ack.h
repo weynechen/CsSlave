@@ -13,6 +13,13 @@
 #include "stm32f1xx_hal.h"
 #include "pro.h"
 
+typedef enum
+{
+    ACK_STRING,
+    ACK_NULL = 0xff,
+}AckDataIDTypeDef;
+
+
 ResultTypeDef Package(PackageDataStruct package);
 void UserPrintf(char * fmt, ...);
 

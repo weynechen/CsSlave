@@ -11,14 +11,8 @@
 
 #ifndef _PRO_H_
 #define _PRO_H_
-#include "sysconfig.h"
 
-#define u8               unsigned char
-#define u16              unsigned short
-#define u32              unsigned int
-#define s16              short
-#define LIDAR_ADDRESS    0x10
-#define PARSE_LEN           BUFFER_SIZE   
+#define LCD_ADDRESS    0x10
 #define MIN_PRO_NUM      14
 
 typedef enum
@@ -32,10 +26,10 @@ typedef enum
 
 typedef struct
 {
-    u8  DeviceAddr;   //  cmd
-    u8  FunctionCode; // sub cmd
-    u16 StartAddr;    //sub sub cmd
-    u32 Len;
+    uint8_t  DeviceAddr;   //  cmd
+    uint8_t  FunctionCode; // sub cmd
+    uint16_t StartAddr;    //sub sub cmd
+    uint32_t Len;
 } SdkProtocolHeaderTypeDef;
 
 
@@ -47,19 +41,13 @@ typedef struct
 #define P_SUCCESS    1
 
 
-typedef enum
-{
-    ACK_STRING,
-    ACK_NULL = 0xff,
-}AckDataIDTypeDef;
-
 typedef struct
 {
-    AckDataIDTypeDef DataID;
-    u8               *DataInBuff;
-    u32              DataInLen;
-    u8               *DataOutBuff;
-    u32              *DataOutLen;
+    uint8_t							  DataID;
+    uint8_t               *DataInBuff;
+    uint32_t              DataInLen;
+    uint8_t               *DataOutBuff;
+    uint32_t              *DataOutLen;
 } PackageDataStruct;
 
 

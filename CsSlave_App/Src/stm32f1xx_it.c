@@ -40,6 +40,7 @@
 #include "sysconfig.h"
 #include "usart.h"
 #include "ack.h"
+#include "pro.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -244,17 +245,14 @@ void USART1_IRQHandler(void)
 	{
 		__HAL_UART_CLEAR_IDLEFLAG(&huart1);	
 
-		if(ParseComData() == P_SUCCESS)
+
+		RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
+
+		if(Unpacking(&RecPackage) == PACK_OK)
 		{
-			UserPrintf("Info: transfer success\n");
+			TaskID = (ActionIDTypeDef)RecPackage.DataID;
 			UART_RestartDMA();
 		}
-		else
-		{
-			UserPrintf("Error: error data\n");
-			UART_RestartDMA();			
-		}
-
 	}
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);

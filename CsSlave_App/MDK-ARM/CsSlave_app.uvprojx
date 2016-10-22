@@ -667,6 +667,11 @@
               <FilePath>..\Bsp\ssd2828\ssd2828.c</FilePath>
             </File>
             <File>
+              <FileName>sysconfig.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\sysconfig\sysconfig.c</FilePath>
+            </File>
+            <File>
               <FileName>power.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\power\power.c</FilePath>
@@ -675,11 +680,6 @@
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\lcd\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>sysconfig.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Bsp\sysconfig\sysconfig.c</FilePath>
             </File>
             <File>
               <FileName>fpga.c</FileName>

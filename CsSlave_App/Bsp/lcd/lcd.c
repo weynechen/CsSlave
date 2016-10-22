@@ -146,7 +146,7 @@ void SetLcdInitCode(void)
         {
           i++;
         }
-        UserPrintf("error: not specified package\n");
+        UserPrintf("Error: not specified MIPI package\n");
 				return ;
       }
       break;
@@ -337,11 +337,13 @@ uint8_t IsStayTimeOver(uint8_t frame)
 
 void ResetLcd(void)
 {
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LS245_OE_GPIO_Port,LS245_OE_Pin,GPIO_PIN_RESET);
 	HAL_Delay(10);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_SET);
+	HAL_Delay(10);
+	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_RESET);
 	HAL_Delay(120);
-	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_2,GPIO_PIN_SET);	
+	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_SET);	
 	HAL_Delay(10);
 }
 

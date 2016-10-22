@@ -10,7 +10,7 @@
 #ifndef _REC_H_
 #define _REC_H_
 #include "stm32f1xx_hal.h"
-
+#include "pro.h"
 
 /**
  * @brief  接口定义
@@ -22,48 +22,7 @@ typedef enum
 	IF_UART3,
 }InterfaceTypeDef;
 
-/**
- * @brief  操作数据包ID号，同一个数据包只能有一个ACTION.
- */
-typedef enum
-{
-  RE_INIT_START,     /*< 重新初始化开始标志*/
-  LCD_READ,          /*< 回读LCD寄存器，高速*/
-  LCD_WRITE,         /*< 写LCD寄存器，高速模式*/
-  SET_FRAME,         /*< 选择显示的画面*/
-  FLASH_PARA,        /*< 固化调试好的参数到Flash*/
-  FLASH_CONFIG_FILE, /*< 烧录配置文件 */
-  CHANNEL_SEL,        /*< 选择通道 */
-	UPDATE_FIRMWARE,    /*< 更新固件 */
-	ACTION_NULL = 0xff /*< 空动作*/
-}ActionIDTypeDef;
-
-
-
-/**
- * @brief  解包标志位
- */
-typedef enum
-{
-  P_SUCCESS = 0xFF,
-  P_FAIL = 0x00	
-}PackFlagTypeDef;
-
-/**
- * @brief  数据校验标志
- */
-typedef enum
-{
-	DATA_NG,	
-	DATA_OK,
-}DataStateTypeDef;
-
-
-
-extern ActionIDTypeDef TaskID ;
-
-
-PackFlagTypeDef ParseComData(void);
+ResultTypeDef Unpacking(PackageDataStruct *package);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

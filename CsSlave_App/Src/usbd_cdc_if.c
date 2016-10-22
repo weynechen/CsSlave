@@ -34,6 +34,8 @@
 #include "usbd_cdc_if.h"
 /* USER CODE BEGIN INCLUDE */
 #include "sysconfig.h"
+#include "pro.h"
+#include "rec.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -255,6 +257,7 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
+	USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;	
 	USBState = DATA_READY;
 	USBIdle = 1;
 	if((uint32_t)(Buf+*Len) - (uint32_t)(RecBuffer) >	BUFFER_SIZE)
@@ -264,6 +267,16 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 	}
 	else
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, Buf+*Len);
+	
+	RecPackage.DataInLen = hcdc->RxLength;
+
+	if(Unpacking(&RecPackage) == PACK_OK)
+	{
+		TaskID = (ActionIDTypeDef)RecPackage.DataID;
+		Buf = RecBuffer;
+		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);	
+	}
+	
 	
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);

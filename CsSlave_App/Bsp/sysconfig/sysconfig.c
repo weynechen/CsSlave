@@ -15,6 +15,11 @@
 uint8_t SystemBuf[BUFFER_SIZE];
 /*接收串口和USB口数据用*/
 uint8_t RecBuffer[BUFFER_SIZE];
+/*接收数据计数*/
+uint32_t RecCounter = 0;
+/*接收封包信息*/
+PackageDataStruct RecPackage;
+
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;
 PatternPropertyTypeDef PatternProperty;
@@ -60,6 +65,12 @@ void ReadSystemConfig(void)
 		}
 }
 
-
+void InitSystemConfig(void)
+{
+	RecPackage.DataID = ACTION_NULL;
+	RecPackage.DataInBuff = RecBuffer;
+	RecPackage.DataOutBuff = SystemBuf;
+	RecPackage.DataOutLen = &RecCounter;
+}
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

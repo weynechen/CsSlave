@@ -56,7 +56,7 @@ extern void Error_Handler(void);
 void MX_SPI2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void SPI_FlashCheck(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

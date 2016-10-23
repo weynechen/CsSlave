@@ -67,8 +67,9 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, SSD_SHUT_Pin|SSD_SCK_Pin|SSD_SDO_Pin|SSD_RESET_Pin 
                           |ON_OFF_Pin|DOWN_Pin|UP_STOP_Pin|EN_VSP_Pin 
-                          |SPI2_CS_Pin|SSD1_CS_Pin|SSD2_CS_Pin, GPIO_PIN_RESET);
+                          |SSD1_CS_Pin|SSD2_CS_Pin, GPIO_PIN_RESET);
 
+	  HAL_GPIO_WritePin(GPIOE, SPI2_CS_Pin,GPIO_PIN_SET);
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_pull_up_GPIO_Port, USB_pull_up_Pin, GPIO_PIN_SET);
 

@@ -463,6 +463,8 @@ void  USBD_LL_Delay (uint32_t Delay)
   HAL_Delay(Delay);  
 }
 
+
+USBD_CDC_HandleTypeDef CDC_Handle;
 /**
   * @brief  static single allocation.
   * @param  size: size of allocated memory
@@ -470,8 +472,10 @@ void  USBD_LL_Delay (uint32_t Delay)
   */
 void *USBD_static_malloc(uint32_t size)
 {
-  static uint32_t mem[(sizeof(USBD_CDC_HandleTypeDef)/4)+1];//On 32-bit boundary
-  return mem;
+  //static uint32_t mem[(sizeof(USBD_CDC_HandleTypeDef)/4)+1];//On 32-bit boundary
+  //return mem;
+	
+	return &CDC_Handle;
 }
 
 /**

@@ -257,10 +257,10 @@ static int8_t CDC_Control_FS  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-	USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;	
+	uint32_t rec_len = (uint32_t)(Buf+*Len) - (uint32_t)(RecBuffer);
 	USBState = DATA_READY;
 	USBIdle = 1;
-	if((uint32_t)(Buf+*Len) - (uint32_t)(RecBuffer) >	BUFFER_SIZE)
+	if(rec_len >	BUFFER_SIZE)
 	{
 		Buf = RecBuffer;
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);		
@@ -268,15 +268,22 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 	else
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, Buf+*Len);
 	
-	RecPackage.DataInLen = hcdc->RxLength;
+	RecPackage.DataInLen = rec_len;
 
 	if(Unpacking(&RecPackage) == PACK_OK)
 	{
 		TaskID = (ActionIDTypeDef)RecPackage.DataID;
+		if(TaskID == RE_INIT_START)
+			memcpy(&SystemConfig, &SystemBuf[8], sizeof(SystemConfig));
+	
 		Buf = RecBuffer;
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);	
 	}
 	
+	if(rec_len > 4400)
+	{
+		rec_len =0;
+	}
 	
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);

@@ -125,18 +125,7 @@ int main(void)
 
 
   /* USER CODE END 2 */
-//while(1)
-//{
-  LCDTiming.LCDH = 720;
-  LCDTiming.LCDV = 1280;
-  LCDTiming.LCDH = 18;
-
-  LcdDrvSetTiming();
-
-  LcdDrvSetPattern();
-  Img_Full(0, 0, 0xff);
-  //HAL_Delay(5000);
-//}
+	
 /* Infinite loop */
 /* USER CODE BEGIN WHILE */
   while (1)
@@ -154,7 +143,6 @@ int main(void)
       TaskID = ACTION_NULL;
       if (RecCounter== sizeof(SystemConfig)+1)
       {
-        memcpy(&SystemConfig, &SystemBuf[8], sizeof(SystemConfig));
         Lcd_ReInit();
         UserPrintf("Info: ReInit success!\n");
       }

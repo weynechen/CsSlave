@@ -15,7 +15,7 @@
 #include "usart.h"
 
 
-static char sprint_buf[512];
+static char StrBuffer[512];
 
 /**
   * @brief  数据打包函数
@@ -84,11 +84,11 @@ void UserPrintf(char * fmt, ...)
 	PackageDataStruct  package;
 
 	va_start(args, fmt);
-	package.DataInLen = vsprintf(sprint_buf, fmt, args);
+	package.DataInLen = vsnprintf(StrBuffer,sizeof(StrBuffer), fmt, args);
 	va_end(args);
 
 	package.DataID = ACK_STRING;
-	package.DataInBuff = (uint8_t *)sprint_buf;
+	package.DataInBuff = (uint8_t *)StrBuffer;
 	package.DataOutBuff = SystemBuf;
 	package.DataOutLen = &out_len;
 	
@@ -99,6 +99,35 @@ void UserPrintf(char * fmt, ...)
 		CDC_Transmit_FS((uint8_t *)SystemBuf,out_len);
 	}
 		HAL_UART_Transmit(&huart1,SystemBuf,out_len,10);
+}
+
+void UserSendArray(char *c ,uint8_t *array,uint8_t number_size)
+{
+	uint32_t out_len;
+	uint16_t i,j=0;
+	PackageDataStruct  package;
+	memset(StrBuffer,0,100);
+	j+=snprintf(StrBuffer,sizeof(StrBuffer),"%s",c);
+	for(i=0;i<number_size;i++)
+	{
+		j+=snprintf((char *)(StrBuffer+j),sizeof(StrBuffer)-j,"%2X ",*(array+i));
+	}
+
+	j+=snprintf((char *)(StrBuffer+j),sizeof(StrBuffer)-j,"\n");	
+	
+	package.DataInLen = j;
+	package.DataID = ACK_STRING;
+	package.DataInBuff = (uint8_t *)StrBuffer;
+	package.DataOutBuff = SystemBuf;
+	package.DataOutLen = &out_len;
+	
+	Package(package);
+	
+	if(USBConnect == 1)
+	{
+		CDC_Transmit_FS((uint8_t *)SystemBuf,out_len);
+	}
+	HAL_UART_Transmit(&huart1,SystemBuf,out_len,10);
 }
 
   

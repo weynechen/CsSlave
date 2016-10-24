@@ -55,6 +55,7 @@
 #include "fpga.h"
 #include "ack.h"
 #include "in_img.h"
+#include "spi_flash.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/

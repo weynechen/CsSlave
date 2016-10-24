@@ -125,25 +125,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 } 
 
 /* USER CODE BEGIN 1 */
-void SPI_FlashCheck(void)
-{
-	uint8_t reset = 0xff;
-	uint8_t feature[] = {0x0f,0xD0,0xff};
-	uint8_t id_register[] = {0x9f,0,0xff,0xff,0xff,0xff,0xff};
-	HAL_StatusTypeDef state;
-	__HAL_SPI_ENABLE(&hspi2);
-		  HAL_GPIO_WritePin(GPIOE, SPI2_CS_Pin,GPIO_PIN_RESET);
-	HAL_Delay(10);
-	
-	state = HAL_SPI_TransmitReceive(&hspi2,(uint8_t*)&feature,SystemBuf,sizeof(feature),1000);
-		HAL_Delay(120);
-	state = HAL_SPI_TransmitReceive(&hspi2,(uint8_t*)&id_register,SystemBuf,sizeof(id_register),1000);
-		  HAL_GPIO_WritePin(GPIOE, SPI2_CS_Pin,GPIO_PIN_SET);
-	if(state == HAL_OK)
-		UserPrintf("SPI Flash ID:%x,%x,%x,%x,%x\n",SystemBuf[2],SystemBuf[3],SystemBuf[4],SystemBuf[5],SystemBuf[6]);
-	else
-		UserPrintf("SPI flash comminuication error\n");
-}
+
 /* USER CODE END 1 */
 
 /**

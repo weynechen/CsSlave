@@ -22,6 +22,7 @@ typedef enum
 
 ResultTypeDef Package(PackageDataStruct package);
 void UserPrintf(char * fmt, ...);
+void UserSendArray(char *c ,uint8_t *array,uint8_t number_size);
 
 #endif
 

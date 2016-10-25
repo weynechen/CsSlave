@@ -56,6 +56,7 @@
 #include "ack.h"
 #include "in_img.h"
 #include "spi_flash.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -131,41 +132,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		SwitchTask();
     if (USBPlugin == 1)
     {
       USBConnect = 1;
       USBD_CDC_ReceivePacket(&hUsbDeviceFS);
       USBPlugin = 0;
     }
-
-    switch (TaskID)
-    {
-    case RE_INIT_START:
-      TaskID = ACTION_NULL;
-      if (RecCounter== sizeof(SystemConfig)+1)
-      {
-        Lcd_ReInit();
-        UserPrintf("Info: ReInit success!\n");
-      }
-			else if(RecCounter == 0)
-			{
-				Lcd_ReInit();
-				UserPrintf("Info: LCD initialize success!\n");
-			}
-      else
-      {
-        UserPrintf("Error: Init para error!\n");
-      }
-      break;
-
-    case FLASH_PARA:
-      TaskID = ACTION_NULL;
-      FlashConfig();
-
-    default:
-      break;
-    }
-
 
     if (SystemConfig.IsAutoRun == 1)
     {

@@ -57,7 +57,7 @@ void ReadSystemConfig(void)
 		SystemConfig = *((ConfigTypeDef *)CONFIG_BASE_ADDRESS);	
 		if(SystemConfig.Backlight < 200)
 		{
-			TaskID = RE_INIT_START;
+			TaskID = ACT_RE_INIT_START;
 		}
 		else
 		{

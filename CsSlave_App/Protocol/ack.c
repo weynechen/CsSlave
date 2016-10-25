@@ -6,7 +6,7 @@
   * @brief       打包
   * @note        
   *
-  * @attention   COYPRIGHT INMOTION ROBOT
+  * @attention   COYPRIGHT WEYNE
   **/
 #include "ack.h"  
 #include <stdarg.h>
@@ -130,6 +130,30 @@ void UserSendArray(char *c ,uint8_t *array,uint8_t number_size)
 	HAL_UART_Transmit(&huart1,SystemBuf,out_len,10);
 }
 
+
+/**
+  * @brief  发送准备接收firmware数据的信号
+  * @param  None
+  * @retval None
+  */
+void SendUpgradeSignal(uint8_t signal)
+{
+    PackageDataStruct package;
+    uint32_t out_len;
+
+    package.DataID = ACK_UPGRADE;
+    package.DataInBuff = (uint8_t *)&signal;
+    package.DataInLen = sizeof(signal);
+    package.DataOutBuff = SystemBuf;
+    package.DataOutLen = &out_len;
+    Package(package);
+	
+		if(USBConnect == 1)
+		{
+			CDC_Transmit_FS((uint8_t *)SystemBuf,out_len);
+		}
+		HAL_UART_Transmit(&huart1,SystemBuf,out_len,10);
+}
   
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 

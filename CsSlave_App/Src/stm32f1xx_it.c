@@ -41,6 +41,7 @@
 #include "usart.h"
 #include "ack.h"
 #include "pro.h"
+#include "string.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -251,6 +252,8 @@ void USART1_IRQHandler(void)
 		if(Unpacking(&RecPackage) == PACK_OK)
 		{
 			TaskID = (ActionIDTypeDef)RecPackage.DataID;
+			if(TaskID == ACT_RE_INIT_START)
+				memcpy(&SystemConfig, &SystemBuf[8], sizeof(SystemConfig));
 			UART_RestartDMA();
 		}
 	}

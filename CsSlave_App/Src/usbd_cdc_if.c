@@ -273,7 +273,7 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 	if(Unpacking(&RecPackage) == PACK_OK)
 	{
 		TaskID = (ActionIDTypeDef)RecPackage.DataID;
-		if(TaskID == RE_INIT_START)
+		if(TaskID == ACT_RE_INIT_START)
 			memcpy(&SystemConfig, &SystemBuf[8], sizeof(SystemConfig));
 	
 		Buf = RecBuffer;

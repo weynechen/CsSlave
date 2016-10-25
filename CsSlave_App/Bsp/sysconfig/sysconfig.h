@@ -94,14 +94,14 @@ typedef enum
  */
 typedef enum
 {
-  RE_INIT_START,     /*< 重新初始化开始标志*/
-  LCD_READ,          /*< 回读LCD寄存器，高速*/
-  LCD_WRITE,         /*< 写LCD寄存器，高速模式*/
-  SET_FRAME,         /*< 选择显示的画面*/
-  FLASH_PARA,        /*< 固化调试好的参数到Flash*/
-  FLASH_CONFIG_FILE, /*< 烧录配置文件 */
-  CHANNEL_SEL,        /*< 选择通道 */
-	UPDATE_FIRMWARE,    /*< 更新固件 */
+  ACT_RE_INIT_START,     /*< 重新初始化开始标志*/
+  ACT_LCD_READ,          /*< 回读LCD寄存器，高速*/
+  ACT_LCD_WRITE,         /*< 写LCD寄存器，高速模式*/
+  ACT_SET_FRAME,         /*< 选择显示的画面*/
+  ACT_FLASH_PARA,        /*< 固化调试好的参数到Flash*/
+  ACT_FLASH_CONFIG_FILE, /*< 烧录配置文件 */
+  ACT_CHANNEL_SEL,        /*< 选择通道 */
+	ACT_UPGRADE_FIRMWARE,    /*< 更新固件 */
 	ACTION_NULL = 0xff /*< 空动作*/
 }ActionIDTypeDef;
 

@@ -16,6 +16,7 @@
 typedef enum
 {
     ACK_STRING,
+		ACK_UPGRADE,
     ACK_NULL = 0xff,
 }AckDataIDTypeDef;
 
@@ -23,6 +24,7 @@ typedef enum
 ResultTypeDef Package(PackageDataStruct package);
 void UserPrintf(char * fmt, ...);
 void UserSendArray(char *c ,uint8_t *array,uint8_t number_size);
+void SendUpgradeSignal(uint8_t signal);
 
 #endif
 

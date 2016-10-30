@@ -274,7 +274,7 @@ static int8_t CDC_Receive_FS (uint8_t* Buf, uint32_t *Len)
 	{
 		TaskID = (ActionIDTypeDef)RecPackage.DataID;
 		if(TaskID == ACT_RE_INIT_START)
-			memcpy(&SystemConfig, &SystemBuf[8], sizeof(SystemConfig));
+			memcpy(&SystemConfig, RecPackage.DataOutBuff, sizeof(SystemConfig));
 	
 		Buf = RecBuffer;
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);	

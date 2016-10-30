@@ -41,6 +41,8 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define LED_Pin GPIO_PIN_15
+#define LED_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

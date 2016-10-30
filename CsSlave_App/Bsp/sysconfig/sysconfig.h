@@ -14,8 +14,15 @@
 #include "flash_if.h"
 
 #define APP_BASE_ADDRESS 0x0801C800
+#define VERSION_ADDRESS 0x0803FFFC
 #define CONFIG_BASE_ADDRESS ADDR_FLASH_PAGE_11
+#define FIRMWARE_BASE_ADDRESS ADDR_FLASH_PAGE_17
+#define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS ADDR_FLASH_PAGE_56
+#define KEY_STORE_ADDRESS ADDR_FLASH_PAGE_10
+#define NUMBER_OF_UPGRADE_PAGES 40
 #define NUMBER_OF_CONFIG_PAGES 5
+#define NUMBER_OF_APP_PAGAES 40
+
 /**
  * @brief 系统缓冲区的长度
  */
@@ -102,6 +109,7 @@ typedef enum
   ACT_FLASH_CONFIG_FILE, /*< 烧录配置文件 */
   ACT_CHANNEL_SEL,        /*< 选择通道 */
 	ACT_UPGRADE_FIRMWARE,    /*< 更新固件 */
+	ACT_REBOOT,
 	ACTION_NULL = 0xff /*< 空动作*/
 }ActionIDTypeDef;
 
@@ -122,6 +130,7 @@ extern PackageDataStruct RecPackage;
 void FlashConfig(void);
 void ReadSystemConfig(void);
 void InitSystemConfig(void);
+void SoftwareReset(void);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

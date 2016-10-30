@@ -118,6 +118,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n--CD310--\n");
+	UserPrintf("Info:Version--%x\n",*(uint32_t *)VERSION_ADDRESS);
   InitSystemConfig();
   SDCardCheck();
   UART_SetDMA();
@@ -242,20 +243,10 @@ int fputc(int ch, FILE *file)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-//  if (htim == &htim2)
-//  {
-//    USBIdle = 0;
-//    if (USBState == DATA_READY)
-//    {
-//      USBState = DATA_NULL;
-////			if(ParseComData() == P_SUCCESS)
-////			{
-////				UserPrintf("Info: transfer success\n");
-////			}
-//      hpcd_USB_FS.OUT_ep[CDC_OUT_EP & 0x7F].xfer_buff = RecBuffer;
-//      USBD_CDC_SetRxBuffer(&hUsbDeviceFS, RecBuffer);
-//    }
-//  }
+  if (htim == &htim2)
+  {
+		SendHeartBeat();
+  }
 }
 
 

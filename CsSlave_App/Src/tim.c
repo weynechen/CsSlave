@@ -119,7 +119,7 @@ void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7200;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 100;
+  htim2.Init.Period = 2000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
   {
@@ -227,7 +227,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     HAL_NVIC_EnableIRQ(TIM2_IRQn);
   /* USER CODE BEGIN TIM2_MspInit 1 */
 	__HAL_TIM_ENABLE_IT(tim_baseHandle,TIM_IT_UPDATE);
-		  __HAL_TIM_ENABLE(tim_baseHandle);
+  __HAL_TIM_ENABLE(tim_baseHandle);
   /* USER CODE END TIM2_MspInit 1 */
   }
   else if(tim_baseHandle->Instance==TIM3)

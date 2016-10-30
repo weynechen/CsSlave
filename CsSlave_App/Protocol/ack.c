@@ -140,20 +140,48 @@ void SendUpgradeSignal(uint8_t signal)
 {
     PackageDataStruct package;
     uint32_t out_len;
-
+		uint8_t buffer[32];
+	
     package.DataID = ACK_UPGRADE;
     package.DataInBuff = (uint8_t *)&signal;
     package.DataInLen = sizeof(signal);
-    package.DataOutBuff = SystemBuf;
+    package.DataOutBuff = buffer;
     package.DataOutLen = &out_len;
     Package(package);
 	
 		if(USBConnect == 1)
 		{
-			CDC_Transmit_FS((uint8_t *)SystemBuf,out_len);
+			CDC_Transmit_FS((uint8_t *)buffer,out_len);
 		}
-		HAL_UART_Transmit(&huart1,SystemBuf,out_len,10);
+		HAL_UART_Transmit(&huart1,buffer,out_len,10);
 }
-  
+
+
+/**
+  * @brief  发送心跳信号
+  * @param  None
+  * @retval None
+  */
+void SendHeartBeat(void)
+{
+    PackageDataStruct package;
+    uint32_t out_len;
+		uint8_t signal = 0;
+		uint8_t buffer[32];
+	
+    package.DataID = ACT_HEATBEATS;
+    package.DataInBuff = (uint8_t *)&signal;
+    package.DataInLen = sizeof(signal);
+    package.DataOutBuff = buffer;
+    package.DataOutLen = &out_len;
+    Package(package);
+	
+		if(USBConnect == 1)
+		{
+			CDC_Transmit_FS((uint8_t *)buffer,out_len);
+		}
+		HAL_UART_Transmit(&huart1,buffer,out_len,10);
+}
+
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 

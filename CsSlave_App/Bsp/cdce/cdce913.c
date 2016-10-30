@@ -318,7 +318,7 @@ void CDCE_Init(uint16_t f_out)
 
   if (read_back != CDCE_ID)
   {
-    UserPrintf("Error:clk device ID error");
+    UserPrintf("Error:clk device ID error\n");
     return;
   }
 

@@ -12,12 +12,27 @@
 #define _SYSTEM_CONFIG_H_
 
 #include "stm32f1xx_hal.h"
- 
+
+#define APP_BASE_ADDRESS 0x0801C800
+#define CONFIG_BASE_ADDRESS ADDR_FLASH_PAGE_11
+#define FIRMWARE_BASE_ADDRESS ADDR_FLASH_PAGE_17
+#define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS ADDR_FLASH_PAGE_56
+#define KEY_STORE_ADDRESS ADDR_FLASH_PAGE_10
+#define NUMBER_OF_UPGRADE_PAGES 40
+#define NUMBER_OF_CONFIG_PAGES 5
+#define NUMBER_OF_APP_PAGAES 40
+
+
 typedef __IO uint32_t  vu32;
  
 typedef void (*IapFun)(void); 
-#define APP_BASE_ADDRESS 0x0801C800
- 
+
+typedef enum
+{
+	FALSE,
+	TRUE,
+}bool;
+
 
 void JumpToApp(void);
  

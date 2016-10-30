@@ -13,6 +13,9 @@
 #include "lcd.h"
 #include "ack.h"
 #include "upgrade.h"
+#include "tim.h"
+#include "usb_device.h"
+#include "usbd_core.h"
 
 void SwitchTask(void)
 {
@@ -23,12 +26,12 @@ void SwitchTask(void)
 			if (RecCounter== sizeof(SystemConfig)+1)
 			{
 				Lcd_ReInit();
-				UserPrintf("Info: ReInit success!\n");
+				UserPrintf("Info: ReInit complete!\n");
 			}
 			else if(RecCounter == 0)
 			{
 				Lcd_ReInit();
-				UserPrintf("Info: LCD initialize success!\n");
+				UserPrintf("Info: System initialize complete!\n");
 			}
 			else
 			{
@@ -43,9 +46,15 @@ void SwitchTask(void)
 		
 		case ACT_UPGRADE_FIRMWARE:
 			TaskID = ACTION_NULL;
-			SendUpgradeSignal(FW_UPDATE_READY);
+			UpgradeFirmwareData();
 			break;
 		
+		case ACT_REBOOT:
+			__HAL_TIM_DISABLE(&htim2);
+			USBD_Stop(&hUsbDeviceFS);
+			HAL_Delay(600);
+			SoftwareReset();
+			break;
 		
 		default:
 		break;

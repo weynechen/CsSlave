@@ -18,7 +18,7 @@
 #define SPI_SDI          PEin(5)  /*< SPI SDI */
 #define SPI_SDO          PEout(4) /*< SPI SDO */
 #define SPI_SCK          PEout(3) /*< SPI CLK */
-#define SPI_CS           PEout(0) /*< SSD2828 1 的SPI使能PIN，低电平有效 */
+#define SPI_CS           PEout(1) /*< SSD2828 1 的SPI使能PIN，低电平有效 */
 #define SSD2828_RESET    PEout(6) /*< SSD2828 Reset pin */
 #define SSD2828_SHUT     PEout(2) /*< SPI Shut down 功能脚 */
 
@@ -414,6 +414,7 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
  */
 void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
+	SPI_CS = 1;	
   SSD2828_RESET = 0;
   SSD2828_SHUT = 0;
   HAL_Delay(50);

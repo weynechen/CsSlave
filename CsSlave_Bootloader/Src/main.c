@@ -32,9 +32,9 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
-#include "system_config.h"
-/* USER CODE BEGIN Includes */
 
+/* USER CODE BEGIN Includes */
+#include "firmwareupgrade.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -64,7 +64,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  SCB->VTOR = 0x08000000;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -80,18 +80,26 @@ int main(void)
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
+	if(CheckAppValidity() == TRUE)
+	{
+		if(IsNeedToUpdate() == TRUE)
+			WriteFirmwareToApp();
 
+		JumpToApp();
+	}
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-  /* USER CODE END WHILE */
+
+	 HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	
+	 HAL_Delay(1000);
+		/* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	JumpToApp();
-	while(1);	
+
   }
   /* USER CODE END 3 */
 
@@ -157,8 +165,20 @@ static void MX_CRC_Init(void)
 static void MX_GPIO_Init(void)
 {
 
+  GPIO_InitTypeDef GPIO_InitStruct;
+
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
 }
 

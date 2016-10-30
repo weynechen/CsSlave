@@ -10,6 +10,7 @@
   **/
 #ifndef _UPGRADE_H_
 #define _UPGRADE_H_
+#include "stm32f1xx_hal.h"
 
 typedef enum {
   FW_UPDATE_READY,
@@ -19,7 +20,14 @@ typedef enum {
   FW_NULL = 0xff,
 } FirmwareUpdateType;
 
+typedef struct
+{
+  int32_t Offset;
+  uint32_t DataBaseAddress;
+} FirmwareDataStruct;
 
+
+void UpgradeFirmwareData(void);
 #endif
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

@@ -10,6 +10,8 @@
 #include "sysconfig.h"
 #include "ack.h"
 
+//KEY
+const uint32_t __attribute__((at(KEY_STORE_ADDRESS + 20))) KeyStore = 0x5A2F5D81;
 
 /* 数据缓冲区，读写SDCard,flash等用*/
 uint8_t SystemBuf[BUFFER_SIZE];
@@ -71,6 +73,27 @@ void InitSystemConfig(void)
 	RecPackage.DataInBuff = RecBuffer;
 	RecPackage.DataOutBuff = SystemBuf;
 	RecPackage.DataOutLen = &RecCounter;
+}
+
+/**
+ * @brief  软件复位
+ * @param  None
+ * @retval None
+ */
+void SoftwareReset(void)
+{
+  __set_FAULTMASK(1);       // close all interrupt
+  SCB->VTOR = 0x08000000;   //re-located boot address
+  __DSB();                  /* Ensure all outstanding memory accesses included
+                             *  buffered write are completed before reset */
+  SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) |
+                (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+                SCB_AIRCR_VECTCLRACTIVE_Msk |
+                SCB_AIRCR_SYSRESETREQ_Msk);   /* Keep priority group unchanged */
+  __DSB();                                    /* Ensure completion of memory access */
+  while (1)
+  {
+  }
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

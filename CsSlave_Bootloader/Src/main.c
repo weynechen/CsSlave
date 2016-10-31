@@ -80,11 +80,11 @@ int main(void)
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
+	if(IsNeedToUpdate() == TRUE)
+		WriteFirmwareToApp();
+	
 	if(CheckAppValidity() == TRUE)
 	{
-		if(IsNeedToUpdate() == TRUE)
-			WriteFirmwareToApp();
-
 		JumpToApp();
 	}
   /* USER CODE END 2 */

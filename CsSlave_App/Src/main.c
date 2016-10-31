@@ -118,7 +118,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n--CD310--\n");
-	UserPrintf("Info:Version--%x\n",*(uint32_t *)VERSION_ADDRESS);
+	GetFirmwareVersion();
   InitSystemConfig();
   SDCardCheck();
   UART_SetDMA();

@@ -75,6 +75,15 @@ void InitSystemConfig(void)
 	RecPackage.DataOutLen = &RecCounter;
 }
 
+
+void GetFirmwareVersion(void)
+{
+	uint32_t version = *(uint32_t *)VERSION_ADDRESS;
+	uint8_t *p = (uint8_t *)&version;
+	
+	UserPrintf("Info:Version--v%d.%d.%d\n",*(p+3),*(p+2),*p);	
+}
+
 /**
  * @brief  软件复位
  * @param  None

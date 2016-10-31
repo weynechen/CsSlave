@@ -183,5 +183,7 @@ void SendHeartBeat(void)
 		HAL_UART_Transmit(&huart1,buffer,out_len,10);
 }
 
+
+
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/
 

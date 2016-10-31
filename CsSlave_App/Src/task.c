@@ -56,6 +56,11 @@ void SwitchTask(void)
 			SoftwareReset();
 			break;
 		
+		case ACT_GET_VERSION:
+			TaskID = ACTION_NULL;
+			GetFirmwareVersion();
+			break;
+		
 		default:
 		break;
 	}

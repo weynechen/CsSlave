@@ -9,6 +9,7 @@
  */
 #include "sysconfig.h"
 #include "ack.h"
+#include "string.h"
 
 //KEY
 const uint32_t __attribute__((at(KEY_STORE_ADDRESS + 20))) KeyStore = 0x5A2F5D81;
@@ -17,10 +18,12 @@ const uint32_t __attribute__((at(KEY_STORE_ADDRESS + 20))) KeyStore = 0x5A2F5D81
 uint8_t SystemBuf[BUFFER_SIZE];
 /*接收串口和USB口数据用*/
 uint8_t RecBuffer[BUFFER_SIZE];
-/*接收数据计数*/
+/*接收有效数据计数*/
 uint32_t RecCounter = 0;
 /*接收封包信息*/
 PackageDataStruct RecPackage;
+/*缓存一些配置数据*/
+uint8_t ConfigData[128];
 
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;
@@ -83,6 +86,29 @@ void GetFirmwareVersion(void)
 	
 	UserPrintf("Info:Version--v%d.%d.%d\n",*(p+3),*(p+2),*p);	
 }
+
+void CacheData(void)
+{
+	switch(TaskID)
+	{
+		case ACT_RE_INIT_START:
+		   memcpy(&SystemConfig, RecPackage.DataOutBuff, sizeof(SystemConfig));
+			break;
+		
+		case ACT_READ_SSD2828:
+			 ConfigData[0] = *RecPackage.DataOutBuff;
+			break;
+		
+		case ACT_SET_SSD2828:
+			 memcpy(ConfigData,RecPackage.DataOutBuff,RecCounter);
+		  break;
+		
+		default:
+			break;
+	}
+
+}
+
 
 /**
  * @brief  软件复位

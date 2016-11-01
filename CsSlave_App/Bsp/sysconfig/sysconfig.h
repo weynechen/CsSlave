@@ -111,6 +111,9 @@ typedef enum
 	ACT_UPGRADE_FIRMWARE,    /*< 更新固件 */
 	ACT_REBOOT,
 	ACT_GET_VERSION,
+	ACT_READ_SSD2828,
+	ACT_SET_SSD2828,
+	ACT_RESET_SSD2828,
 	ACTION_NULL = 0xff /*< 空动作*/
 }ActionIDTypeDef;
 
@@ -127,12 +130,14 @@ extern uint8_t USBIdle;
 extern uint8_t USBPlugin;
 extern uint32_t RecCounter;
 extern PackageDataStruct RecPackage;
+extern uint8_t ConfigData[];
 
 void FlashConfig(void);
 void ReadSystemConfig(void);
 void InitSystemConfig(void);
 void SoftwareReset(void);
 void GetFirmwareVersion(void);
+void CacheData(void);
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

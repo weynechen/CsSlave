@@ -100,7 +100,7 @@ void SSD2828WriteData(uint8_t data)
 }
 
 
-static void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2)
+void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2)
 {
   uint8_t i;
 
@@ -192,7 +192,7 @@ static uint8_t SSD2828Read()
 }
 
 
-static uint16_t SSD2828ReadReg(uint8_t reg)
+uint16_t SSD2828ReadReg(uint8_t reg)
 {
   uint16_t tmp;
   uint8_t data_l, data_h;

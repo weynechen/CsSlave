@@ -16,9 +16,12 @@
 #include "tim.h"
 #include "usb_device.h"
 #include "usbd_core.h"
+#include "ssd2828.h"
 
 void SwitchTask(void)
 {
+//	uint16_t data16;
+	uint8_t data8;
 	switch (TaskID)
 	{
 		case ACT_RE_INIT_START:
@@ -61,6 +64,26 @@ void SwitchTask(void)
 			GetFirmwareVersion();
 			break;
 		
+		case ACT_READ_SSD2828:
+			TaskID = ACTION_NULL;
+		  data8 = (uint8_t)ConfigData[0];
+		  if((data8<0xB0) && (data8 > 0xFF))
+				UserPrintf("Error:SSD2828 register must between 0xB0 ~ 0xFF\n");
+			else
+				UserPrintf("Info:Read 0x%x = 0x%x \n",data8,SSD2828ReadReg(data8)); 
+		  break;
+		
+		case ACT_SET_SSD2828:
+			TaskID = ACTION_NULL;
+		  data8 = (uint8_t)ConfigData[0];
+		
+		  if((data8<0xB0) && (data8 > 0xFF))
+				UserPrintf("Error:SSD2828 register must between 0xB0 ~ 0xFF\n");
+			else
+				SSD2828WriteReg(data8,ConfigData[1],ConfigData[2]); 
+		
+			break;
+			
 		default:
 		break;
 	}

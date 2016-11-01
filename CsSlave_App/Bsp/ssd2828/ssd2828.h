@@ -43,5 +43,7 @@ void SSD2828_DcsLongWrite(uint32_t n);
 void SSD2828_GenericShortWrite(uint8_t n);
 void SSD2828_GenericLongWrite(uint32_t n);
 void SSD2828WriteData(uint8_t data);
+uint16_t SSD2828ReadReg(uint8_t reg);
+void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2);
 
 #endif

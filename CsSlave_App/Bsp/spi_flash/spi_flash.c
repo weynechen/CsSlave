@@ -18,7 +18,7 @@
 static uint8_t ReadBackBuffer[9];
 
 
-static HAL_StatusTypeDef ReadWriteFlash(uint8_t *byte ,uint8_t byte_amount)
+static HAL_StatusTypeDef RWFlashRegister(uint8_t *byte ,uint8_t byte_amount)
 {
 	HAL_StatusTypeDef state;
 	
@@ -34,14 +34,14 @@ static HAL_StatusTypeDef ReadWriteFlash(uint8_t *byte ,uint8_t byte_amount)
 HAL_StatusTypeDef ResetSpiFlash(void)
 {
 	FlashOpCodeTypeDef reset = FLASH_Reset;
-	return ReadWriteFlash((uint8_t *)&reset,sizeof(reset));
+	return RWFlashRegister((uint8_t *)&reset,sizeof(reset));
 }
 
 
 HAL_StatusTypeDef ReadSpiFlashID(void)
 {
 	uint8_t  id[] = {FLASH_ID,0xff,0xff,0xff,0xff};
-	return ReadWriteFlash((uint8_t *)id,sizeof(id));	
+	return RWFlashRegister((uint8_t *)id,sizeof(id));	
 }
 
 
@@ -59,4 +59,33 @@ void SPI_FlashCheck(void)
 	{
 		UserPrintf("Error:SPI Flash Error\n");
 	}
+}
+
+void ReadSPIFlash(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
+{
+	HAL_StatusTypeDef state;
+	uint8_t  read[] = {FLASH_READ,(uint8_t)(blk_addr>>16),(uint8_t)(blk_addr>>8),(uint8_t)(blk_addr>>0)};	
+	
+	if(buf == NULL)
+		return;
+	
+	SPI_CS_L;                             
+	state = HAL_SPI_Transmit(&hspi2,(uint8_t*)read,sizeof(read),1000);   
+	state = HAL_SPI_Receive(&hspi2,buf,blk_len,1000); 
+	SPI_CS_H;  		
+}
+
+
+void WriteSPIFlash(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
+{
+	HAL_StatusTypeDef state;
+	uint8_t  read[] = {FLASH_WRITE,(uint8_t)(blk_addr>>16),(uint8_t)(blk_addr>>8),(uint8_t)(blk_addr>>0)};	
+	
+	if(buf == NULL)
+		return;
+	
+	SPI_CS_L;                             
+	state = HAL_SPI_Transmit(&hspi2,(uint8_t*)read,sizeof(read),1000);   
+	state = HAL_SPI_Receive(&hspi2,buf,blk_len,1000); 
+	SPI_CS_H;  		
 }

@@ -14,6 +14,8 @@ typedef enum
 {
 	FLASH_Reset = 0xff,
 	FLASH_ID = 0x9f,
+	FLASH_WRITE = 0x02,
+	FLASH_READ = 0x03,
 	FLASH_ReadStatus  = 0x0F,
 	FLASH_WriteStatus = 0x1F,
 	FLASH_WriteEnable = 0x06,
@@ -23,5 +25,6 @@ typedef enum
 
 HAL_StatusTypeDef ReadSpiFlashID(void);
 void SPI_FlashCheck(void);
+void ReadSPIFlash(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
 
 #endif

@@ -123,7 +123,7 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-	SPI_FlashCheck();
+	W25Nxx_Init();
   SSD2828_Init(4, 480);
   ReadSystemConfig();
 

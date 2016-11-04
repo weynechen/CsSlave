@@ -12,19 +12,26 @@
 
 typedef enum
 {
-	FLASH_Reset = 0xff,
+	FLASH_RESET = 0xff,
 	FLASH_ID = 0x9f,
 	FLASH_WRITE = 0x02,
 	FLASH_READ = 0x03,
-	FLASH_ReadStatus  = 0x0F,
-	FLASH_WriteStatus = 0x1F,
-	FLASH_WriteEnable = 0x06,
-	FLASH_WriteDisable = 0x04,
+	FLASH_PAGE_DATA_READ = 0x13,
+	FLASH_READ_STATUS  = 0x0F,
+	FLASH_WRITE_STATUS = 0x1F,
+	FLASH_WRITE_ENABLE = 0x06,
+	FLASH_WRITE_DISABLE = 0x04,
 }FlashOpCodeTypeDef;
 
+typedef enum
+{
+	STATUS_ADDRESS1 = 0xA0,
+	STATUS_ADDRESS2 = 0xB0,
+	STATUS_ADDRESS3 = 0xC0,
+}FlashStatusAddressTypeDef;
 
-HAL_StatusTypeDef ReadSpiFlashID(void);
-void SPI_FlashCheck(void);
-void ReadSPIFlash(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
+#define PAGE_SIZE 2048
 
+void W25Nxx_Init(void);
+void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
 #endif

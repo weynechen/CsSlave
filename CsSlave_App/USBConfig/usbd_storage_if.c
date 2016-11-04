@@ -230,7 +230,7 @@ int8_t STORAGE_Read_FS (uint8_t lun,
 {
   /* USER CODE BEGIN 6 */ 
 	
-	 ReadSPIFlash(buf , blk_addr, blk_len);
+	W25Nxx_ReadData(buf , blk_addr, blk_len);
   return (USBD_OK);
   /* USER CODE END 6 */ 
 }

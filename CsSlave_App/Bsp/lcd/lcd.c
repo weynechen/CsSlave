@@ -85,7 +85,8 @@ void SetLcdInitCode(void)
   uint16_t i = 0, j = 0;
   uint16_t delay_time;
   MIPI_ReadTypeDef result;
-
+	uint8_t read_back[32];
+	
   while (i < code_size)
   {
     switch ((MipiTypeDef)(*(p + i++)))
@@ -156,11 +157,11 @@ void SetLcdInitCode(void)
       para_amount = *(p + i++);
       if (package == DCS)
       {
-        result = SSD2828_DcsReadDT06(para, para_amount, SystemBuf);
+        result = SSD2828_DcsReadDT06(para, para_amount, read_back);
       }
       if (package == GP)
       {
-        result = SSD2828_GenericReadDT14(para, para_amount, SystemBuf);
+        result = SSD2828_GenericReadDT14(para, para_amount, read_back);
       }
 
       if (result == MIPI_READ_SUCCEED)
@@ -168,7 +169,7 @@ void SetLcdInitCode(void)
         UserPrintf("Info:read 0x%x\n", para);
         for (j = 0; j < para_amount; j++)
         {
-          UserPrintf("para%d = 0x%x\n", j + 1, SystemBuf[j]);
+          UserPrintf("para%d = 0x%x\n", j + 1, read_back[j]);
         }
       }
       else

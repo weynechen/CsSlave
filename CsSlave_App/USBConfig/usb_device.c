@@ -40,6 +40,7 @@
 #include "usbd_msc.h"
 #include "usbd_storage_if.h"
 #include "usbd_composite.h"
+#include "usbd_cdc_if.h"
 /* USB Device Core handle declaration */
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -50,8 +51,8 @@ void MX_USB_DEVICE_Init(void)
   USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS);
 
   USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE);
-
- // USBD_MSC_RegisterStorage(&hUsbDeviceFS, &USBD_Storage_Interface_fops_FS);
+	//USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC);
+	//USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_Interface_fops_FS);
 
   USBD_Start(&hUsbDeviceFS);
 

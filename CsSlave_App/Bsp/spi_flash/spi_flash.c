@@ -11,6 +11,7 @@
 #include "spi_flash.h"
 #include "spi.h"
 #include "ack.h"
+#include "string.h"
 
 #define  SPI_CS_L HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin,GPIO_PIN_RESET)
 #define  SPI_CS_H HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin,GPIO_PIN_SET)
@@ -184,19 +185,76 @@ void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
 	W25Nxx_Reset();
 }
 
+void W25Nxx_ErasePage(uint16_t page_address)
+{
+	uint8_t  erase[] = {FLASH_PAGE_ERASE,DUMMY,page_address >>8 , page_address & 0xff};
+		uint8_t timeout = 255;
+	
+	W25Nxx_WriteEnable();
+	SPI_CS_L;                             
+	HAL_SPI_Transmit(&hspi2,(uint8_t*)erase,sizeof(erase),1000);
+	SPI_CS_H; 	
+	W25NxxProperty.Busy = 0 ;
+	W25Nxx_ReadStatus();
+	while(W25NxxProperty.Busy)
+	{
+		 W25Nxx_ReadStatus();
+		 timeout--;
+		 if(timeout == 0)
+			break;
+	}		
+	W25Nxx_WriteEnable();	
+}
+
+
+void LoadProgramData(uint16_t column_address , uint8_t *buf , uint16_t len)
+{
+	uint8_t  load_column[] = {FLASH_PROGRAM_DATA,column_address >>8 , column_address & 0xff};
+	
+	if(len > PAGE_SIZE - column_address)
+		return;
+	
+	W25Nxx_WriteEnable();
+	SPI_CS_L;                             
+	HAL_SPI_Transmit(&hspi2,(uint8_t*)load_column,sizeof(load_column),1000);
+	HAL_SPI_Transmit(&hspi2,(uint8_t*)buf,len,1000);	
+	SPI_CS_H; 	
+	W25Nxx_WriteEnable();		
+}
+
+void ProgramExecute(uint16_t page_address)
+{
+	uint8_t  erase[] = {FLASH_PROGRAM_EXECUTE,DUMMY,page_address >>8 , page_address & 0xff};
+		uint8_t timeout = 255;
+	
+	W25Nxx_WriteEnable();
+	SPI_CS_L;                             
+	HAL_SPI_Transmit(&hspi2,(uint8_t*)erase,sizeof(erase),1000);
+	SPI_CS_H; 	
+	W25NxxProperty.Busy = 0 ;
+	W25Nxx_ReadStatus();
+	while(W25NxxProperty.Busy)
+	{
+		 W25Nxx_ReadStatus();
+		 timeout--;
+		 if(timeout == 0)
+			break;
+	}		
+	W25Nxx_WriteEnable();
+		
+}
 
 void W25Nxx_WriteData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
 {
-	HAL_StatusTypeDef state;
-
-	uint8_t  read[] = {FLASH_WRITE,(uint8_t)(blk_addr>>16),(uint8_t)(blk_addr>>8),(uint8_t)(blk_addr>>0)};	
+	uint16_t column_address = blk_addr&0xfff;
+	uint16_t page_address = (blk_addr >> 12) & 0xffff;
+	uint32_t first_page_address = blk_addr - column_address;
+	uint32_t page_amount = (blk_addr + blk_len)/PAGE_SIZE + 1;
 	
-	if(buf == NULL)
-		return;
-	
-
-	read[0] = 
-	
-		state = HAL_SPI_Receive(&hspi2,buf,blk_len,1000); 
+  //restore first page data
+  W25Nxx_ReadData(SystemBuf,first_page_address,PAGE_SIZE);
+	memcpy(SystemBuf,buf,PAGE_SIZE - column_address);
+	W25Nxx_ErasePage(page_address);
+	LoadProgramData(0,SystemBuf,PAGE_SIZE);
 	
 }

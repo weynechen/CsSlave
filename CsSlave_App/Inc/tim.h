@@ -50,7 +50,7 @@ extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN Private defines */
-
+#define BL_MAX 100
 /* USER CODE END Private defines */
 
 extern void Error_Handler(void);

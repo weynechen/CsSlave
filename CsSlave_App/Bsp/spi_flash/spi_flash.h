@@ -13,8 +13,10 @@
 typedef enum
 {
 	FLASH_RESET = 0xff,
+	FLASH_PAGE_ERASE = 0xD8,
+	FLASH_PROGRAM_EXECUTE = 0x10,
 	FLASH_ID = 0x9f,
-	FLASH_WRITE = 0x02,
+	FLASH_PROGRAM_DATA = 0x02,
 	FLASH_READ = 0x03,
 	FLASH_PAGE_DATA_READ = 0x13,
 	FLASH_READ_STATUS  = 0x0F,
@@ -31,7 +33,7 @@ typedef enum
 }FlashStatusAddressTypeDef;
 
 #define PAGE_SIZE 2048
-
+#define DUMMY 0xff
 void W25Nxx_Init(void);
 void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
 #endif

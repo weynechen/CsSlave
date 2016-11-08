@@ -582,6 +582,11 @@
           <GroupName>Application/Bsp</GroupName>
           <Files>
             <File>
+              <FileName>bsp_driver_sd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Src/bsp_driver_sd.c</FilePath>
+            </File>
+            <File>
               <FileName>cdce913.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\cdce\cdce913.c</FilePath>
@@ -710,11 +715,6 @@
               <FileName>gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Src/gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_driver_sd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Src/bsp_driver_sd.c</FilePath>
             </File>
             <File>
               <FileName>fsmc.c</FileName>

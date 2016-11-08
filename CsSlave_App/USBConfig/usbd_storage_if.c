@@ -34,6 +34,7 @@
 #include "usbd_storage_if.h"
 /* USER CODE BEGIN INCLUDE */
 #include "spi_flash.h"
+#include "bsp_driver_sd.h"
 /* USER CODE END INCLUDE */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -57,10 +58,11 @@
 /** @defgroup USBD_STORAGE_Private_Defines
   * @{
   */ 
-#define STORAGE_LUN_NBR                  1  
-#define STORAGE_BLK_NBR                  65536
-#define STORAGE_BLK_SIZ                  2048
-
+#define STORAGE_LUN_NBR                  2  
+#define LUN0_STORAGE_BLK_NBR                  200//65535
+#define LUN0_STORAGE_BLK_SIZ                  2048
+#define STORAGE_BLK_NBR                  0x10000  
+#define STORAGE_BLK_SIZ                  0x200
 /* USER CODE BEGIN PRIVATE_DEFINES */
 /* USER CODE END PRIVATE_DEFINES */
   
@@ -98,6 +100,19 @@ const int8_t  STORAGE_Inquirydata_FS[] = {//36
   'N', ',', 'U', 'D', 'I', 'S', 'K', ' ', /* Product      : 16 Bytes */
   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
   '0', '.', '0' ,'1',                     /* Version      : 4 Bytes */
+  /* LUN 1 */
+  0x00,		
+  0x80,		
+  0x02,		
+  0x02,
+  (STANDARD_INQUIRY_DATA_LEN - 5),
+  0x00,
+  0x00,	
+  0x00,
+  'C', 'O', 'O', 'L', 'S', 'A', 'V', 'E', /* Manufacturer : 8 bytes */
+  'N', ',', 'U', 'D', 'I', 'S', 'K', ' ', /* Product      : 16 Bytes */
+  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+  '0', '.', '0' ,'1',                     /* Version      : 4 Bytes */	
 }; 
 /* USER CODE END INQUIRY_DATA_FS */ 
 
@@ -181,10 +196,30 @@ int8_t STORAGE_Init_FS (uint8_t lun)
 *******************************************************************************/
 int8_t STORAGE_GetCapacity_FS (uint8_t lun, uint32_t *block_num, uint16_t *block_size)
 {
-  /* USER CODE BEGIN 3 */   
-  *block_num  = STORAGE_BLK_NBR;
-  *block_size = STORAGE_BLK_SIZ;
-  return (USBD_OK);
+  /* USER CODE BEGIN 3 */  
+
+	if(lun == 1)
+	{	
+		*block_num  = LUN0_STORAGE_BLK_NBR;
+		*block_size = LUN0_STORAGE_BLK_SIZ;
+		return (USBD_OK);	
+	} 
+	else
+	{
+		SD_CardInfo info;
+		
+		int8_t ret = -1;
+		
+		if(BSP_SD_IsDetected() != SD_NOT_PRESENT)
+		{
+			BSP_SD_GetCardInfo(&info);
+			
+			*block_num = (info.CardCapacity)/STORAGE_BLK_SIZ  - 1;
+			*block_size = STORAGE_BLK_SIZ;
+			ret = 0;
+		}
+		return ret;	
+	}
   /* USER CODE END 3 */ 
 }
 
@@ -229,8 +264,11 @@ int8_t STORAGE_Read_FS (uint8_t lun,
                         uint16_t blk_len)
 {
   /* USER CODE BEGIN 6 */ 
+	if(lun == 1)
+		W25Nxx_ReadData(buf , blk_addr*LUN0_STORAGE_BLK_SIZ, blk_len);
+  else		
+		BSP_SD_ReadBlocks((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);	
 	
-	W25Nxx_ReadData(buf , blk_addr, blk_len);
   return (USBD_OK);
   /* USER CODE END 6 */ 
 }
@@ -248,6 +286,10 @@ int8_t STORAGE_Write_FS (uint8_t lun,
                          uint16_t blk_len)
 {
   /* USER CODE BEGIN 7 */ 
+	if(lun == 1)
+		W25Nxx_WriteData(buf,blk_addr * LUN0_STORAGE_BLK_SIZ,blk_len);	
+  else  
+		BSP_SD_WriteBlocks((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);	
   return (USBD_OK);
   /* USER CODE END 7 */ 
 }

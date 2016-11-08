@@ -26,6 +26,7 @@ struct
 	uint8_t EraseFailure;
 	uint8_t WriteEnable;
 	uint8_t Busy;	
+	uint8_t Protection;
 }W25NxxProperty;
 	
 #define WRITE_OP_CODE \
@@ -55,13 +56,32 @@ static HAL_StatusTypeDef W25Nxx_ReadID(uint8_t *read_back_buf)
 	return status;
 }
 
+static void W25Nxx_WriteStatus(uint8_t status_address , uint8_t value)
+{
+	uint8_t data[] = {FLASH_WRITE_STATUS , status_address , value};
+	
+	SPI_CS_L;
+	HAL_SPI_Transmit(&hspi2,data,sizeof(data),1000);
+	SPI_CS_H;		
+}
+
+static void W25Nxx_ReadProtection(void)
+{
+	uint8_t data[] = {FLASH_READ_STATUS , STATUS_ADDRESS1};
+	
+	SPI_CS_L;
+	HAL_SPI_Transmit(&hspi2,data,sizeof(data),1000);
+	HAL_SPI_Receive(&hspi2,&W25NxxProperty.Protection,1,1000);
+	SPI_CS_H;	
+}
+
 static void W25Nxx_ReadCfg(void)
 {
 	uint8_t read_back;
 	uint8_t data[] = {FLASH_READ_STATUS , STATUS_ADDRESS2};
 	
 	SPI_CS_L;
-	HAL_SPI_Transmit(&hspi2,data,2,1000);
+	HAL_SPI_Transmit(&hspi2,data,sizeof(data),1000);
 	HAL_SPI_Receive(&hspi2,&read_back,1,1000);
 	SPI_CS_H;
 	W25NxxProperty.ECC_Enable = (read_back >> 4) &0x01;
@@ -74,7 +94,7 @@ static void W25Nxx_ReadStatus(void)
 	uint8_t data[] = {FLASH_READ_STATUS , STATUS_ADDRESS3};
 	
 	SPI_CS_L;
-	HAL_SPI_Transmit(&hspi2,data,2,1000);
+	HAL_SPI_Transmit(&hspi2,data,sizeof(data),1000);
 	HAL_SPI_Receive(&hspi2,&read_back,1,1000);
 	SPI_CS_H;
 	W25NxxProperty.Busy = (read_back >> 0) &0x01;
@@ -86,7 +106,6 @@ static void W25Nxx_ReadStatus(void)
 
 static void W25Nxx_SetNonBufMode(void)
 {
-	uint8_t read_back;
 	uint8_t data[] = {FLASH_WRITE_STATUS , STATUS_ADDRESS2 , 0x10};
 	
 	SPI_CS_L;
@@ -110,7 +129,7 @@ void W25Nxx_WriteDisable(void)
 void W25Nxx_Init(void)
 {
 	uint8_t buf[3];
-	
+	char flash_data[]="flash data:";
 	W25Nxx_Reset();
 	HAL_Delay(10);
 	
@@ -118,15 +137,19 @@ void W25Nxx_Init(void)
 	{
 		char c[]="Info:SPI Flash OK: ";
 		UserSendArray(c,buf,3);
+		W25Nxx_WriteStatus(STATUS_ADDRESS1,0); //remove protection
 		W25Nxx_ReadCfg();
 		W25Nxx_ReadStatus();
-
+		W25Nxx_ReadProtection();
 		UserSendArray(c,(uint8_t *)&W25NxxProperty,sizeof(W25NxxProperty));		
 	}
 	else
 	{
 		UserPrintf("Error:SPI Flash Error\n");
 	}
+	//W25Nxx_WriteData(buf,0,3);
+	W25Nxx_ReadData(buf , 0 , 3);
+	UserSendArray(flash_data,buf,sizeof(buf));
 }
 
 void W25Nxx_LoadPage(uint16_t page_address)
@@ -219,17 +242,17 @@ void LoadProgramData(uint16_t column_address , uint8_t *buf , uint16_t len)
 	HAL_SPI_Transmit(&hspi2,(uint8_t*)load_column,sizeof(load_column),1000);
 	HAL_SPI_Transmit(&hspi2,(uint8_t*)buf,len,1000);	
 	SPI_CS_H; 	
-	W25Nxx_WriteEnable();		
+	W25Nxx_WriteDisable();		
 }
 
 void ProgramExecute(uint16_t page_address)
 {
-	uint8_t  erase[] = {FLASH_PROGRAM_EXECUTE,DUMMY,page_address >>8 , page_address & 0xff};
+	uint8_t  execute[] = {FLASH_PROGRAM_EXECUTE,DUMMY,page_address >>8 , page_address & 0xff};
 		uint8_t timeout = 255;
 	
 	W25Nxx_WriteEnable();
 	SPI_CS_L;                             
-	HAL_SPI_Transmit(&hspi2,(uint8_t*)erase,sizeof(erase),1000);
+	HAL_SPI_Transmit(&hspi2,(uint8_t*)execute,sizeof(execute),1000);
 	SPI_CS_H; 	
 	W25NxxProperty.Busy = 0 ;
 	W25Nxx_ReadStatus();
@@ -240,7 +263,7 @@ void ProgramExecute(uint16_t page_address)
 		 if(timeout == 0)
 			break;
 	}		
-	W25Nxx_WriteEnable();
+	W25Nxx_WriteDisable();
 		
 }
 
@@ -249,12 +272,34 @@ void W25Nxx_WriteData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
 	uint16_t column_address = blk_addr&0xfff;
 	uint16_t page_address = (blk_addr >> 12) & 0xffff;
 	uint32_t first_page_address = blk_addr - column_address;
-	uint32_t page_amount = (blk_addr + blk_len)/PAGE_SIZE + 1;
 	
   //restore first page data
   W25Nxx_ReadData(SystemBuf,first_page_address,PAGE_SIZE);
-	memcpy(SystemBuf,buf,PAGE_SIZE - column_address);
+	memcpy((uint8_t *)(SystemBuf + column_address),buf,PAGE_SIZE - column_address);
 	W25Nxx_ErasePage(page_address);
 	LoadProgramData(0,SystemBuf,PAGE_SIZE);
+	ProgramExecute(page_address);
 	
+	if(column_address + blk_len > PAGE_SIZE)
+	{
+		uint16_t len = column_address + blk_len - PAGE_SIZE;
+		uint16_t pages = len / PAGE_SIZE;
+		uint16_t i = 1;
+		while(pages != 0)
+		{
+			W25Nxx_ErasePage(page_address + i);
+			LoadProgramData(0,(uint8_t *)(buf + PAGE_SIZE - column_address + i * PAGE_SIZE),PAGE_SIZE);			
+			ProgramExecute(page_address + i);
+			i++;
+			pages--;
+		}
+		
+		//restore last page data
+	W25Nxx_ReadData(SystemBuf,(uint32_t)((page_address + i) << 12),PAGE_SIZE);
+	memcpy(SystemBuf,(uint8_t *)(buf + PAGE_SIZE - column_address + i * PAGE_SIZE) ,blk_len - (PAGE_SIZE - column_address + i * PAGE_SIZE));
+	W25Nxx_ErasePage(page_address + i);
+	LoadProgramData(0,SystemBuf,PAGE_SIZE);
+	ProgramExecute(page_address + i);	
+		
+	}
 }

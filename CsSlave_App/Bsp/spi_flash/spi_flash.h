@@ -36,4 +36,5 @@ typedef enum
 #define DUMMY 0xff
 void W25Nxx_Init(void);
 void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
+void W25Nxx_WriteData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
 #endif

@@ -58,8 +58,8 @@
 /** @defgroup USBD_STORAGE_Private_Defines
   * @{
   */ 
-#define STORAGE_LUN_NBR                  2  
-#define LUN0_STORAGE_BLK_NBR                  200//65535
+#define STORAGE_LUN_NBR                  1  
+#define LUN0_STORAGE_BLK_NBR                  (65535)
 #define LUN0_STORAGE_BLK_SIZ                  2048
 #define STORAGE_BLK_NBR                  0x10000  
 #define STORAGE_BLK_SIZ                  0x200
@@ -265,7 +265,7 @@ int8_t STORAGE_Read_FS (uint8_t lun,
 {
   /* USER CODE BEGIN 6 */ 
 	if(lun == 1)
-		W25Nxx_ReadData(buf , blk_addr*LUN0_STORAGE_BLK_SIZ, blk_len);
+		W25Nxx_ReadData(buf , blk_addr*LUN0_STORAGE_BLK_SIZ, blk_len/LUN0_STORAGE_BLK_SIZ+1);
   else		
 		BSP_SD_ReadBlocks((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);	
 	
@@ -287,7 +287,7 @@ int8_t STORAGE_Write_FS (uint8_t lun,
 {
   /* USER CODE BEGIN 7 */ 
 	if(lun == 1)
-		W25Nxx_WriteData(buf,blk_addr * LUN0_STORAGE_BLK_SIZ,blk_len);	
+		W25Nxx_WriteData(buf,blk_addr * LUN0_STORAGE_BLK_SIZ,blk_len/LUN0_STORAGE_BLK_SIZ+1);	
   else  
 		BSP_SD_WriteBlocks((uint32_t *)buf, blk_addr * STORAGE_BLK_SIZ, STORAGE_BLK_SIZ, blk_len);	
   return (USBD_OK);

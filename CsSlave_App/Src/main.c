@@ -123,7 +123,7 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-	W25Nxx_Init();
+	//W25Nxx_Init();
   SSD2828_Init(4, 480);
   ReadSystemConfig();
 
@@ -134,12 +134,12 @@ int main(void)
   while (1)
   {
 		SwitchTask();
-    if (USBPlugin == 1)
-    {
-      USBConnect = 1;
-      USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-      USBPlugin = 0;
-    }
+//    if (USBPlugin == 1)
+//    {
+//      USBConnect = 1;
+//      //USBD_CDC_ReceivePacket(&hUsbDeviceFS);
+//      USBPlugin = 0;
+//    }
 
     if (SystemConfig.IsAutoRun == 1)
     {

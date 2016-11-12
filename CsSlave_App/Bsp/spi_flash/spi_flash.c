@@ -104,15 +104,14 @@ static void W25Nxx_ReadStatus(void)
 
 }
 
-static void W25Nxx_SetNonBufMode(void)
+static void W25Nxx_EnableBufMode(FunctionStateTypeDef state)
 {
-	uint8_t data[] = {FLASH_WRITE_STATUS , STATUS_ADDRESS2 , 0x10};
+	uint8_t data[] = {FLASH_WRITE_STATUS , STATUS_ADDRESS2 , 0x10 | (state<<3)};
 	
 	SPI_CS_L;
 	HAL_SPI_Transmit(&hspi2,data,sizeof(data),1000);
 	SPI_CS_H;
 }
-
 
 void W25Nxx_WriteEnable(void)
 {
@@ -126,31 +125,7 @@ void W25Nxx_WriteDisable(void)
 	WRITE_OP_CODE;	
 }
 
-void W25Nxx_Init(void)
-{
-	uint8_t buf[3];
-	char flash_data[]="flash data:";
-	W25Nxx_Reset();
-	HAL_Delay(10);
-	
-	if(W25Nxx_ReadID(buf)== HAL_OK)
-	{
-		char c[]="Info:SPI Flash OK: ";
-		UserSendArray(c,buf,3);
-		W25Nxx_WriteStatus(STATUS_ADDRESS1,0); //remove protection
-		W25Nxx_ReadCfg();
-		W25Nxx_ReadStatus();
-		W25Nxx_ReadProtection();
-		UserSendArray(c,(uint8_t *)&W25NxxProperty,sizeof(W25NxxProperty));		
-	}
-	else
-	{
-		UserPrintf("Error:SPI Flash Error\n");
-	}
-	//W25Nxx_WriteData(buf,0,3);
-	W25Nxx_ReadData(buf , 0 , 3);
-	UserSendArray(flash_data,buf,sizeof(buf));
-}
+
 
 void W25Nxx_LoadPage(uint16_t page_address)
 {
@@ -161,6 +136,7 @@ void W25Nxx_LoadPage(uint16_t page_address)
 		SPI_CS_H; 
 		
 		W25NxxProperty.Busy = 0 ;
+		HAL_Delay(1000);
 		W25Nxx_ReadStatus();
 		while(W25NxxProperty.Busy)
 		{
@@ -168,27 +144,29 @@ void W25Nxx_LoadPage(uint16_t page_address)
 			 timeout--;
 			 if(timeout == 0)
 				break;
-		}		
-}
+		}
+		}
 
 
-void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
+void W25Nxx_ReadData(uint8_t *buf , uint32_t start_addr, uint32_t len)
 {
-	uint16_t column_address = blk_addr&0xfff;
-	uint16_t page_address = (blk_addr >> 12) & 0xffff;
-
+	uint16_t column_address = start_addr&0xfff;
+	uint16_t page_address = (start_addr >> 12) & 0xffff;
+	
 	uint8_t buff_read[] = {FLASH_READ , column_address >>8,column_address &0xff,0xff};
 	
 	if(buf == NULL)
 		return;
 	
+	W25Nxx_EnableBufMode(FUN_ENABLE);
+			W25Nxx_ReadCfg();
 	W25Nxx_LoadPage(page_address);
 	
-	if(blk_len < PAGE_SIZE - column_address) //read a part of data
+	if(len <= PAGE_SIZE - column_address) //read a part of data
 	{
 	SPI_CS_L;                             
 	HAL_SPI_Transmit(&hspi2,(uint8_t*)buff_read,sizeof(buff_read),1000);
-	HAL_SPI_Receive(&hspi2,buf,blk_len,1000);		
+	HAL_SPI_Receive(&hspi2,buf,len,1000);		
 	SPI_CS_H; 
 	}
 	else //data will cross multi pages
@@ -198,14 +176,16 @@ void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
 	HAL_SPI_Receive(&hspi2,buf,PAGE_SIZE - column_address,1000);
 	SPI_CS_H;				
 		
-	W25Nxx_SetNonBufMode();// set read mode to continues read
-	
-	W25Nxx_LoadPage(page_address+1);		
+	W25Nxx_EnableBufMode(FUN_DISABLE);// set read mode to continues read
+			W25Nxx_ReadCfg();
+	//continues read from next page column 0
+	W25Nxx_LoadPage(page_address+1);
 	HAL_SPI_Transmit(&hspi2,(uint8_t*)buff_read,sizeof(buff_read),1000);
-	HAL_SPI_Receive(&hspi2,buf,blk_len-(PAGE_SIZE - column_address),1000);		//recive the rest data
+		HAL_Delay(1000);
+		HAL_SPI_Receive(&hspi2,buf + PAGE_SIZE - column_address,len-(PAGE_SIZE - column_address),1000);		//recive the rest data
 	}
-	
-	W25Nxx_Reset();
+	W25Nxx_EnableBufMode(FUN_ENABLE);	
+	//W25Nxx_Reset();
 }
 
 void W25Nxx_ErasePage(uint16_t page_address)
@@ -296,10 +276,40 @@ void W25Nxx_WriteData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len)
 		
 		//restore last page data
 	W25Nxx_ReadData(SystemBuf,(uint32_t)((page_address + i) << 12),PAGE_SIZE);
-	memcpy(SystemBuf,(uint8_t *)(buf + PAGE_SIZE - column_address + i * PAGE_SIZE) ,blk_len - (PAGE_SIZE - column_address + i * PAGE_SIZE));
+	memcpy(SystemBuf,(uint8_t *)(buf + PAGE_SIZE - column_address + (i-1) * PAGE_SIZE) ,blk_len - (PAGE_SIZE - column_address + (i-1) * PAGE_SIZE));
 	W25Nxx_ErasePage(page_address + i);
 	LoadProgramData(0,SystemBuf,PAGE_SIZE);
 	ProgramExecute(page_address + i);	
 		
 	}
+}
+
+void W25Nxx_Init(void)
+{
+	uint8_t buf[3];
+	char flash_data[]="flash data:";
+	W25Nxx_Reset();
+	HAL_Delay(10);
+	
+	if(W25Nxx_ReadID(buf)== HAL_OK)
+	{
+		char c[]="Info:SPI Flash OK: ";
+		UserSendArray(c,buf,3);
+		W25Nxx_WriteStatus(STATUS_ADDRESS1,0); //remove protection
+		W25Nxx_ReadCfg();
+		W25Nxx_ReadStatus();
+		W25Nxx_ReadProtection();
+		UserSendArray(c,(uint8_t *)&W25NxxProperty,sizeof(W25NxxProperty));		
+	}
+	else
+	{
+		UserPrintf("Error:SPI Flash Error\n");
+	}
+	memset(RecBuffer,0xAA,512);
+ 	RecBuffer[2049]=0x11;
+	RecBuffer[10]=0x10;
+	//W25Nxx_ErasePage(0);
+	//W25Nxx_WriteData(RecBuffer,0,512);
+	W25Nxx_ReadData(SystemBuf , 0 , 3000);
+//	UserSendArray(flash_data,&RecBuffer[2047],4);
 }

@@ -12,6 +12,13 @@
 
 typedef enum
 {
+	FUN_DISABLE = 0,
+	FUN_ENABLE = 1,
+}FunctionStateTypeDef;
+
+
+typedef enum
+{
 	FLASH_RESET = 0xff,
 	FLASH_PAGE_ERASE = 0xD8,
 	FLASH_PROGRAM_EXECUTE = 0x10,
@@ -35,6 +42,6 @@ typedef enum
 #define PAGE_SIZE 2048
 #define DUMMY 0xff
 void W25Nxx_Init(void);
-void W25Nxx_ReadData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
+void W25Nxx_ReadData(uint8_t *buf , uint32_t addr, uint32_t len);
 void W25Nxx_WriteData(uint8_t *buf , uint32_t blk_addr, uint16_t blk_len);
 #endif

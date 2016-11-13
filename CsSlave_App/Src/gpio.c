@@ -66,10 +66,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, SSD_SHUT_Pin|SSD_SCK_Pin|SSD_SDO_Pin|SSD_RESET_Pin 
-                          |ON_OFF_Pin|DOWN_Pin|UP_STOP_Pin|EN_VSP_Pin 
-                          |SSD1_CS_Pin|SSD2_CS_Pin, GPIO_PIN_RESET);
+                          |EN_VSP_Pin|SPI2_CS_Pin|SSD1_CS_Pin|SSD2_CS_Pin, GPIO_PIN_RESET);
 
-	  HAL_GPIO_WritePin(GPIOE, SPI2_CS_Pin,GPIO_PIN_SET);
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_pull_up_GPIO_Port, USB_pull_up_Pin, GPIO_PIN_SET);
 
@@ -88,11 +86,9 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, RST_24LCD_Pin|RS_24LCD_Pin|EN_MTP_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin 
-                           PEPin PEPin PEPin PEPin 
-                           PEPin */
-  GPIO_InitStruct.Pin = SSD_SHUT_Pin|SSD_RESET_Pin|ON_OFF_Pin|DOWN_Pin 
-                          |UP_STOP_Pin|EN_VSP_Pin|SPI2_CS_Pin|SSD1_CS_Pin 
-                          |SSD2_CS_Pin;
+                           PEPin PEPin */
+  GPIO_InitStruct.Pin = SSD_SHUT_Pin|SSD_RESET_Pin|EN_VSP_Pin|SPI2_CS_Pin 
+                          |SSD1_CS_Pin|SSD2_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -103,11 +99,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = SSD_SDI_Pin;
+  /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
+  GPIO_InitStruct.Pin = SSD_SDI_Pin|KEY_POWER_Pin|KEY_DOWN_Pin|KEY_UP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(SSD_SDI_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin 
                            PCPin PCPin */

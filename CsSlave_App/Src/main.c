@@ -57,6 +57,7 @@
 #include "in_img.h"
 #include "spi_flash.h"
 #include "task.h"
+#include "ctrlbox.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -85,6 +86,8 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   uint8_t current_frame = 0;
+	uint8_t key_control = 0;
+	uint8_t power_on = 1;
 	/* 记得cube生成后，修改地址设置*/
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
@@ -105,13 +108,13 @@ int main(void)
   MX_SDIO_SD_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
-//  MX_USART3_UART_Init();
+  //MX_USART3_UART_Init();
   MX_FATFS_Init();
-  MX_USB_DEVICE_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_SPI2_Init();
   MX_ADC1_Init();
+  MX_USB_DEVICE_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
@@ -134,14 +137,55 @@ int main(void)
   while (1)
   {
 		SwitchTask();
-//    if (USBPlugin == 1)
-//    {
-//      USBConnect = 1;
-//      //USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-//      USBPlugin = 0;
-//    }
+		ScanKey();
+		switch(CtrlKey)
+		{
+			case KEY_UP:
+			CtrlKey = KEY_NULL;
+			key_control  = 1;
+			if(current_frame == PatternProperty.Counter-1)
+				current_frame = 0;
+			else
+				current_frame++;
+			LcdDrvShowPattern(current_frame);
+			break;
+			
+			case KEY_DOWN:
+			CtrlKey = KEY_NULL;	
+			key_control  = 1;
+			if(current_frame == 0)
+				current_frame = PatternProperty.Counter-1;
+			else
+				current_frame --;
+			LcdDrvShowPattern(current_frame);
 
-    if (SystemConfig.IsAutoRun == 1)
+			break;
+			
+			case KEY_POWER:
+			CtrlKey = KEY_NULL;
+			key_control  = 0;	
+				
+			if(power_on == 1)
+			{
+			Lcd_Sleep();
+			SSD2828_SetReset(0);
+			SetLcdPower(OFF);
+		  Power_SetBLCurrent(0);				
+				power_on = 0;
+			}
+			else
+			{
+				Lcd_LightOn();
+				LcdDrvShowPattern(current_frame = 0);
+				power_on = 1;
+				ResetStayTimeCounter();
+			}
+			break;
+			
+			default:
+				break;
+		}
+    if ((SystemConfig.IsAutoRun == 1) && (key_control == 0))
     {
       if (IsStayTimeOver(current_frame) == 1)
       {
@@ -218,7 +262,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
   /* USART1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USART3_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USART3_IRQn, 2, 0);

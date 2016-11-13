@@ -335,6 +335,11 @@ uint8_t IsStayTimeOver(uint8_t frame)
   return 0;
 }
 
+void ResetStayTimeCounter(void)
+{
+	htim3.Instance->CNT = 0;
+}
+
 void ResetLcd(void)
 {
 	HAL_GPIO_WritePin(LS245_OE_GPIO_Port,LS245_OE_Pin,GPIO_PIN_RESET);
@@ -365,5 +370,22 @@ void Lcd_ReInit(void)
 	
 }
 
+void Lcd_Sleep(void)
+{
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x11);	
+}
+
+void Lcd_LightOn(void)
+{
+	SetLcdPower(ON);
+	SetLcdTiming();
+	SetMipiPara();
+	ResetLcd();
+	SetLcdInitCode();
+	Power_SetBLCurrent(SystemConfig.Backlight);
+	LcdDrvOpenRGB();
+	SSD2828_SetMode(VD);
+}
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

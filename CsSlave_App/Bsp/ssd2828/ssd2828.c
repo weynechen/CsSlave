@@ -37,6 +37,11 @@ static void Delay_10us(volatile uint8_t t)
   }
 }
 
+void SSD2828_SetReset(uint8_t t)
+{
+	SSD2828_RESET = t;
+}
+
 
 static void SSD2828WriteCmd(uint8_t cmd)
 {
@@ -403,7 +408,6 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
     SSD2828WriteReg(0x00b7, 0x03, 0x0B);
   }
 }
-
 
 
 /**

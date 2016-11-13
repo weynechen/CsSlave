@@ -10,7 +10,7 @@
 #ifndef _LCD_H_
 #define _LCD_H_
 #include "stm32f1xx_hal.h"
-
+#include "power.h"
 
 #define RESET_PINA     GPIO_PIN_2
 #define RESET_PORTA    GPIOA
@@ -58,6 +58,9 @@ typedef enum
 
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
-
+void Lcd_Sleep(void);
+void SetLcdPower(StateTypeDef state);
+void Lcd_LightOn(void);
+void ResetStayTimeCounter(void);
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

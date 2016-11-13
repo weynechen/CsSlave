@@ -333,7 +333,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\power;..\Protocol;..\Bsp\sysconfig;..\Algorithm\pattern;..\Bsp\fpga;..\Bsp\res;..\Bsp\lcd;..\Bsp\flash_if;..\Bsp\spi_flash;..\Algorithm\upgrade;..\USBConfig;..\Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;..\Bsp\power;..\Protocol;..\Bsp\sysconfig;..\Algorithm\pattern;..\Bsp\fpga;..\Bsp\res;..\Bsp\lcd;..\Bsp\flash_if;..\Bsp\spi_flash;..\Algorithm\upgrade;..\USBConfig;..\Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\ctlbox</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -631,31 +631,16 @@
               <FileType>1</FileType>
               <FilePath>..\Bsp\spi_flash\spi_flash.c</FilePath>
             </File>
+            <File>
+              <FileName>ctrlbox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\ctlbox\ctrlbox.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Middlewares/USB_Device_Library</GroupName>
           <Files>
-            <File>
-              <FileName>usbd_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_ioreq.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_ctlreq.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_cdc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c</FilePath>
-            </File>
             <File>
               <FileName>usbd_msc.c</FileName>
               <FileType>1</FileType>
@@ -675,6 +660,26 @@
               <FileName>usbd_msc_scsi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Src\usbd_msc_scsi.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_cdc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ioreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c</FilePath>
+            </File>
+            <File>
+              <FileName>usbd_ctlreq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c</FilePath>
             </File>
           </Files>
         </Group>

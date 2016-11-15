@@ -1,35 +1,35 @@
 /**
-  ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program body
-  ******************************************************************************
-  *
-  * COPYRIGHT(c) 2016 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * File Name          : main.c
+ * Description        : Main program body
+ ******************************************************************************
+ *
+ * COPYRIGHT(c) 2016 STMicroelectronics
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
+ *   1. Redistributions of source code must retain the above copyright notice,
+ *      this list of conditions and the following disclaimer.
+ *   2. Redistributions in binary form must reproduce the above copyright notice,
+ *      this list of conditions and the following disclaimer in the documentation
+ *      and/or other materials provided with the distribution.
+ *   3. Neither the name of STMicroelectronics nor the names of its contributors
+ *      may be used to endorse or promote products derived from this software
+ *      without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ******************************************************************************
+ */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
 #include "adc.h"
@@ -83,12 +83,12 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
   uint8_t current_frame = 0;
-	uint8_t key_control = 0;
-	uint8_t power_on = 1;
-	/* 记得cube生成后，修改地址设置*/
+  uint8_t key_control = 0;
+  uint8_t power_on = 1;
+
+  /* 记得cube生成后，修改地址设置*/
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -121,12 +121,12 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n--CD310--\n");
-	GetFirmwareVersion();
+  GetFirmwareVersion();
   InitSystemConfig();
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-	//W25Nxx_Init();
+  //W25Nxx_Init();
   SSD2828_Init(4, 480);
   ReadSystemConfig();
 
@@ -136,55 +136,63 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-		SwitchTask();
-		ScanKey();
-		switch(CtrlKey)
-		{
-			case KEY_UP:
-			CtrlKey = KEY_NULL;
-			key_control  = 1;
-			if(current_frame == PatternProperty.Counter-1)
-				current_frame = 0;
-			else
-				current_frame++;
-			LcdDrvShowPattern(current_frame);
-			break;
-			
-			case KEY_DOWN:
-			CtrlKey = KEY_NULL;	
-			key_control  = 1;
-			if(current_frame == 0)
-				current_frame = PatternProperty.Counter-1;
-			else
-				current_frame --;
-			LcdDrvShowPattern(current_frame);
+    SwitchTask();
+    ScanKey();
+    switch (CtrlKey)
+    {
+    case KEY_UP:
+      CtrlKey = KEY_NULL;
+      key_control = 1;
+      if (current_frame == PatternProperty.Counter - 1)
+      {
+        current_frame = 0;
+      }
+      else
+      {
+        current_frame++;
+      }
+      LcdDrvShowPattern(current_frame);
+      break;
 
-			break;
-			
-			case KEY_POWER:
-			CtrlKey = KEY_NULL;
-			key_control  = 0;	
-				
-			if(power_on == 1)
-			{
-			Lcd_Sleep();
-			SSD2828_SetReset(0);
-			SetLcdPower(OFF);
-		  Power_SetBLCurrent(0);				
-				power_on = 0;
-			}
-			else
-			{
-				Lcd_LightOn();
-				LcdDrvShowPattern(current_frame = 0);
-				power_on = 1;
-				ResetStayTimeCounter();
-			}
-			break;
-			
-			default:
-				break;
-		}
+    case KEY_DOWN:
+      CtrlKey = KEY_NULL;
+      key_control = 1;
+      if (current_frame == 0)
+      {
+        current_frame = PatternProperty.Counter - 1;
+      }
+      else
+      {
+        current_frame--;
+      }
+      LcdDrvShowPattern(current_frame);
+
+      break;
+
+    case KEY_POWER:
+      CtrlKey = KEY_NULL;
+      key_control = 0;
+
+      if (power_on == 1)
+      {
+        Lcd_Sleep();
+        SSD2828_SetReset(0);
+        SetLcdPower(OFF);
+        Power_SetBLCurrent(0);
+        power_on = 0;
+      }
+      else
+      {
+        Lcd_LightOn();
+        LcdDrvShowPattern(current_frame = 0);
+        power_on = 1;
+        ResetStayTimeCounter();
+      }
+      break;
+
+    default:
+      break;
+    }
     if ((SystemConfig.IsAutoRun == 1) && (key_control == 0))
     {
       if (IsStayTimeOver(current_frame) == 1)
@@ -199,19 +207,18 @@ int main(void)
 
 
 
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
 }
 
+
 /** System Clock Configuration
-*/
+ */
 void SystemClock_Config(void)
 {
-
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
@@ -227,8 +234,8 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -238,7 +245,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC | RCC_PERIPHCLK_USB;
   PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
   PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
@@ -246,7 +253,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -254,8 +261,9 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
+
 /** NVIC Configuration
-*/
+ */
 static void MX_NVIC_Init(void)
 {
   /* DMA1_Channel5_IRQn interrupt configuration */
@@ -275,6 +283,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
 
+
 /* USER CODE BEGIN 4 */
 int fputc(int ch, FILE *file)
 {
@@ -289,7 +298,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim2)
   {
-		SendHeartBeat();
+    SendHeartBeat();
   }
 }
 
@@ -297,10 +306,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @param  None
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @param  None
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
@@ -308,36 +317,35 @@ void Error_Handler(void)
   while (1)
   {
   }
-  /* USER CODE END Error_Handler */ 
+  /* USER CODE END Error_Handler */
 }
+
 
 #ifdef USE_FULL_ASSERT
 
 /**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
-void assert_failed(uint8_t* file, uint32_t line)
+ * @brief Reports the name of the source file and the source line number
+ * where the assert_param error has occurred.
+ * @param file: pointer to the source file name
+ * @param line: assert_param error line source number
+ * @retval None
+ */
+void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
 
   /* User can add his own implementation to report the file name and line number,
    *  ex: UserPrintf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
-
 #endif
 
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 /**
-  * @}
-*/ 
+ * @}
+ */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

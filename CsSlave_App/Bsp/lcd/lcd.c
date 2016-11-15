@@ -53,18 +53,18 @@ void SetLcdPower(StateTypeDef state)
 
 void SetLcdTiming(void)
 {
-	memcpy((uint16_t *)&LCDTiming,(uint16_t *)SystemConfig.LCDTimingPara,sizeof(SystemConfig.LCDTimingPara));
-	CDCE_Init(LCDTiming.DCLK);
-	LcdDrvSetTiming();
+  memcpy((uint16_t *)&LCDTiming, (uint16_t *)SystemConfig.LCDTimingPara, sizeof(SystemConfig.LCDTimingPara));
+  CDCE_Init(LCDTiming.DCLK);
+  LcdDrvSetTiming();
 }
 
 
 void SetMipiPara(void)
 {
-	uint8_t lane = SystemConfig.MIPIConfig[3];
-	uint16_t speed = (SystemConfig.MIPIConfig[1]<<8) | SystemConfig.MIPIConfig[2];
-	
-	SSD2828_Init(lane,speed);
+  uint8_t lane = SystemConfig.MIPIConfig[3];
+  uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
+
+  SSD2828_Init(lane, speed);
 }
 
 
@@ -85,7 +85,8 @@ void SetLcdInitCode(void)
   uint16_t i = 0, j = 0;
   uint16_t delay_time;
   MIPI_ReadTypeDef result;
-	uint8_t buffer[32];
+  uint8_t buffer[32];
+
   while (i < code_size)
   {
     switch ((MipiTypeDef)(*(p + i++)))
@@ -147,7 +148,7 @@ void SetLcdInitCode(void)
           i++;
         }
         UserPrintf("Error: not specified MIPI package\n");
-				return ;
+        return;
       }
       break;
 
@@ -181,7 +182,7 @@ void SetLcdInitCode(void)
     default:
       break;
     }
- }
+  }
 }
 
 
@@ -193,23 +194,23 @@ void SetPattern(void)
   uint8_t r, g, b;
   uint16_t stay_time;
 
-	memset(&PatternProperty,0,sizeof(PatternProperty));
-	
-	LcdDrvSetPattern();
+  memset(&PatternProperty, 0, sizeof(PatternProperty));
+
+  LcdDrvSetPattern();
   while (i < size)
   {
-		if(PatternProperty.Counter > PATTERN_AMOUNT)
-		{
-			break;
-		}
-		
+    if (PatternProperty.Counter > PATTERN_AMOUNT)
+    {
+      break;
+    }
+
     switch ((PatternTypeDef) * (p + i++))
     {
     case PATTERN_START:
 
       break;
 
-    case RGB: 
+    case RGB:
       r = *(p + i++);
       g = *(p + i++);
       b = *(p + i++);
@@ -299,25 +300,28 @@ void SetPattern(void)
     case PATTERN_STAY:
       stay_time = *(p + i++);
       stay_time = (stay_time << 8) | *(p + i++);
-			if(PatternProperty.Counter != 0)
-			{
-				PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;
-			}
-			break;
-		
+      if (PatternProperty.Counter != 0)
+      {
+        PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;
+      }
+      break;
+
     default:
       UserPrintf("Error:pattern syntax error\n");
-			break;
+      break;
     }
-		
-		if(TaskID != ACTION_NULL)
-			break;
-		
+
+    if (TaskID != ACTION_NULL)
+    {
+      break;
+    }
+
     HAL_Delay(500);
   }
-	
-	LcdDrvShowPattern(0);
+
+  LcdDrvShowPattern(0);
 }
+
 
 uint8_t IsStayTimeOver(uint8_t frame)
 {
@@ -335,57 +339,61 @@ uint8_t IsStayTimeOver(uint8_t frame)
   return 0;
 }
 
+
 void ResetStayTimeCounter(void)
 {
-	htim3.Instance->CNT = 0;
+  htim3.Instance->CNT = 0;
 }
+
 
 void ResetLcd(void)
 {
-	HAL_GPIO_WritePin(LS245_OE_GPIO_Port,LS245_OE_Pin,GPIO_PIN_RESET);
-	HAL_Delay(10);
-	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_SET);
-	HAL_Delay(10);
-	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_RESET);
-	HAL_Delay(120);
-	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port,MIPIRESET_Pin,GPIO_PIN_SET);	
-	HAL_Delay(10);
+  HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
+  HAL_Delay(10);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_Delay(10);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_RESET);
+  HAL_Delay(120);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_Delay(10);
 }
 
 
 void Lcd_ReInit(void)
 {
   memset(&PatternProperty, 0, sizeof(PatternProperty));
-	SetLcdPower(OFF);	
-	SetLcdPower(ON);
-	SetLcdTiming();
-	SetMipiPara();
-	ResetLcd();
-	SetLcdInitCode();
-	Power_SetBLCurrent(SystemConfig.Backlight);
-	LcdDrvOpenRGB();
-	SSD2828_SetMode(VD);
+  SetLcdPower(OFF);
+  SetLcdPower(ON);
+  SetLcdTiming();
+  SetMipiPara();
+  ResetLcd();
+  SetLcdInitCode();
+  Power_SetBLCurrent(SystemConfig.Backlight);
+  LcdDrvOpenRGB();
+  SSD2828_SetMode(VD);
 
-	SetPattern();
-	
+  SetPattern();
 }
+
 
 void Lcd_Sleep(void)
 {
   SSD2828_DcsShortWrite(1);
-  SSD2828WriteData(0x11);	
+  SSD2828WriteData(0x11);
 }
+
 
 void Lcd_LightOn(void)
 {
-	SetLcdPower(ON);
-	SetLcdTiming();
-	SetMipiPara();
-	ResetLcd();
-	SetLcdInitCode();
-	Power_SetBLCurrent(SystemConfig.Backlight);
-	LcdDrvOpenRGB();
-	SSD2828_SetMode(VD);
+  SetLcdPower(ON);
+  SetLcdTiming();
+  SetMipiPara();
+  ResetLcd();
+  SetLcdInitCode();
+  Power_SetBLCurrent(SystemConfig.Backlight);
+  LcdDrvOpenRGB();
+  SSD2828_SetMode(VD);
 }
+
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

@@ -12,71 +12,74 @@
 
 void LcdDrvWriteData(uint8_t para)
 {
-	FPGA_WRITE_DATA(para);
+  FPGA_WRITE_DATA(para);
 }
+
 
 static void FPGAWrite16BitData(uint16_t data)
 {
-	data = data -1;
-	FPGA_WRITE_DATA(data>>8);
-	FPGA_WRITE_DATA(data);	
+  data = data - 1;
+  FPGA_WRITE_DATA(data >> 8);
+  FPGA_WRITE_DATA(data);
 }
 
 
 void LcdDrvSetTiming(void)
 {
-	FPGA_WRITE_CMD(0xB0);
-	FPGAWrite16BitData(LCDTiming.LCDH);
-	FPGAWrite16BitData(LCDTiming.LCDV);	
-  
-	FPGA_WRITE_CMD(0xB4);
-	FPGAWrite16BitData(LCDTiming.HSPW);
-	FPGAWrite16BitData(LCDTiming.HFPD);	
-	FPGAWrite16BitData(LCDTiming.HBPD);	
-	
-	FPGA_WRITE_CMD(0xB6);
-	FPGAWrite16BitData(LCDTiming.VSPW);
-	FPGAWrite16BitData(LCDTiming.VFPD);	
-	FPGAWrite16BitData(LCDTiming.VBPD);	
-	
-	FPGA_WRITE_CMD(0x28);	
-}
+  FPGA_WRITE_CMD(0xB0);
+  FPGAWrite16BitData(LCDTiming.LCDH);
+  FPGAWrite16BitData(LCDTiming.LCDV);
 
+  FPGA_WRITE_CMD(0xB4);
+  FPGAWrite16BitData(LCDTiming.HSPW);
+  FPGAWrite16BitData(LCDTiming.HFPD);
+  FPGAWrite16BitData(LCDTiming.HBPD);
+
+  FPGA_WRITE_CMD(0xB6);
+  FPGAWrite16BitData(LCDTiming.VSPW);
+  FPGAWrite16BitData(LCDTiming.VFPD);
+  FPGAWrite16BitData(LCDTiming.VBPD);
+
+  FPGA_WRITE_CMD(0x28);
+}
 
 
 void LcdDrvOpenRGB(void)
 {
-	FPGA_WRITE_CMD(0x29);	
+  FPGA_WRITE_CMD(0x29);
 }
+
 
 void LcdDrvCloseRGB(void)
 {
-	FPGA_WRITE_CMD(0x28);	
+  FPGA_WRITE_CMD(0x28);
 }
+
 
 void LcdDrvSetPattern(void)
 {
-	FPGA_WRITE_CMD(0x3C);		
+  FPGA_WRITE_CMD(0x3C);
 }
+
 
 void LcdDrvShowPattern(uint8_t frame)
 {
-	uint32_t address = 0;
-	uint8_t i = 0;
-	uint8_t *p = (uint8_t *)&address;
-	
-	address = LCDTiming.LCDH;
-	address *= LCDTiming.LCDV;
-	address *= frame;
+  uint32_t address = 0;
+  uint8_t i = 0;
+  uint8_t *p = (uint8_t *)&address;
 
-	
-	FPGA_WRITE_CMD(0x0B);
-	
-	for(;i<sizeof(address);i++)
-	{
-			FPGA_WRITE_DATA(*(p+3-i));
-	}
-	
+  address = LCDTiming.LCDH;
+  address *= LCDTiming.LCDV;
+  address *= frame;
+
+
+  FPGA_WRITE_CMD(0x0B);
+
+  for ( ; i < sizeof(address); i++)
+  {
+    FPGA_WRITE_DATA(*(p + 3 - i));
+  }
 }
+
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

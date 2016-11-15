@@ -13,12 +13,12 @@
 #define _PRO_H_
 
 #define LCD_ADDRESS    0x10
-#define MIN_PRO_NUM      14
+#define MIN_PRO_NUM    14
 
 typedef enum
 {
-    PACK_FAIL,
-    PACK_OK
+  PACK_FAIL,
+  PACK_OK
 } ResultTypeDef;
 
 #define NULL    0
@@ -26,10 +26,10 @@ typedef enum
 
 typedef struct
 {
-    uint8_t  DeviceAddr;   //  cmd
-    uint8_t  FunctionCode; // sub cmd
-    uint16_t StartAddr;    //sub sub cmd
-    uint32_t Len;
+  uint8_t  DeviceAddr;     //  cmd
+  uint8_t  FunctionCode;   // sub cmd
+  uint16_t StartAddr;      //sub sub cmd
+  uint32_t Len;
 } SdkProtocolHeaderTypeDef;
 
 
@@ -43,11 +43,11 @@ typedef struct
 
 typedef struct
 {
-    uint8_t							  DataID;
-    uint8_t               *DataInBuff;
-    uint32_t              DataInLen;
-    uint8_t               *DataOutBuff;
-    uint32_t              *DataOutLen;
+  uint8_t  DataID;
+  uint8_t  *DataInBuff;
+  uint32_t DataInLen;
+  uint8_t  *DataOutBuff;
+  uint32_t *DataOutLen;
 } PackageDataStruct;
 
 

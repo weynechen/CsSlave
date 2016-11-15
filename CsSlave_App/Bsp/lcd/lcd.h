@@ -62,5 +62,6 @@ void Lcd_Sleep(void);
 void SetLcdPower(StateTypeDef state);
 void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
+
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

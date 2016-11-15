@@ -31,7 +31,7 @@ void Res_ReadPic(char *file_name)
 
   for ( ; ; )
   {
-		br = 1;
+    br = 1;
     res = f_read(&fsrc, SystemBuf, BUFFER_SIZE - 1, &br);
     if (res || (br == 0))
     {
@@ -43,17 +43,15 @@ void Res_ReadPic(char *file_name)
       LcdDrvWriteData(temp1);
       pic_size++;
     }
-
-
   }
 
-	temp1 = (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV *3 ;
-	if(pic_size != temp1)
-	{
-		UserPrintf("Error:picture size %d\n", pic_size);		
-	}
+  temp1 = (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3;
+  if (pic_size != temp1)
+  {
+    UserPrintf("Error:picture size %d\n", pic_size);
+  }
 
-  f_close(&fsrc);	
+  f_close(&fsrc);
 }
 
 

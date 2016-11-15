@@ -12,6 +12,7 @@
 #include "sys.h"
 #include "sysconfig.h"
 #include "ack.h"
+
 /**
  * @brief SSD2828 IO PIN 的配置区域
  */
@@ -37,9 +38,10 @@ static void Delay_10us(volatile uint8_t t)
   }
 }
 
+
 void SSD2828_SetReset(uint8_t t)
 {
-	SSD2828_RESET = t;
+  SSD2828_RESET = t;
 }
 
 
@@ -418,53 +420,52 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
  */
 void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
-	SPI_CS = 1;	
+  SPI_CS = 1;
   SSD2828_RESET = 0;
   SSD2828_SHUT = 0;
   HAL_Delay(50);
   SSD2828_RESET = 1;
   HAL_Delay(10);
-	SPI_CS = 0;
-	HAL_Delay(10);	
-	if (SSD2828ReadReg(0xB0) == 0x2828)
-	{
-		UserPrintf("Info:SSD2828 OK\n");
-	}
-	else
-	{
-		UserPrintf("Error:SSD2828 configuration failed\n");
-	}
+  SPI_CS = 0;
+  HAL_Delay(10);
+  if (SSD2828ReadReg(0xB0) == 0x2828)
+  {
+    UserPrintf("Info:SSD2828 OK\n");
+  }
+  else
+  {
+    UserPrintf("Error:SSD2828 configuration failed\n");
+  }
 
 
-	SSD2828WriteReg(0x00b9, 0x00, 0x00);
-	SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
-	SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD+10);
-	SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
-	SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
-	SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
-	SSD2828WriteReg(0x00b6, 0x00, 0x07);
-	if (data_rate < 500)
-	{
-		SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
-	}
-	else
-	{
-		SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
-	}
-	SSD2828WriteReg(0x00bb, 0x00, 0x06);
-	SSD2828WriteReg(0x00b8, 0x00, 0x00);
-	SSD2828WriteReg(0x00c9, 0x25, 0x09);
-	SSD2828WriteReg(0x00ca, 0x23, 0x01);
-	SSD2828WriteReg(0x00cb, 0x05, 0x10);
-	SSD2828WriteReg(0x00cc, 0x10, 0x05);
-	SSD2828WriteReg(0x00de, 0x00, lane - 1);
-	SSD2828WriteReg(0x00d6, 0x00, 0x05);
-	SSD2828WriteReg(0x00c4, 0x00, 0x01);
-	SSD2828WriteReg(0x00eb, 0x80, 0x00);
-	HAL_Delay(10);
-	SSD2828WriteReg(0x00b9, 0x00, 0x01);
-	HAL_Delay(120);
-  
+  SSD2828WriteReg(0x00b9, 0x00, 0x00);
+  SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
+  SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD + 10);
+  SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
+  SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
+  SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
+  SSD2828WriteReg(0x00b6, 0x00, 0x07);
+  if (data_rate < 500)
+  {
+    SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
+  }
+  else
+  {
+    SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
+  }
+  SSD2828WriteReg(0x00bb, 0x00, 0x06);
+  SSD2828WriteReg(0x00b8, 0x00, 0x00);
+  SSD2828WriteReg(0x00c9, 0x25, 0x09);
+  SSD2828WriteReg(0x00ca, 0x23, 0x01);
+  SSD2828WriteReg(0x00cb, 0x05, 0x10);
+  SSD2828WriteReg(0x00cc, 0x10, 0x05);
+  SSD2828WriteReg(0x00de, 0x00, lane - 1);
+  SSD2828WriteReg(0x00d6, 0x00, 0x05);
+  SSD2828WriteReg(0x00c4, 0x00, 0x01);
+  SSD2828WriteReg(0x00eb, 0x80, 0x00);
+  HAL_Delay(10);
+  SSD2828WriteReg(0x00b9, 0x00, 0x01);
+  HAL_Delay(120);
 }
 
 

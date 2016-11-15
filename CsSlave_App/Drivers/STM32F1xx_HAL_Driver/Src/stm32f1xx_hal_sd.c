@@ -2499,7 +2499,7 @@ static HAL_SD_ErrorTypedef SD_PowerON(SD_HandleTypeDef *hsd)
   sdio_cmdinitstructure.CmdIndex         = SD_SDIO_SEND_IF_COND;
   sdio_cmdinitstructure.Response         = SDIO_RESPONSE_SHORT;
   SDIO_SendCommand(hsd->Instance, &sdio_cmdinitstructure);
-  
+
   /* Check for error conditions */ 
   errorstate = SD_CmdResp7Error(hsd);
   
@@ -2508,6 +2508,16 @@ static HAL_SD_ErrorTypedef SD_PowerON(SD_HandleTypeDef *hsd)
     /* SD Card 2.0 */
     hsd->CardType = STD_CAPACITY_SD_CARD_V2_0; 
     sdtype        = SD_HIGH_CAPACITY;
+  }
+	else
+  {
+		/* Send CMD55 */
+		sdio_cmdinitstructure.Argument         = 0;
+		sdio_cmdinitstructure.CmdIndex         = SD_CMD_APP_CMD;
+		SDIO_SendCommand(hsd->Instance, &sdio_cmdinitstructure);
+		
+		/* Check for error conditions */
+		errorstate = SD_CmdResp1Error(hsd, SD_CMD_APP_CMD);
   }
   
   /* Send CMD55 */

@@ -17,10 +17,10 @@
  */
 typedef enum
 {
-	IF_UART1,
-	IF_USB,
-	IF_UART3,
-}InterfaceTypeDef;
+  IF_UART1,
+  IF_USB,
+  IF_UART3,
+} InterfaceTypeDef;
 
 ResultTypeDef Unpacking(PackageDataStruct *package);
 

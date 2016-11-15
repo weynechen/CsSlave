@@ -13,20 +13,20 @@
 #include "rec.h"
 #include "flash_if.h"
 
-#define APP_BASE_ADDRESS 0x0801C800
-#define VERSION_ADDRESS 0x0803F800
-#define CONFIG_BASE_ADDRESS ADDR_FLASH_PAGE_11
-#define FIRMWARE_BASE_ADDRESS ADDR_FLASH_PAGE_17
-#define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS ADDR_FLASH_PAGE_56
-#define KEY_STORE_ADDRESS ADDR_FLASH_PAGE_10
-#define NUMBER_OF_UPGRADE_PAGES 40
-#define NUMBER_OF_CONFIG_PAGES 5
-#define NUMBER_OF_APP_PAGAES 40
+#define APP_BASE_ADDRESS                      0x0801C800
+#define VERSION_ADDRESS                       0x0803F800
+#define CONFIG_BASE_ADDRESS                   ADDR_FLASH_PAGE_11
+#define FIRMWARE_BASE_ADDRESS                 ADDR_FLASH_PAGE_17
+#define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS    ADDR_FLASH_PAGE_56
+#define KEY_STORE_ADDRESS                     ADDR_FLASH_PAGE_10
+#define NUMBER_OF_UPGRADE_PAGES               40
+#define NUMBER_OF_CONFIG_PAGES                5
+#define NUMBER_OF_APP_PAGAES                  40
 
 /**
  * @brief 系统缓冲区的长度
  */
-#define BUFFER_SIZE    8192
+#define BUFFER_SIZE                           8192
 
 
 /**
@@ -92,9 +92,9 @@ typedef struct
  */
 typedef enum
 {
-	DATA_NULL,	
-	DATA_READY,
-}ComStateTypeDef;
+  DATA_NULL,
+  DATA_READY,
+} ComStateTypeDef;
 
 /**
  * @brief  操作数据包ID号，同一个数据包只能有一个ACTION.
@@ -107,15 +107,15 @@ typedef enum
   ACT_SET_FRAME,         /*< 选择显示的画面*/
   ACT_FLASH_PARA,        /*< 固化调试好的参数到Flash*/
   ACT_FLASH_CONFIG_FILE, /*< 烧录配置文件 */
-  ACT_CHANNEL_SEL,        /*< 选择通道 */
-	ACT_UPGRADE_FIRMWARE,    /*< 更新固件 */
-	ACT_REBOOT,
-	ACT_GET_VERSION,
-	ACT_READ_SSD2828,
-	ACT_SET_SSD2828,
-	ACT_RESET_SSD2828,
-	ACTION_NULL = 0xff /*< 空动作*/
-}ActionIDTypeDef;
+  ACT_CHANNEL_SEL,       /*< 选择通道 */
+  ACT_UPGRADE_FIRMWARE,  /*< 更新固件 */
+  ACT_REBOOT,
+  ACT_GET_VERSION,
+  ACT_READ_SSD2828,
+  ACT_SET_SSD2828,
+  ACT_RESET_SSD2828,
+  ACTION_NULL = 0xff /*< 空动作*/
+} ActionIDTypeDef;
 
 extern uint8_t SystemBuf[BUFFER_SIZE];
 extern uint8_t RecBuffer[BUFFER_SIZE];

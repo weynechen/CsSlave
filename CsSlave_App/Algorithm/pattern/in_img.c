@@ -9,8 +9,9 @@ void Img_CT(void)
   uint32_t h;
   uint32_t v1_2;
   uint32_t v1_4, h1_4;
-	uint32_t mod;
-	mod = LCDTiming.LCDV % 4;
+  uint32_t mod;
+
+  mod = LCDTiming.LCDV % 4;
   for (v1_4 = 0; v1_4 < LCDTiming.LCDV / 4; v1_4++)
   {
     for (h = 0; h < LCDTiming.LCDH; h++)
@@ -108,6 +109,7 @@ void Flicker(void)
 void Img_Full(uint8_t r, uint8_t g, uint8_t b)
 {
   uint32_t i, j;
+
   for (j = 0; j < LCDTiming.LCDV; j++)
   {
     for (i = 0; i < LCDTiming.LCDH; i++)
@@ -125,8 +127,8 @@ void Img_Chcker58()
   uint16_t i;
   uint16_t j;
   uint16_t y;
-	uint16_t mod = LCDTiming.LCDV % 8;
-	
+  uint16_t mod = LCDTiming.LCDV % 8;
+
   for (j = 0; j < 4; j++)
   {
     for (y = 0; y < LCDTiming.LCDV / 8; y++)
@@ -161,7 +163,6 @@ void Img_Chcker58()
         LcdDrvWriteData(0x00);
         LcdDrvWriteData(0x00);
       }
-			
     }
 
     for (y = 0; y < LCDTiming.LCDV / 8; y++)
@@ -198,40 +199,40 @@ void Img_Chcker58()
       }
     }
   }
-	
-	    for (y = 0; y < mod; y++)
+
+  for (y = 0; y < mod; y++)
+  {
+    for (i = 0; i < LCDTiming.LCDH / 5; i++)
     {
-      for (i = 0; i < LCDTiming.LCDH / 5; i++)
-      {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-      }
-      for ( ; i < LCDTiming.LCDH * 2 / 5; i++)
-      {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-      }
-      for ( ; i < LCDTiming.LCDH * 3 / 5; i++)
-      {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-      }
-      for ( ; i < LCDTiming.LCDH * 4 / 5; i++)
-      {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-      }
-      for ( ; i < LCDTiming.LCDH; i++)
-      {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-      }
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
     }
+    for ( ; i < LCDTiming.LCDH * 2 / 5; i++)
+    {
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x00);
+    }
+    for ( ; i < LCDTiming.LCDH * 3 / 5; i++)
+    {
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+    }
+    for ( ; i < LCDTiming.LCDH * 4 / 5; i++)
+    {
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x00);
+    }
+    for ( ; i < LCDTiming.LCDH; i++)
+    {
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+    }
+  }
 }
 
 
@@ -697,7 +698,8 @@ void MAX_Current(void)
 
 void RGBBar(void)
 {
-  uint32_t i, j,y,mod;
+  uint32_t i, j, y, mod;
+
   y = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
 
@@ -727,7 +729,7 @@ void RGBBar(void)
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0xff);
     }
-	}
+  }
 
   for (i = 0; i < mod; i++)
   {
@@ -737,22 +739,22 @@ void RGBBar(void)
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0xff);
     }
-	}	
-	
+  }
 }
 
 
 void RGBLevel(void)
 {
-  uint32_t i, j,y,mod,color=0;
+  uint32_t i, j, y, mod, color = 0;
+
   y = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
-	
+
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-			color = j*255/LCDTiming.LCDH;
+      color = j * 255 / LCDTiming.LCDH;
       LcdDrvWriteData(0xff - color);
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0x00);
@@ -762,9 +764,9 @@ void RGBLevel(void)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-			color = j*255/LCDTiming.LCDH;
+      color = j * 255 / LCDTiming.LCDH;
       LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff - color);			
+      LcdDrvWriteData(0xff - color);
       LcdDrvWriteData(0x00);
     }
   }
@@ -772,29 +774,29 @@ void RGBLevel(void)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-			color = j*255/LCDTiming.LCDH;	
+      color = j * 255 / LCDTiming.LCDH;
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0xff - color);
     }
-	}
+  }
 
   for (i = 0; i < mod; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-			color = j*255/LCDTiming.LCDH;		
+      color = j * 255 / LCDTiming.LCDH;
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0x00);
       LcdDrvWriteData(0xff - color);
     }
-	}	
-	
+  }
 }
+
 
 void Img_NG(void)
 {
-  uint32_t  y;
+  uint32_t y;
 
   for (y = 0; y < LCDTiming.LCDV / 2; y++)
   {

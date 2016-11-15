@@ -17,7 +17,6 @@
 
 
 
-
 /**
  * @brief  处理接收到的firmware数据
  * @note   此函数不返回
@@ -31,12 +30,12 @@ void UpgradeFirmwareData(void)
   if (FLASH_If_Erase(FIRMWARE_BASE_ADDRESS, NUMBER_OF_UPGRADE_PAGES) == FLASHIF_ERASEKO)
   {
     UserPrintf("Error:upgrade error , system will reboot\n");
-		HAL_Delay(1000); 
+    HAL_Delay(1000);
     SoftwareReset();
   }
 
-	SendUpgradeSignal(FW_UPDATE_READY);		
-	
+  SendUpgradeSignal(FW_UPDATE_READY);
+
   TaskID = ACTION_NULL;
 
   while (1)
@@ -53,14 +52,14 @@ void UpgradeFirmwareData(void)
     if (firmware->Offset == -1)
     {
       uint32_t update_ok = 1;
-      
-			if (FLASH_If_Write(FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS, (uint32_t *)&update_ok, 1) == 0)
+
+      if (FLASH_If_Write(FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS, (uint32_t *)&update_ok, 1) == 0)
       {
-				SendUpgradeSignal(FW_OK);
+        SendUpgradeSignal(FW_OK);
       }
       else
       {
-				SendUpgradeSignal(FW_FLASH_ERROR);
+        SendUpgradeSignal(FW_FLASH_ERROR);
       }
 
       HAL_Delay(1000);     //necessary delay
@@ -68,12 +67,12 @@ void UpgradeFirmwareData(void)
     }
 
     //写入数据到flash
-    if (FLASH_If_Write(FIRMWARE_BASE_ADDRESS+firmware->Offset, (uint32_t *)(RecPackage.DataOutBuff + 4), (RecCounter-4)/4)!=0)
-		{
-				SendUpgradeSignal(FW_FLASH_ERROR);
-				HAL_Delay(1000);     //necessary delay
-				SoftwareReset();			
-		}
+    if (FLASH_If_Write(FIRMWARE_BASE_ADDRESS + firmware->Offset, (uint32_t *)(RecPackage.DataOutBuff + 4), (RecCounter - 4) / 4) != 0)
+    {
+      SendUpgradeSignal(FW_FLASH_ERROR);
+      HAL_Delay(1000);       //necessary delay
+      SoftwareReset();
+    }
 
     // 发送继续接收信号
     SendUpgradeSignal(FW_UPDATE_READY);

@@ -4,7 +4,7 @@
  * @version     V01
  * @date        2016.08.09
  * @brief       接收处理
- * @note        
+ * @note
  * @attention   COYPRIGHT WEYNE
  */
 

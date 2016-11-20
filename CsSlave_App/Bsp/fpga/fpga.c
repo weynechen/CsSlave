@@ -10,6 +10,7 @@
 #include "fpga.h"
 #include "sysconfig.h"
 
+
 void LcdDrvWriteData(uint8_t para)
 {
   FPGA_WRITE_DATA(para);

@@ -11,12 +11,34 @@
 #ifndef _FPGA_H_
 #define _FPGA_H_
 #include "stm32f1xx_hal.h"
+#include "sys.h"
 
+#define FSMC_NE1 PDout(7)
 #define FSMC_LCD_CMD     ((uint32_t)0x60000000)                   //A16
 #define FSMC_LCD_DATA    ((uint32_t)0x60010000)
-#define FPGA_WRITE_CMD(x)     *(__IO uint8_t *)FSMC_LCD_CMD = x;
-#define FPGA_WRITE_DATA(x)    *(__IO uint8_t *)FSMC_LCD_DATA = x;
-#define FPGA_READ_DATA()      *(__IO uint8_t *)FSMC_LCD_DATA
+#define FPGA_WRITE_CMD(x)\
+do {\
+	FSMC_NE1 = 0;\
+*(__IO uint8_t *)FSMC_LCD_CMD = x;\
+		FSMC_NE1 = 1;\
+}while(0)
+
+#define FPGA_WRITE_DATA(x)\
+do {\
+	FSMC_NE1 = 0;\
+*(__IO uint8_t *)FSMC_LCD_DATA = x;\
+		FSMC_NE1 = 1;\
+}while(0)
+
+//#define FPGA_WRITE_CMD(x) *(__IO uint8_t *)FSMC_LCD_CMD = x
+//#define FPGA_WRITE_DATA(x) *(__IO uint8_t *)FSMC_LCD_DATA = x
+
+#define FPGA_READ_DATA()\
+do {\
+	FSMC_NE1 = 0;\
+*(__IO uint8_t *)FSMC_LCD_DATA;\
+	FSMC_NE1 = 1;\
+}while(0)
 
 void LcdDrvWriteData(uint8_t para);
 void LcdDrvSetTiming(void);

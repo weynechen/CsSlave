@@ -58,6 +58,7 @@
 #include "spi_flash.h"
 #include "task.h"
 #include "ctrlbox.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -129,7 +130,6 @@ int main(void)
   //W25Nxx_Init();
   SSD2828_Init(4, 480);
   ReadSystemConfig();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

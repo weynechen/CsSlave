@@ -18,6 +18,7 @@
 #include "fpga.h"
 #include "tim.h"
 #include "ack.h"
+#include "rgbif.h"
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -371,7 +372,7 @@ void Lcd_ReInit(void)
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
   SSD2828_SetMode(VD);
-
+	RGB_SPI_Test();
   SetPattern();
 }
 

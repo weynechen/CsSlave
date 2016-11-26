@@ -22,7 +22,7 @@
 
 void SetLcdPower(StateTypeDef state)
 {
-  PowerTypeDef power_list[POWER_AMOUT] = { POWER_1V8, POWER_2V8, POWER_3V3, POWER_P5V, POWER_N5V };
+  PowerTypeDef power_list[POWER_AMOUT] = { POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN,POWER_OUT5V,POWER_MTP };
   uint8_t i = 0;
 
   if (state == ON)
@@ -372,7 +372,7 @@ void Lcd_ReInit(void)
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
   SSD2828_SetMode(VD);
-	RGB_SPI_Test();
+	//RGB_SPI_Test();
   SetPattern();
 }
 

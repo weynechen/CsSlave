@@ -33,7 +33,7 @@ void SetLcdPower(StateTypeDef state)
       if (((SystemConfig.PowerSettings >> i) & 0x01) == 0x01)
       {
         Power_SetState(power_list[i], ON);
-        HAL_Delay(50);
+        HAL_Delay(10);
       }
     }
   }
@@ -88,6 +88,8 @@ void SetLcdInitCode(void)
   MIPI_ReadTypeDef result;
   uint8_t buffer[32];
 
+	SSD2828_SetMode(LP);
+	
   while (i < code_size)
   {
     switch ((MipiTypeDef)(*(p + i++)))
@@ -170,6 +172,7 @@ void SetLcdInitCode(void)
         UserPrintf("Info:read 0x%x\n", para);
         for (j = 0; j < para_amount; j++)
         {
+					HAL_Delay(10);
           UserPrintf("para%d = 0x%x\n", j + 1, buffer[j]);
         }
       }
@@ -351,23 +354,28 @@ void ResetLcd(void)
 {
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   HAL_Delay(10);
-  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
-  HAL_Delay(10);
+//  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+//  HAL_Delay(10);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_RESET);
-  HAL_Delay(120);
-  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   HAL_Delay(10);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_Delay(50);
 }
 
 
 void Lcd_ReInit(void)
 {
   memset(&PatternProperty, 0, sizeof(PatternProperty));
-  SetLcdPower(OFF);
-  SetLcdPower(ON);
+	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   SetLcdTiming();
+	
+	HAL_Delay(10);
+  SetLcdPower(OFF);
+	HAL_Delay(200);
+  SetLcdPower(ON);
   SetMipiPara();
   ResetLcd();
+  ResetLcd();	
   SetLcdInitCode();
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
@@ -387,7 +395,7 @@ void Lcd_Sleep(void)
 void Lcd_LightOn(void)
 {
   SetLcdPower(ON);
-  SetLcdTiming();
+ // SetLcdTiming();
   SetMipiPara();
   ResetLcd();
   SetLcdInitCode();

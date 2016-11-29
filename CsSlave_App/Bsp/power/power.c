@@ -18,7 +18,8 @@ void Power_SetState(PowerTypeDef power, StateTypeDef state)
 
 void Power_SetBLCurrent(uint16_t value)
 {
-  TIM1->CCR1 = BL_MAX - value;
+  //TIM1->CCR1 = BL_MAX - value;
+  TIM1->CCR1 = value;	
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 

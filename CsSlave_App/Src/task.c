@@ -17,10 +17,10 @@
 #include "usb_device.h"
 #include "usbd_core.h"
 #include "ssd2828.h"
+#include "ctrlbox.h"
 
 void SwitchTask(void)
 {
-//	uint16_t data16;
   uint8_t data8;
 
   switch (TaskID)
@@ -93,6 +93,11 @@ void SwitchTask(void)
 
     break;
 
+	case ACT_TOGGLE_LCD_POWER:
+		TaskID = ACTION_NULL;
+		CtrlKey = KEY_POWER;
+		break;		
+		
   default:
     break;
   }

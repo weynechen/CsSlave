@@ -173,7 +173,7 @@ void SendHeartBeat(void)
   uint8_t signal = 0;
   uint8_t buffer[32];
 
-  package.DataID = ACT_HEATBEATS;
+  package.DataID = ACK_HEATBEATS;
   package.DataInBuff = (uint8_t *)&signal;
   package.DataInLen = sizeof(signal);
   package.DataOutBuff = buffer;

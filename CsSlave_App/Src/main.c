@@ -135,9 +135,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
+  {    
+		ScanKey();
     SwitchTask();
-    ScanKey();
+
     switch (CtrlKey)
     {
     case KEY_UP:
@@ -193,7 +194,7 @@ int main(void)
     default:
       break;
     }
-    if ((SystemConfig.IsAutoRun == 1) && (key_control == 0))
+    if ((SystemConfig.IsAutoRun == 1) && (key_control == 0) &&(power_on == 1))
     {
       if (IsStayTimeOver(current_frame) == 1)
       {

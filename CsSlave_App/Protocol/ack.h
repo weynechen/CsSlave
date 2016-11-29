@@ -17,7 +17,7 @@ typedef enum
 {
   ACK_STRING,
   ACK_UPGRADE,
-  ACT_HEATBEATS,
+  ACK_HEATBEATS,
   ACK_NULL = 0xff,
 } AckDataIDTypeDef;
 

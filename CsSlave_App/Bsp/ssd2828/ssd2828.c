@@ -26,9 +26,9 @@
 
 static uint16_t mode = LP;
 
-static void Delay_10us(volatile uint8_t t)
+static void Delay(volatile uint8_t t)
 {
-  volatile uint8_t i = 15;
+  volatile uint8_t i = 1;
 
   while (t--)
   {
@@ -52,11 +52,11 @@ static void SSD2828WriteCmd(uint8_t cmd)
 	
 	SPI_CS = 0;
   SPI_SDO = 0;
-  Delay_10us(2);
+  Delay(2);
   SPI_SCK = 0;
-  Delay_10us(2);
+  Delay(2);
   SPI_SCK = 1;
-  Delay_10us(2);
+  Delay(2);
   for (i = 0; i < 8; i++)
   {
     if ((cmd & 0x80) == 0x80)
@@ -67,14 +67,14 @@ static void SSD2828WriteCmd(uint8_t cmd)
     {
       SPI_SDO = 0;
     }
-    Delay_10us(2);
+    Delay(2);
     SPI_SCK = 0;
-    Delay_10us(2);
+    Delay(2);
     SPI_SCK = 1;
-    Delay_10us(2);
+    Delay(2);
     cmd = cmd << 1;
   }
-  Delay_10us(0);
+  Delay(0);
 	SPI_CS = 1;
 }
 
@@ -85,11 +85,11 @@ void SSD2828WriteData(uint8_t data)
 
 	SPI_CS = 0;
   SPI_SDO = 1;
-  Delay_10us(2);
+  Delay(2);
   SPI_SCK = 0;
-  Delay_10us(2);
+  Delay(2);
   SPI_SCK = 1;
-  Delay_10us(2);
+  Delay(2);
   for (i = 0; i < 8; i++)
   {
     if ((data & 0x80) == 0x80)
@@ -100,14 +100,14 @@ void SSD2828WriteData(uint8_t data)
     {
       SPI_SDO = 0;
     }
-    Delay_10us(2);
+    Delay(2);
     SPI_SCK = 0;
-    Delay_10us(2);
+    Delay(2);
     SPI_SCK = 1;
-    Delay_10us(2);
+    Delay(2);
     data = data << 1;
   }
-  Delay_10us(2);
+  Delay(2);
 	SPI_CS = 1;
 }
 
@@ -188,13 +188,13 @@ static uint8_t SSD2828Read()
   uint16_t i;
   uint8_t tmp = 0;
 	SPI_CS = 0;
-  Delay_10us(1);
+  Delay(1);
   for (i = 0; i < 8; i++)
   {
     SPI_SCK = 0;
-    Delay_10us(1);
+    Delay(1);
     SPI_SCK = 1;
-    Delay_10us(1);
+    Delay(1);
     tmp <<= 1;
     if (SPI_SDI)
     {
@@ -238,7 +238,7 @@ void SSD2828_DcsShortWrite(uint8_t n)
   {
     SSD2828WriteReg(0x00b7, 0x02 | 0x01, 0x50 & 0XEF | 0X0B);
   }
-  Delay_10us(10);
+  Delay(10);
   SSD2828WriteReg(0xbc, 0x00, n);
   SSD2828WriteReg(0xbd, 0x00, 0x00);
   SSD2828WriteReg(0xbe, 0x00, n);
@@ -260,7 +260,7 @@ void SSD2828_DcsLongWrite(uint32_t n)
   {
     SSD2828WriteReg(0x00b7, 0x06 | 0x01, 0x50 & 0XEF | 0X0B);
   }
-  Delay_10us(10);
+  Delay(10);
   SSD2828WriteReg(0xbc, n >> 8, n);
   SSD2828WriteReg(0xbd, n >> 24, n >> 16);
   SSD2828WriteReg(0xbe, 0x0f, 0xff);
@@ -282,7 +282,7 @@ void SSD2828_GenericShortWrite(uint8_t n)
   {
     SSD2828WriteReg(0x00b7, 0x02 | 0x01, 0x10 & 0XEF | 0X0B);
   }
-  Delay_10us(10);
+  Delay(10);
   SSD2828WriteReg(0xbc, 0x00, n);
   SSD2828WriteReg(0xbd, 0x00, 0x00);
   SSD2828WriteReg(0xbe, 0x00, n);
@@ -304,7 +304,7 @@ void SSD2828_GenericLongWrite(uint32_t n)
   {
     SSD2828WriteReg(0x00b7, 0x06 | 0X01, 0x10 & 0XEF | 0X0B);
   }
-  Delay_10us(10);
+  Delay(10);
   SSD2828WriteReg(0xbc, n >> 8, n);
   SSD2828WriteReg(0xbd, n >> 24, n >> 16);
   SSD2828WriteReg(0xbe, 0x0f, 0xff);
@@ -416,6 +416,7 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
   if (mode == VD)
   {
     SSD2828WriteReg(0x00b7, 0x03, 0x0B);
+			SSD2828_SHUT = 0;
   }
 }
 
@@ -429,13 +430,14 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
 void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
   SSD2828_RESET = 0;
-  SSD2828_SHUT = 0;
+  SSD2828_SHUT = 1;
   HAL_Delay(50);
   SSD2828_RESET = 1;
   HAL_Delay(10);
+	
   if (SSD2828ReadReg(0xB0) == 0x2828)
   {
-    UserPrintf("Info:SSD2828 OK\n");
+    UserPrintf("Info:SSD2828 OK %d\n",SSD2828ReadReg(0xB7));
   }
   else
   {
@@ -470,7 +472,8 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   SSD2828WriteReg(0x00eb, 0x80, 0x00);
   HAL_Delay(10);
   SSD2828WriteReg(0x00b9, 0x00, 0x01);
-  HAL_Delay(120);
+  HAL_Delay(20);
+
 }
 
 

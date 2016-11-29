@@ -114,6 +114,7 @@ typedef enum
   ACT_READ_SSD2828,
   ACT_SET_SSD2828,
   ACT_RESET_SSD2828,
+	ACT_TOGGLE_LCD_POWER,
   ACTION_NULL = 0xff /*< 空动作*/
 } ActionIDTypeDef;
 

@@ -19,6 +19,9 @@
 #include "tim.h"
 #include "ack.h"
 #include "rgbif.h"
+#include "font.h"
+FontColorTypeDef FontColor = {0xffffff,0};
+
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -382,6 +385,8 @@ void Lcd_ReInit(void)
   SSD2828_SetMode(VD);
 	//RGB_SPI_Test();
   SetPattern();
+	LCD_ShowString(0,0,"CoolSaven");
+//	LcdDrvShowPattern(1);
 }
 
 
@@ -402,6 +407,81 @@ void Lcd_LightOn(void)
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
   SSD2828_SetMode(VD);
+}
+
+
+
+/*
+static void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
+{
+  LcdDrvSetXY(x, y);
+  LcdDrvWriteData(color >> 8);
+  LcdDrvWriteData(color);
+}
+*/
+
+void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
+{
+  uint8_t temp = 0x01;
+  uint8_t pos, t;
+
+  chars = chars - ' ';
+
+
+	
+  for (pos = 0; pos < 64; pos += 2)
+  {
+    LcdDrvSetXY(x, y + (pos >> 1));
+		
+			LcdDrvSetPattern();
+		
+    temp = asc2_3216[chars][pos];
+    for (t = 0; t < 8; t++)
+    {
+      if (temp & 0x01)
+      {
+				LcdDrvWriteData(FontColor.Fore >> 16);
+        LcdDrvWriteData(FontColor.Fore >> 8);
+        LcdDrvWriteData(FontColor.Fore);
+      }
+      else
+      {
+				LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 8);
+        LcdDrvWriteData(FontColor.Background);
+      }
+      temp >>= 1;
+    }
+    temp = asc2_3216[chars][pos + 1];
+    for (t = 8; t < 16; t++)
+    {
+      if (temp & 0x01)
+      {
+				LcdDrvWriteData(FontColor.Fore >> 16);
+        LcdDrvWriteData(FontColor.Fore >> 8);
+        LcdDrvWriteData(FontColor.Fore);
+      }
+      else
+      {
+				LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 8);
+        LcdDrvWriteData(FontColor.Background);
+      }
+      temp >>= 1;
+    }
+  }
+}
+
+void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
+{         
+	
+	LcdDrvSetChar();
+    while(*p!='\0')
+    {       
+        LCD_ShowChar(x,y,*p);
+				x=x+(16>>1);
+        p++;
+    }  
 }
 
 

@@ -54,6 +54,11 @@ typedef enum
   PATTERN_END
 } PatternTypeDef;
 
+typedef struct
+{
+	uint32_t Background;
+	uint32_t Fore;
+}FontColorTypeDef;
 
 
 void Lcd_ReInit(void);
@@ -62,6 +67,9 @@ void Lcd_Sleep(void);
 void SetLcdPower(StateTypeDef state);
 void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
+void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars);
+void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
+extern FontColorTypeDef FontColor;
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

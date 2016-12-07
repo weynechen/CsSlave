@@ -19,6 +19,7 @@ void LcdDrvWriteData(uint8_t para)
 
 static void FPGAWrite16BitData(uint16_t data)
 {
+	if(data > 0)
   data = data - 1;
   FPGA_WRITE_DATA(data >> 8);
   FPGA_WRITE_DATA(data);
@@ -62,6 +63,23 @@ void LcdDrvSetPattern(void)
   FPGA_WRITE_CMD(0x3C);
 }
 
+void LcdDrvSetXY(uint16_t x , uint16_t y)
+{
+
+	
+  FPGA_WRITE_CMD(0x2A);
+  FPGAWrite16BitData(x);
+  FPGAWrite16BitData(y);		
+	
+}
+
+void LcdDrvSetChar(void)
+{
+  FPGA_WRITE_CMD(0x3A);
+  FPGAWrite16BitData(0);
+  FPGAWrite16BitData(0);
+
+}
 
 void LcdDrvShowPattern(uint8_t frame)
 {

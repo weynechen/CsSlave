@@ -30,8 +30,10 @@ do {\
 		FSMC_NE1 = 1;\
 }while(0)
 
+/* 当NE使能以后，可以使用下面的简化操作*/
 //#define FPGA_WRITE_CMD(x) *(__IO uint8_t *)FSMC_LCD_CMD = x
 //#define FPGA_WRITE_DATA(x) *(__IO uint8_t *)FSMC_LCD_DATA = x
+
 
 #define FPGA_READ_DATA()\
 do {\
@@ -45,7 +47,8 @@ void LcdDrvSetTiming(void);
 void LcdDrvSetPattern(void);
 void LcdDrvShowPattern(uint8_t frame);
 void LcdDrvOpenRGB(void);
-
+void LcdDrvSetXY(uint16_t x , uint16_t y);
+void LcdDrvSetChar(void);
 #endif
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

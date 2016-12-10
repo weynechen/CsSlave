@@ -36,6 +36,7 @@
 #include "usbd_core.h"
 #include "usbd_desc.h"
 #include "usbd_conf.h"
+#include "sysconfig.h"
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
  * @{
@@ -60,7 +61,13 @@
 #define USBD_VID                        0x0483
 #define USBD_LANGID_STRING              0x409
 #define USBD_MANUFACTURER_STRING        "CoolSaven"
+
+#if  USB_TYPE == COMPOSITE_USB
 #define USBD_PID_FS                     0x5738
+#elif USB_TYPE == CDC_USB
+#define USBD_PID_FS                     0x5739
+#endif
+
 #define USBD_PRODUCT_STRING_FS          "CoolSaven Composite Device"
 #define USBD_SERIALNUMBER_STRING_FS     "00000000001A"
 #define USBD_CONFIGURATION_STRING_FS    "CoolSaven Config"
@@ -111,6 +118,8 @@ USBD_DescriptorsTypeDef FS_Desc =
 #if defined (__ICCARM__)   /*!< IAR Compiler */
 #pragma data_alignment=4
 #endif
+
+#if (USB_TYPE == COMPOSITE_USB)
 /* USB Standard Device Descriptor */
 __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
 {
@@ -133,6 +142,33 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   USBD_IDX_SERIAL_STR,         /*Index of serial number string*/
   USBD_MAX_NUM_CONFIGURATION   /*bNumConfigurations*/
 };
+#elif (USB_TYPE == CDC_USB)
+
+/* USB Standard Device Descriptor */
+__ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
+{
+  0x12,                        /*bLength */
+  USB_DESC_TYPE_DEVICE,        /*bDescriptorType*/
+  0x00,                        /* bcdUSB */
+  0x02,
+	0x02,                        /*bDeviceClass*/
+	0x02,                       /*bDeviceSubClass*/
+  0x00,                        /*bDeviceProtocol*/
+  USB_MAX_EP0_SIZE,            /*bMaxPacketSize*/
+  LOBYTE(USBD_VID),            /*idVendor*/
+  HIBYTE(USBD_VID),            /*idVendor*/
+  LOBYTE(USBD_PID_FS),         /*idVendor*/
+  HIBYTE(USBD_PID_FS),         /*idVendor*/
+  0x00,                        /*bcdDevice rel. 2.00*/
+  0x02,
+  USBD_IDX_MFC_STR,            /*Index of manufacturer  string*/
+  USBD_IDX_PRODUCT_STR,        /*Index of product string*/
+  USBD_IDX_SERIAL_STR,         /*Index of serial number string*/
+  USBD_MAX_NUM_CONFIGURATION   /*bNumConfigurations*/
+};
+#endif	
+
+
 /* USB_DeviceDescriptor */
 
 #if defined (__ICCARM__)   /*!< IAR Compiler */

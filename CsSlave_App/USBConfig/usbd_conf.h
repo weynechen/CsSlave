@@ -58,7 +58,13 @@ extern "C" {
  */
 
 /*---------- -----------*/
-#define USBD_MAX_NUM_INTERFACES       3 //3
+
+#if  (USB_TYPE == COMPOSITE_USB)
+	#define USBD_MAX_NUM_INTERFACES       3 
+#elif (USB_TYPE == CDC_USB)
+	#define USBD_MAX_NUM_INTERFACES       1
+#endif
+
 /*---------- -----------*/
 #define USBD_MAX_NUM_CONFIGURATION    1
 /*---------- -----------*/

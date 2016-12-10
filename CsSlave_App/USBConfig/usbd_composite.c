@@ -11,6 +11,9 @@
 #include "usbd_composite.h"
 #include "usbd_cdc.h"
 #include "usbd_msc.h"
+#include "sysconfig.h"
+
+#if  (USB_TYPE == COMPOSITE_USB)
 
 USBD_CDC_HandleTypeDef *pCDCData;
 USBD_MSC_BOT_HandleTypeDef *pMSCData;
@@ -407,7 +410,7 @@ uint8_t *USBD_Composite_GetDeviceQualifierDescriptor(uint16_t *length)
   return USBD_Composite_DeviceQualifierDesc;
 }
 
-
+#endif
 /**
  * @}
  */

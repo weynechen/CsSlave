@@ -41,6 +41,7 @@
 #include "usbd_storage_if.h"
 #include "usbd_composite.h"
 #include "usbd_cdc_if.h"
+#include "sysconfig.h"
 /* USB Device Core handle declaration */
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -50,10 +51,13 @@ void MX_USB_DEVICE_Init(void)
   /* Init Device Library,Add Supported Class and Start the library*/
   USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS);
 
+	#if  (USB_TYPE == COMPOSITE_USB)
   USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE);
-  //USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC);
-  //USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_Interface_fops_FS);
-
+	#elif (USB_TYPE == CDC_USB)
+  USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC);
+  USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_Interface_fops_FS);
+	#endif
+	
   USBD_Start(&hUsbDeviceFS);
 }
 

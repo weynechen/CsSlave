@@ -35,7 +35,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include  "usbd_ioreq.h"
-
+#include "sysconfig.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
   */
@@ -49,9 +49,15 @@
 /** @defgroup usbd_cdc_Exported_Defines
   * @{
   */ 
+	 
+	 
 #define CDC_IN_EP                                   0x81  /* EP1 for data IN */
 #define CDC_OUT_EP                                  0x01  /* EP1 for data OUT */
-#define CDC_CMD_EP                                  0x83  /* EP3 for CDC commands */
+#if  (USB_TYPE == COMPOSITE_USB)
+#define CDC_CMD_EP                                  0x83  /* EP3 for CDC commands */	
+	#elif (USB_TYPE == CDC_USB)
+#define CDC_CMD_EP                                  0x82  /* EP2 for CDC commands */		
+#endif
 
 /* CDC Endpoints parameters: you can fine tune these values depending on the needed baudrates and performance. */
 #define CDC_DATA_HS_MAX_PACKET_SIZE                 512  /* Endpoint IN & OUT Packet size */

@@ -23,6 +23,11 @@
 #define NUMBER_OF_CONFIG_PAGES                5
 #define NUMBER_OF_APP_PAGAES                  40
 
+#define CDC_USB 0
+#define COMPOSITE_USB 1
+
+#define USB_TYPE COMPOSITE_USB
+
 /**
  * @brief 系统缓冲区的长度
  */

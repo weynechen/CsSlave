@@ -65,20 +65,43 @@ void LcdDrvSetPattern(void)
 
 void LcdDrvSetXY(uint16_t x , uint16_t y)
 {
-
+  uint32_t address = 0;
+  uint8_t i = 0;
+  uint8_t *p = (uint8_t *)&address;
+	
+	address = LCDTiming.LCDH;
+	address *= y;
+	address += x;
 	
   FPGA_WRITE_CMD(0x2A);
-  FPGAWrite16BitData(x);
-  FPGAWrite16BitData(y);		
+	
+  for ( ; i < sizeof(address); i++)
+  {
+    FPGA_WRITE_DATA(*(p + 3 - i));
+  }
+
+	FPGA_WRITE_CMD(0x2C);	
 	
 }
 
-void LcdDrvSetChar(void)
+void LcdDrvSetChar(uint8_t frame)
 {
-  FPGA_WRITE_CMD(0x3A);
-  FPGAWrite16BitData(0);
-  FPGAWrite16BitData(0);
+  uint32_t address = 0;
+  uint8_t i = 0;
+  uint8_t *p = (uint8_t *)&address;
 
+  address = LCDTiming.LCDH;
+  address *= LCDTiming.LCDV;
+  address *= frame;
+
+
+  FPGA_WRITE_CMD(0x3A);
+
+  for ( ; i < sizeof(address); i++)
+  {
+    FPGA_WRITE_DATA(*(p + 3 - i));
+  }	
+	
 }
 
 void LcdDrvShowPattern(uint8_t frame)

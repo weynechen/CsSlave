@@ -385,7 +385,7 @@ void Lcd_ReInit(void)
   SSD2828_SetMode(VD);
 	//RGB_SPI_Test();
   SetPattern();
-	LCD_ShowString(0,0,"CoolSaven");
+	LCD_ShowString(10,10,"CoolSaven");
 //	LcdDrvShowPattern(1);
 }
 
@@ -427,13 +427,9 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 
   chars = chars - ' ';
 
-
-	
   for (pos = 0; pos < 64; pos += 2)
   {
     LcdDrvSetXY(x, y + (pos >> 1));
-		
-			LcdDrvSetPattern();
 		
     temp = asc2_3216[chars][pos];
     for (t = 0; t < 8; t++)
@@ -475,11 +471,11 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
 {         
 	
-	LcdDrvSetChar();
+	LcdDrvSetChar(0);
     while(*p!='\0')
     {       
         LCD_ShowChar(x,y,*p);
-				x=x+(16>>1);
+				x=x+16;
         p++;
     }  
 }

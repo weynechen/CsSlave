@@ -22,6 +22,9 @@
 #include "font.h"
 FontColorTypeDef FontColor = {0xffffff,0};
 
+uint8_t ReadBackAmount = 0;
+uint8_t ReadBackTemp[32];
+
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -91,6 +94,7 @@ void SetLcdInitCode(void)
   MIPI_ReadTypeDef result;
   uint8_t buffer[32];
 
+	ReadBackAmount = 0;
 	SSD2828_SetMode(LP);
 	
   while (i < code_size)
@@ -173,11 +177,21 @@ void SetLcdInitCode(void)
       if (result == MIPI_READ_SUCCEED)
       {
         UserPrintf("Info:read 0x%x\n", para);
-        for (j = 0; j < para_amount; j++)
+				
+				if(sizeof(ReadBackTemp) - ReadBackAmount > para_amount + 2)
+				{
+					ReadBackTemp[ReadBackAmount++] = para_amount + 1; //len
+					ReadBackTemp[ReadBackAmount++] = para; //register
+					memcpy(ReadBackTemp + ReadBackAmount,buffer,para_amount);
+					ReadBackAmount++;
+				}
+				
+				for (j = 0; j < para_amount; j++)
         {
 					HAL_Delay(10);
           UserPrintf("para%d = 0x%x\n", j + 1, buffer[j]);
         }
+				
       }
       else
       {
@@ -200,6 +214,8 @@ void SetPattern(void)
   uint16_t i = 0;
   uint8_t r, g, b;
   uint16_t stay_time;
+	uint16_t j,x, y;
+	char temp[16];
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
 
@@ -225,6 +241,34 @@ void SetPattern(void)
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%x,%x,%x)", PatternProperty.Counter, r, g, b);
       PatternProperty.Counter++;
       break;
+		
+		case SHOW_ID:
+			x = 0;
+			y = 0;
+			j = 0;
+			if(PatternProperty.Counter!=0)
+				LcdDrvSetChar(PatternProperty.Counter -1);
+			else
+				LcdDrvSetChar(0);
+			
+			while(j<ReadBackAmount)
+			{
+				uint8_t len = ReadBackTemp[j++];
+				uint8_t n;
+				
+				for(n = 0 ; n<len ; n++)
+				{
+					memset(temp,0,sizeof(temp));
+					sprintf(temp,"0x%02X ",ReadBackTemp[j++]);
+					x += 16*n*5;
+					LCD_ShowString(x,y,temp);
+				}
+				x= 0;
+				y+=32;
+			}
+			
+			
+			break;
 
     case FLICKERV:
       Flicker();
@@ -385,7 +429,7 @@ void Lcd_ReInit(void)
   SSD2828_SetMode(VD);
 	//RGB_SPI_Test();
   SetPattern();
-	LCD_ShowString(10,10,"CoolSaven");
+
 //	LcdDrvShowPattern(1);
 }
 
@@ -471,7 +515,7 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
 {         
 	
-	LcdDrvSetChar(0);
+
     while(*p!='\0')
     {       
         LCD_ShowChar(x,y,*p);

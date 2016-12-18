@@ -51,6 +51,7 @@ typedef enum
   RGBLEVEL,
   PATTERN_STAY,
   NULL_PATTERN,
+	SHOW_ID,
   PATTERN_END
 } PatternTypeDef;
 

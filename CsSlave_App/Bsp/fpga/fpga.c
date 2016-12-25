@@ -84,7 +84,7 @@ void LcdDrvSetXY(uint16_t x , uint16_t y)
 	
 }
 
-void LcdDrvSetChar(uint8_t frame)
+void LcdDrvSetCharIndex(uint8_t frame)
 {
   uint32_t address = 0;
   uint8_t i = 0;

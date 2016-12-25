@@ -1,6 +1,6 @@
 /**
  * @file        upgrade.c
- * @author      陈维
+ * @author      Weyne
  * @version     V01
  * @date        2016.10.25
  * @brief       firmware升级

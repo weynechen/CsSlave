@@ -71,6 +71,8 @@
 #define EN_3V3_GPIO_Port GPIOC
 #define EN_1V8_Pin GPIO_PIN_0
 #define EN_1V8_GPIO_Port GPIOB
+#define KEY_MTP_Pin GPIO_PIN_10
+#define KEY_MTP_GPIO_Port GPIOB
 #define KEY_POWER_Pin GPIO_PIN_11
 #define KEY_POWER_GPIO_Port GPIOE
 #define KEY_DOWN_Pin GPIO_PIN_12
@@ -107,6 +109,8 @@
 #define SSD1_CS_GPIO_Port GPIOE
 #define SSD2_CS_Pin GPIO_PIN_1
 #define SSD2_CS_GPIO_Port GPIOE
+#define LED_Pin GPIO_PIN_15
+#define LED_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

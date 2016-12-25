@@ -26,15 +26,8 @@ typedef enum
 } MIPI_ModeTypeDef;
 
 
-typedef enum
-{
-  U11,
-  U10,
-} SSD2828_NameTypeDef;
-
 void SSD2828_ShutDown(FunctionalState state);
 void SSD2828_Init(uint8_t lane, uint16_t data_rate);
-void SSD2828_ChipSel(SSD2828_NameTypeDef name, FunctionalState state);
 void SSD2828_SetMode(MIPI_ModeTypeDef m);
 MIPI_ReadTypeDef SSD2828_GenericReadDT14(uint8_t adr, uint16_t l, uint8_t *p);
 MIPI_ReadTypeDef SSD2828_DcsReadDT06(uint8_t adr, uint16_t l, uint8_t *p);

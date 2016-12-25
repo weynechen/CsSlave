@@ -119,7 +119,7 @@ typedef enum
   ACT_READ_SSD2828,
   ACT_SET_SSD2828,
   ACT_RESET_SSD2828,
-	ACT_TOGGLE_LCD_POWER,
+	ACT_SET_KEY,
   ACTION_NULL = 0xff /*< 空动作*/
 } ActionIDTypeDef;
 
@@ -144,6 +144,9 @@ void InitSystemConfig(void);
 void SoftwareReset(void);
 void GetFirmwareVersion(void);
 void CacheData(void);
+
+#define SIGNAL_LIGHT_ON 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET)
+#define SIGNAL_LIGTH_OFF    		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET)
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

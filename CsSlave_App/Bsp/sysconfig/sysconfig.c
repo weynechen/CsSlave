@@ -78,6 +78,8 @@ void InitSystemConfig(void)
   RecPackage.DataInBuff = RecBuffer;
   RecPackage.DataOutBuff = SystemBuf;
   RecPackage.DataOutLen = &RecCounter;
+	
+	memset(&PatternProperty,0,sizeof(PatternProperty));
 }
 
 
@@ -101,6 +103,10 @@ void CacheData(void)
   case ACT_READ_SSD2828:
     ConfigData[0] = *RecPackage.DataOutBuff;
     break;
+
+	case ACT_SET_KEY:
+	ConfigData[0] = *RecPackage.DataOutBuff;
+	break;
 
   case ACT_SET_SSD2828:
     memcpy(ConfigData, RecPackage.DataOutBuff, RecCounter);

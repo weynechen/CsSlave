@@ -1,12 +1,12 @@
 /**
   * @file        task.h
-  * @author      陈维
+  * @author      Weyne
   * @version     V01
   * @date        2016.10.25
   * @brief       切换任务
   * @note        
   *
-  * @attention   COYPRIGHT INMOTION ROBOT
+  * @attention   COYPRIGHT WEYNE
   **/
 #ifndef _TASK_H_
 #define _TASK_H_

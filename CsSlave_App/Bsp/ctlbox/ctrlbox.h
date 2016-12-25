@@ -15,6 +15,7 @@ typedef enum
   KEY_UP,
   KEY_DOWN,
   KEY_POWER,
+	KEY_MTP,
   KEY_NULL = 0xff,
 } KeyTypeDef;
 

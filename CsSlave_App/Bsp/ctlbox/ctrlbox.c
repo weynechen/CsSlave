@@ -37,6 +37,14 @@ void ScanKey(void)
     {
       CtrlKey = KEY_DOWN;
     }
+	}
+  else if (HAL_GPIO_ReadPin(GPIOB, KEY_MTP_Pin) == GPIO_PIN_RESET)
+  {
+    HAL_Delay(30);
+    while (HAL_GPIO_ReadPin(GPIOB, KEY_MTP_Pin) == GPIO_PIN_RESET)
+    {
+      CtrlKey = KEY_MTP;
+    }		
   }
 //	else
 //	{

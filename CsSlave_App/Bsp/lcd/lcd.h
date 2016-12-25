@@ -62,6 +62,12 @@ typedef struct
 }FontColorTypeDef;
 
 
+typedef enum
+{
+	PAGE_UP,
+	PAGE_DOWN,
+}PageTuningTypeDef;
+
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
 void Lcd_Sleep(void);
@@ -70,6 +76,10 @@ void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars);
 void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
+void PageTuning(PageTuningTypeDef page);
+void ResetLcd(void);
+void SetMipiPara(void);
+
 extern FontColorTypeDef FontColor;
 
 #endif

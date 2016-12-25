@@ -1,6 +1,6 @@
 /**
  * @file        task.c
- * @author      陈维
+ * @author      Weyne
  * @version     V01
  * @date        2016.10.25
  * @brief       切换任务
@@ -26,7 +26,7 @@ void SwitchTask(void)
   switch (TaskID)
   {
   case ACT_RE_INIT_START:
-    TaskID = ACTION_NULL;
+		TaskID = ACTION_NULL;
     if (RecCounter == sizeof(SystemConfig) + 1)
     {
       Lcd_ReInit();
@@ -44,12 +44,10 @@ void SwitchTask(void)
     break;
 
   case ACT_FLASH_PARA:
-    TaskID = ACTION_NULL;
     FlashConfig();
     break;
 
   case ACT_UPGRADE_FIRMWARE:
-    TaskID = ACTION_NULL;
     UpgradeFirmwareData();
     break;
 
@@ -61,12 +59,10 @@ void SwitchTask(void)
     break;
 
   case ACT_GET_VERSION:
-    TaskID = ACTION_NULL;
     GetFirmwareVersion();
     break;
 
   case ACT_READ_SSD2828:
-    TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
     if ((data8 < 0xB0) && (data8 > 0xFF))
     {
@@ -79,7 +75,6 @@ void SwitchTask(void)
     break;
 
   case ACT_SET_SSD2828:
-    TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
 
     if ((data8 < 0xB0) && (data8 > 0xFF))
@@ -93,14 +88,14 @@ void SwitchTask(void)
 
     break;
 
-	case ACT_TOGGLE_LCD_POWER:
-		TaskID = ACTION_NULL;
-		CtrlKey = KEY_POWER;
+	case ACT_SET_KEY:
+		CtrlKey = (KeyTypeDef)ConfigData[0];
 		break;		
 		
   default:
     break;
   }
+	TaskID = ACTION_NULL;
 }
 
 

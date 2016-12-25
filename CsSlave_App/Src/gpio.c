@@ -70,6 +70,8 @@ void MX_GPIO_Init(void)
 
 	HAL_GPIO_WritePin(GPIOE,SSD1_CS_Pin|SSD2_CS_Pin,GPIO_PIN_SET);
 	
+	HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_SET);	
+	
 	
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_pull_up_GPIO_Port, USB_pull_up_Pin, GPIO_PIN_SET);
@@ -108,10 +110,15 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
+  GPIO_InitStruct.Pin = KEY_MTP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin 
                            PCPin PCPin */
   GPIO_InitStruct.Pin = USB_pull_up_Pin|EN_5V_Pin|IO_EN_Pin|EN_3V3_Pin 
-                          |CDCE_SO_Pin|EN_2V8_Pin;
+                          |CDCE_SO_Pin|EN_2V8_Pin|LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

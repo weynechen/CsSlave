@@ -1,6 +1,6 @@
 /**
  * @file        transmit.c
- * @author      陈维
+ * @author      Weyne
  * @version     V01
  * @date        2016.09.21
  * @brief       打包

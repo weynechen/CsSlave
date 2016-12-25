@@ -1,12 +1,12 @@
 /**
  * @file        upgrade.h
- * @author      陈维
+ * @author      Weyne
  * @version     V01
  * @date        2016.09.21
  * @brief       firmware升级
  * @note
  *
- * @attention   COYPRIGHT INMOTION ROBOT
+ * @attention   COYPRIGHT WEYNE
  **/
 #ifndef _UPGRADE_H_
 #define _UPGRADE_H_

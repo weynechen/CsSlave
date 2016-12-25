@@ -126,7 +126,7 @@ void SetLcdInitCode(void)
         }
         else
         {
-          SSD2828_DcsShortWrite(para_amount);
+          SSD2828_DcsLongWrite(para_amount);
           for (j = 0; j < para_amount; j++)
           {
             SSD2828WriteData(*(p + i++));
@@ -143,7 +143,7 @@ void SetLcdInitCode(void)
         }
         else
         {
-          SSD2828_GenericShortWrite(para_amount);
+          SSD2828_GenericLongWrite(para_amount);
           for (j = 0; j < para_amount; j++)
           {
             SSD2828WriteData(*(p + i++));
@@ -247,9 +247,9 @@ void SetPattern(void)
 			y = 0;
 			j = 0;
 			if(PatternProperty.Counter!=0)
-				LcdDrvSetChar(PatternProperty.Counter -1);
+				LcdDrvSetCharIndex(PatternProperty.Counter -1);
 			else
-				LcdDrvSetChar(0);
+				LcdDrvSetCharIndex(0);
 			
 			while(j<ReadBackAmount)
 			{
@@ -404,7 +404,7 @@ void ResetLcd(void)
 //  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
 //  HAL_Delay(10);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_RESET);
-  HAL_Delay(10);
+  HAL_Delay(100);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   HAL_Delay(50);
 }
@@ -523,6 +523,37 @@ void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
         p++;
     }  
 }
+
+void PageTuning(PageTuningTypeDef page)
+{
+	if(page == PAGE_UP)
+	{
+	
+      if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
+      {
+        PatternProperty.CurrentPattern = 0;
+      }
+      else
+      {
+        PatternProperty.CurrentPattern++;
+      }
+      LcdDrvShowPattern(PatternProperty.CurrentPattern);	
+	}
+	else
+	{
+			if (PatternProperty.CurrentPattern == 0)
+      {
+        PatternProperty.CurrentPattern = PatternProperty.Counter - 1;
+      }
+      else
+      {
+        PatternProperty.CurrentPattern--;
+      }
+      LcdDrvShowPattern(PatternProperty.CurrentPattern);
+	}
+}
+
+
 
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

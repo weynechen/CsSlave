@@ -1,12 +1,12 @@
 /**
  * @file        firmware_update.h
- * @author      陈维
+ * @author      Weyne
  * @version     V01
  * @date        2016.06.27
  * @brief       将firmware写入到flash空闲区域
  * @note
  *
- * @attention   COYPRIGHT INMOTION ROBOT
+ * @attention   COYPRIGHT WEYNE
  **/
 
 #ifndef _FIRMWARE_UPDATE_H_

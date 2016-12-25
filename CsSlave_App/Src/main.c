@@ -58,7 +58,7 @@
 #include "spi_flash.h"
 #include "task.h"
 #include "ctrlbox.h"
-
+#include "mtp.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -80,16 +80,62 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN 0 */
 
+static uint8_t Vcom = 0x9B;
+
+static void SetVcom(void)
+{
+	SSD2828_GenericLongWrite(3);
+	SSD2828WriteData(0xD4);
+	SSD2828WriteData(0x00);
+	SSD2828WriteData(Vcom);	
+}
+
+static void TuningVcom(KeyTypeDef key)
+{
+	char temp[4];
+	if(key == KEY_UP)
+	{
+		Vcom ++;
+	}
+	else if(key == KEY_DOWN)
+	{
+		Vcom --;
+	}
+	SetVcom();
+	snprintf(temp,sizeof(temp),"%02X",Vcom);
+	LCD_ShowString(0,0,temp);
+}
+
+static void MTP(void)
+{
+	Power_SetBLCurrent(0);
+	
+	ResetLcd();
+	SetMipiPara();
+	SetMTPCode(Vcom);
+	ResetLcd();
+	
+	SSD2828_DcsShortWrite(1);
+	SSD2828WriteData(0x11);
+	HAL_Delay(100);
+	SSD2828_DcsShortWrite(1);
+	SSD2828WriteData(0x29);
+	
+	Power_SetBLCurrent(SystemConfig.Backlight);
+  LcdDrvOpenRGB();
+	SSD2828_SetMode(VD);
+}
+
+
 /* USER CODE END 0 */
 
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint8_t current_frame = 0;
   uint8_t key_control = 0;
   uint8_t power_on = 1;
-
-  /* 记得cube生成后，修改地址设置*/
+	uint8_t mtp_mode = 0;
+	
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -127,8 +173,10 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-  //W25Nxx_Init();
-  SSD2828_Init(4, 480);
+	/*@TODO 
+	W25Nxx_Init();
+  */
+	SSD2828_Init(4, 480);
   ReadSystemConfig();
   /* USER CODE END 2 */
 
@@ -142,38 +190,25 @@ int main(void)
     switch (CtrlKey)
     {
     case KEY_UP:
-      CtrlKey = KEY_NULL;
       key_control = 1;
-      if (current_frame == PatternProperty.Counter - 1)
-      {
-        current_frame = 0;
-      }
-      else
-      {
-        current_frame++;
-      }
-      LcdDrvShowPattern(current_frame);
+			if(mtp_mode == 0)
+				PageTuning(PAGE_UP);
+			else
+				TuningVcom(KEY_UP);
       break;
 
     case KEY_DOWN:
-      CtrlKey = KEY_NULL;
       key_control = 1;
-      if (current_frame == 0)
-      {
-        current_frame = PatternProperty.Counter - 1;
-      }
-      else
-      {
-        current_frame--;
-      }
-      LcdDrvShowPattern(current_frame);
-
+			if(mtp_mode == 0)
+				PageTuning(PAGE_DOWN);
+			else
+				TuningVcom(KEY_DOWN);
       break;
 
     case KEY_POWER:
-      CtrlKey = KEY_NULL;
       key_control = 0;
-
+			mtp_mode =0;
+		
       if (power_on == 1)
       {
         Lcd_Sleep();
@@ -181,27 +216,45 @@ int main(void)
         SetLcdPower(OFF);
         Power_SetBLCurrent(0);
         power_on = 0;
+				SIGNAL_LIGTH_OFF;
       }
       else
       {
         Lcd_LightOn();
-        LcdDrvShowPattern(current_frame = 0);
+        LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
         power_on = 1;
         ResetStayTimeCounter();
+				SIGNAL_LIGHT_ON;
       }
       break;
 
+		case KEY_MTP:
+			if(mtp_mode == 0)
+			{
+				LcdDrvSetCharIndex(PatternProperty.CurrentPattern);
+				mtp_mode =1;
+			}
+			else
+			{
+				//TODO
+				MTP();
+				mtp_mode =0;
+			}
+			break;
+			
     default:
       break;
     }
+		CtrlKey = KEY_NULL;
+		
     if ((SystemConfig.IsAutoRun == 1) && (key_control == 0) &&(power_on == 1))
     {
-      if (IsStayTimeOver(current_frame) == 1)
+      if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)
       {
-        LcdDrvShowPattern(current_frame++);
-        if (current_frame == PatternProperty.Counter)
+        LcdDrvShowPattern(PatternProperty.CurrentPattern++);
+        if (PatternProperty.CurrentPattern == PatternProperty.Counter)
         {
-          current_frame = 0;
+          PatternProperty.CurrentPattern = 0;
         }
       }
     }

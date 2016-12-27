@@ -27,7 +27,8 @@ void SwitchTask(void)
   {
   case ACT_RE_INIT_START:
 		TaskID = ACTION_NULL;
-    if (RecCounter == sizeof(SystemConfig) + 1)
+		
+    if (RecCounter - sizeof(SystemConfig) < 5)
     {
       Lcd_ReInit();
       UserPrintf("Info: ReInit complete!\n");
@@ -44,11 +45,14 @@ void SwitchTask(void)
     break;
 
   case ACT_FLASH_PARA:
+		TaskID = ACTION_NULL;
     FlashConfig();
     break;
 
   case ACT_UPGRADE_FIRMWARE:
+		TaskID = ACTION_NULL;
     UpgradeFirmwareData();
+
     break;
 
   case ACT_REBOOT:
@@ -59,10 +63,12 @@ void SwitchTask(void)
     break;
 
   case ACT_GET_VERSION:
+		TaskID = ACTION_NULL;	
     GetFirmwareVersion();
     break;
 
   case ACT_READ_SSD2828:
+		TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
     if ((data8 < 0xB0) && (data8 > 0xFF))
     {
@@ -75,6 +81,7 @@ void SwitchTask(void)
     break;
 
   case ACT_SET_SSD2828:
+		TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
 
     if ((data8 < 0xB0) && (data8 > 0xFF))
@@ -89,13 +96,14 @@ void SwitchTask(void)
     break;
 
 	case ACT_SET_KEY:
+		TaskID = ACTION_NULL;
 		CtrlKey = (KeyTypeDef)ConfigData[0];
 		break;		
 		
   default:
+		TaskID = ACTION_NULL;
     break;
   }
-	TaskID = ACTION_NULL;
 }
 
 

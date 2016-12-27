@@ -56,6 +56,7 @@ typedef struct
   uint8_t Pattern[PATTERN_LEN];        /*< pattern 设置 第一个和第二个字节表示长度*/
   uint8_t ProjectName[MAX_NAME_LEN];   /*< 项目名称设置 */
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
+	uint8_t LcdType;
 } ConfigTypeDef;
 
 

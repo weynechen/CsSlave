@@ -110,10 +110,10 @@ static void MTP(void)
 {
 	Power_SetBLCurrent(0);
 	
-	ResetLcd();
+	ResetMipiLcd();
 	SetMipiPara();
 	SetMTPCode(Vcom);
-	ResetLcd();
+	ResetMipiLcd();
 	
 	SSD2828_DcsShortWrite(1);
 	SSD2828WriteData(0x11);
@@ -211,9 +211,12 @@ int main(void)
 		
       if (power_on == 1)
       {
-        Lcd_Sleep();
-        SSD2828_SetReset(0);
-        SetLcdPower(OFF);
+				if(SystemConfig.LcdType == MIPI_LCD)
+				{
+					MipiLcdSleep();
+					SSD2828_SetReset(0);
+        }
+				SetLcdPower(OFF);
         Power_SetBLCurrent(0);
         power_on = 0;
 				SIGNAL_LIGTH_OFF;

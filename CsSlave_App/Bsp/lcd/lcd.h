@@ -28,6 +28,18 @@ typedef enum
 
 typedef enum
 {
+	RGB_START,
+	RGB_SPI_RISING,
+	RGB_SPI_FALLING,
+	RGB_DELAY,
+	RGB_WRITE,
+	RGB_READ,
+	RGB_END
+}RGBTypeDef;
+
+
+typedef enum
+{
   NO_PACKAGE,
   GP,
   DCS
@@ -68,16 +80,23 @@ typedef enum
 	PAGE_DOWN,
 }PageTuningTypeDef;
 
+
+typedef enum
+{
+	MIPI_LCD,
+	RGB_LCD,
+}LcdTypeDef;
+
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
-void Lcd_Sleep(void);
+void MipiLcdSleep(void);
 void SetLcdPower(StateTypeDef state);
 void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars);
 void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
 void PageTuning(PageTuningTypeDef page);
-void ResetLcd(void);
+void ResetMipiLcd(void);
 void SetMipiPara(void);
 
 extern FontColorTypeDef FontColor;

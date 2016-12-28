@@ -20,6 +20,7 @@
 #include "ack.h"
 #include "rgbif.h"
 #include "font.h"
+
 FontColorTypeDef FontColor = {0xffffff,0};
 
 uint8_t ReadBackAmount = 0;
@@ -75,6 +76,83 @@ void SetMipiPara(void)
 }
 
 
+void ResetRGBLcd(void)
+{
+  HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
+  HAL_Delay(10);
+//  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+//  HAL_Delay(10);
+  RGB_RESET = 0;
+  HAL_Delay(100);
+  RGB_RESET = 1;
+  HAL_Delay(50);	
+}
+
+
+void SetRGBLcdInitCode(void)
+{
+  uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
+  uint8_t *p = &SystemConfig.LCDInitCode[2];
+  uint16_t reg = 0;
+  uint8_t para;
+  SPIEdgeTypeDef package = SPI_RISING;
+  uint16_t delay_time;
+	uint16_t i =0;
+	ReadBackAmount = 0;
+	
+  while (i < code_size)
+  {
+    switch ((RGBTypeDef)(*(p + i++)))
+    {
+    case RGB_SPI_RISING:
+      package = SPI_RISING;
+      break;
+
+    case RGB_SPI_FALLING:
+      package = SPI_FALLING;
+      break;
+
+    case RGB_DELAY:
+      delay_time = *(p + i++);
+      delay_time = (delay_time << 8) | *(p + i++);
+      HAL_Delay(delay_time);
+      break;
+
+    case RGB_WRITE:
+			reg = 0;
+			reg = *(p + i++);
+		  reg = *(p + i++)<<8 | reg;
+		  para = *(p + i++);
+			RGB_SPIWrite(reg,para,package);	
+      break;
+
+    case RGB_READ:
+			reg = 0;
+			reg = *(p + i++);
+		  reg = *(p + i++)<<8 | reg;
+
+	
+			UserPrintf("Info:read 0x%04X\n", reg);
+			para = RGB_SPIRead(reg,package);
+			if(sizeof(ReadBackTemp) - ReadBackAmount >  + 2)
+			{
+				ReadBackTemp[ReadBackAmount++] = 2; //len
+				ReadBackTemp[ReadBackAmount++] = reg; //register
+				ReadBackTemp[ReadBackAmount++] = para;
+			}
+
+			UserPrintf("para = 0x%02X\n", para);
+
+      break;
+
+
+    default:
+      break;
+    }
+  }
+}
+
+
 /**
  * @brief  解析并设定LCD初始化
  * @note   头两个字节为整个initcode的长度
@@ -82,7 +160,7 @@ void SetMipiPara(void)
  * @param  None
  * @retval None
  */
-void SetLcdInitCode(void)
+void SetMipiLcdInitCode(void)
 {
   uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
   uint8_t *p = &SystemConfig.LCDInitCode[2];
@@ -176,7 +254,7 @@ void SetLcdInitCode(void)
 
       if (result == MIPI_READ_SUCCEED)
       {
-        UserPrintf("Info:read 0x%x\n", para);
+        UserPrintf("Info:read 0x%02X\n", para);
 				
 				if(sizeof(ReadBackTemp) - ReadBackAmount > para_amount + 2)
 				{
@@ -189,7 +267,7 @@ void SetLcdInitCode(void)
 				for (j = 0; j < para_amount; j++)
         {
 					HAL_Delay(10);
-          UserPrintf("para%d = 0x%x\n", j + 1, buffer[j]);
+          UserPrintf("para%d = 0x%02X\n", j + 1, buffer[j]);
         }
 				
       }
@@ -205,7 +283,6 @@ void SetLcdInitCode(void)
     }
   }
 }
-
 
 void SetPattern(void)
 {
@@ -238,7 +315,7 @@ void SetPattern(void)
       g = *(p + i++);
       b = *(p + i++);
       Img_Full(r, g, b);
-      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%x,%x,%x)", PatternProperty.Counter, r, g, b);
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%02X,%02X,%02X)", PatternProperty.Counter, r, g, b);
       PatternProperty.Counter++;
       break;
 		
@@ -397,7 +474,7 @@ void ResetStayTimeCounter(void)
 }
 
 
-void ResetLcd(void)
+void ResetMipiLcd(void)
 {
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   HAL_Delay(10);
@@ -420,38 +497,58 @@ void Lcd_ReInit(void)
   SetLcdPower(OFF);
 	HAL_Delay(200);
   SetLcdPower(ON);
-  SetMipiPara();
-  ResetLcd();
-  ResetLcd();	
-  SetLcdInitCode();
-  Power_SetBLCurrent(SystemConfig.Backlight);
+	
+	if(SystemConfig.LcdType == MIPI_LCD)
+	{
+		SetMipiPara();
+		ResetMipiLcd();
+		SetMipiLcdInitCode();
+		SSD2828_SetMode(VD);
+  }
+	else if(SystemConfig.LcdType == RGB_LCD)
+	{
+		ResetRGBLcd();
+		SetRGBLcdInitCode();
+	}
+	else
+		UserPrintf("Error:LCD type definition error!\n");
+	
+	Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
-  SSD2828_SetMode(VD);
 	//RGB_SPI_Test();
   SetPattern();
 
 //	LcdDrvShowPattern(1);
 }
 
+void Lcd_LightOn(void)
+{
+  SetLcdPower(ON);
+	if(SystemConfig.LcdType == MIPI_LCD)
+	{
+		SetMipiPara();
+		ResetMipiLcd();
+		SetMipiLcdInitCode();
+		SSD2828_SetMode(VD);
+  }
+	else if(SystemConfig.LcdType == RGB_LCD)
+	{
+		ResetRGBLcd();
+		SetRGBLcdInitCode();
+	}
+  Power_SetBLCurrent(SystemConfig.Backlight);
+  LcdDrvOpenRGB();
+}
 
-void Lcd_Sleep(void)
+
+void MipiLcdSleep(void)
 {
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x11);
 }
 
 
-void Lcd_LightOn(void)
-{
-  SetLcdPower(ON);
- // SetLcdTiming();
-  SetMipiPara();
-  ResetLcd();
-  SetLcdInitCode();
-  Power_SetBLCurrent(SystemConfig.Backlight);
-  LcdDrvOpenRGB();
-  SSD2828_SetMode(VD);
-}
+
 
 
 

@@ -8,17 +8,6 @@
  * @attention   COYPRIGHT WEYNE
  */
 #include "rgbif.h"
-#include "sys.h"
-
-/**
- * @brief RGB IO PIN 的配置区域
- */
-#define SPI_SDI          PEin(5)  /*< SPI SDI */
-#define SPI_SDO          PEout(4) /*< SPI SDO */
-#define SPI_SCK          PEout(3) /*< SPI CLK */
-#define SPI_CS           PEout(0) /*< RGB 2 的SPI使能PIN，低电平有效 */
-#define RGB_RESET    		 PEout(6) /*< RGB Reset pin */
-#define RGB_SHUT     		 PEout(2) /*< SPI Shut down 功能脚 */
 
 static void Delay_10us(volatile uint8_t t)
 {
@@ -739,5 +728,6 @@ void RGB_SPI_Test(void)
 	RGB_SPIWrite(0x2c00,0x00,SPI_RISING);
     
 }
+
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

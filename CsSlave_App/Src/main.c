@@ -336,7 +336,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_SetPriority(SDIO_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(SDIO_IRQn);
   /* USB_LP_CAN1_RX0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 4, 0);
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
 

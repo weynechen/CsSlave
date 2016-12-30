@@ -84,7 +84,9 @@ typedef enum
 typedef enum
 {
 	MIPI_LCD,
-	RGB_LCD,
+	RGB_SPI16BIT,
+	RGB_SPI8BIT,
+	RGB_SPI9BIT,
 }LcdTypeDef;
 
 void Lcd_ReInit(void);

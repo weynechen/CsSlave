@@ -88,8 +88,71 @@ void ResetRGBLcd(void)
   HAL_Delay(50);	
 }
 
+void SetRGBSPI8Or9BitLcdInitCode(void)
+{
+  uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
+  uint8_t *p = &SystemConfig.LCDInitCode[2];
+  uint8_t para_amount = 0;
 
-void SetRGBLcdInitCode(void)
+//  SPIEdgeTypeDef package;
+  uint16_t i = 0, j = 0;
+  uint16_t delay_time;
+  //uint8_t buffer[32];
+	//  uint8_t para;
+	//ReadBackAmount = 0;
+	
+  while (i < code_size)
+  {
+    switch ((RGBTypeDef)(*(p + i++)))
+    {
+    case RGB_SPI_RISING:
+  //    package = SPI_RISING;
+      break;
+
+    case RGB_SPI_FALLING:
+    //  package = SPI_FALLING;
+      break;
+
+    case RGB_DELAY:
+      delay_time = *(p + i++);
+      delay_time = (delay_time << 8) | *(p + i++);
+      HAL_Delay(delay_time);
+      break;
+
+    case RGB_WRITE:
+			para_amount = *(p + i++);
+			if (SystemConfig.LcdType == RGB_SPI8BIT)
+      {
+				RGB_SPIWrite8Bit(*(p + i++),SPI_COMMAND);
+
+				for (j = 0; j < para_amount-1; j++)
+				{
+					RGB_SPIWrite8Bit(*(p + i++),SPI_DATA);
+				}
+			}
+      else
+      {
+				RGB_SPIWrite9Bit(*(p + i++),SPI_COMMAND);
+
+				for (j = 0; j < para_amount-1; j++)
+				{
+					RGB_SPIWrite9Bit(*(p + i++),SPI_DATA);
+				}
+      }
+      break;
+
+    case RGB_READ:
+			UserPrintf("Waring:This function will be supported nexe version!\n");
+      break;
+
+
+    default:
+      break;
+    }
+  }	
+}
+
+void SetRGBSPI16BitLcdInitCode(void)
 {
   uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
   uint8_t *p = &SystemConfig.LCDInitCode[2];
@@ -123,7 +186,7 @@ void SetRGBLcdInitCode(void)
 			reg = *(p + i++);
 		  reg = *(p + i++)<<8 | reg;
 		  para = *(p + i++);
-			RGB_SPIWrite(reg,para,package);	
+			RGB_SPIWrite_16Bit(reg,para,package);	
       break;
 
     case RGB_READ:
@@ -133,7 +196,7 @@ void SetRGBLcdInitCode(void)
 
 	
 			UserPrintf("Info:read 0x%04X\n", reg);
-			para = RGB_SPIRead(reg,package);
+			para = RGB_SPIRead_16Bit(reg,package);
 			if(sizeof(ReadBackTemp) - ReadBackAmount >  + 2)
 			{
 				ReadBackTemp[ReadBackAmount++] = 2; //len
@@ -505,10 +568,15 @@ void Lcd_ReInit(void)
 		SetMipiLcdInitCode();
 		SSD2828_SetMode(VD);
   }
-	else if(SystemConfig.LcdType == RGB_LCD)
+	else if(SystemConfig.LcdType == RGB_SPI16BIT)
 	{
 		ResetRGBLcd();
-		SetRGBLcdInitCode();
+		SetRGBSPI16BitLcdInitCode();
+	}
+	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+	{
+		ResetRGBLcd();
+		SetRGBSPI8Or9BitLcdInitCode();
 	}
 	else
 		UserPrintf("Error:LCD type definition error!\n");
@@ -531,10 +599,15 @@ void Lcd_LightOn(void)
 		SetMipiLcdInitCode();
 		SSD2828_SetMode(VD);
   }
-	else if(SystemConfig.LcdType == RGB_LCD)
+	else if(SystemConfig.LcdType == RGB_SPI16BIT)
 	{
 		ResetRGBLcd();
-		SetRGBLcdInitCode();
+		SetRGBSPI16BitLcdInitCode();
+	}
+	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+	{
+		ResetRGBLcd();
+		SetRGBSPI8Or9BitLcdInitCode();
 	}
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();

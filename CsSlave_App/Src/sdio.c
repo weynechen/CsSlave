@@ -112,7 +112,7 @@ void HAL_SD_MspInit(SD_HandleTypeDef* sdHandle)
     /* Be sure to change transfer direction before calling
      HAL_SD_ReadBlocks_DMA or HAL_SD_WriteBlocks_DMA. */
     __HAL_LINKDMA(sdHandle,hdmarx,hdma_sdio);
-    __HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio);
+    //__HAL_LINKDMA(sdHandle,hdmatx,hdma_sdio);
 
   /* USER CODE BEGIN SDIO_MspInit 1 */
 

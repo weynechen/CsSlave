@@ -546,7 +546,7 @@ void ResetMipiLcd(void)
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_RESET);
   HAL_Delay(100);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
-  HAL_Delay(50);
+  HAL_Delay(120);
 }
 
 
@@ -558,7 +558,7 @@ void Lcd_ReInit(void)
 	
 	HAL_Delay(10);
   SetLcdPower(OFF);
-	HAL_Delay(200);
+	HAL_Delay(10);
   SetLcdPower(ON);
 	
 	if(SystemConfig.LcdType == MIPI_LCD)

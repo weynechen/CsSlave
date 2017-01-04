@@ -324,19 +324,24 @@ void SystemClock_Config(void)
 static void MX_NVIC_Init(void)
 {
   /* DMA1_Channel5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+	
   /* USART1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USART3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USART3_IRQn, 2, 0);
+  HAL_NVIC_SetPriority(USART3_IRQn, 4, 0);
   HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* SDIO_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SDIO_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(SDIO_IRQn);
+	
+	HAL_NVIC_SetPriority(DMA2_Channel4_IRQn, 2, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Channel4_IRQn);
+	
   /* USB_LP_CAN1_RX0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 4, 0);
+  HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
 

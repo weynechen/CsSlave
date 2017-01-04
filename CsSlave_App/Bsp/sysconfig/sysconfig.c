@@ -15,7 +15,7 @@
 const uint32_t __attribute__((at(KEY_STORE_ADDRESS + 20))) KeyStore = 0x5A2F5D81;
 
 /* 数据缓冲区，读写SDCard,flash等用*/
-uint8_t SystemBuf[BUFFER_SIZE];
+uint8_t SystemBuf[BUFFER_SIZE+1];
 /*接收串口和USB口数据用*/
 uint8_t RecBuffer[BUFFER_SIZE];
 /*接收有效数据计数*/

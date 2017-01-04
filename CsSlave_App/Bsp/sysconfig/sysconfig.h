@@ -31,7 +31,7 @@
 /**
  * @brief 系统缓冲区的长度
  */
-#define BUFFER_SIZE                           8192
+ #define BUFFER_SIZE                           8192 //在SD卡DMA模式时，必须为512的倍数
 
 
 /**
@@ -124,7 +124,7 @@ typedef enum
   ACTION_NULL = 0xff /*< 空动作*/
 } ActionIDTypeDef;
 
-extern uint8_t SystemBuf[BUFFER_SIZE];
+extern uint8_t SystemBuf[BUFFER_SIZE+1];
 extern uint8_t RecBuffer[BUFFER_SIZE];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;

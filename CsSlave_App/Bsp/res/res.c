@@ -22,7 +22,7 @@ void Res_ReadPic(char *file_name)
   FIL fsrc;     // file objects
   uint32_t pic_size = 0;
 
-  res = f_open(&fsrc, file_name, FA_OPEN_EXISTING | FA_READ); //打开对应文件
+  res = f_open(&fsrc, file_name, FA_OPEN_EXISTING | FA_READ); 
   if (res != 0)
   {
     UserPrintf("Error:open file error,error code %d \n", res);
@@ -32,7 +32,7 @@ void Res_ReadPic(char *file_name)
   for ( ; ; )
   {
     br = 1;
-    res = f_read(&fsrc, SystemBuf, BUFFER_SIZE - 1, &br);
+    res = f_read(&fsrc, SystemBuf, BUFFER_SIZE, &br);
     if (res || (br == 0))
     {
       break;                     // error or eof
@@ -43,7 +43,7 @@ void Res_ReadPic(char *file_name)
       LcdDrvWriteData(temp1);
       pic_size++;
     }
-  }
+   }
 
   temp1 = (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3;
   if (pic_size != temp1)

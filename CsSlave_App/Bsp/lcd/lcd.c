@@ -479,9 +479,10 @@ void SetPattern(void)
     case PIC:
       Res_ReadPic((char *)(p + i));
 
-      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,PIC %s", PatternProperty.Counter, (char *)(p + i));
+      snprintf(PatternProperty.Name[PatternProperty.Counter], PATTERN_NAME_LEN,"%d,PIC %s", PatternProperty.Counter, (char *)(p + i));
       PatternProperty.Counter++;
       i += strlen((char *)p + i);
+			i++; // 跳过结束符
       break;
 
 

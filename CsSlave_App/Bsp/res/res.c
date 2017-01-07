@@ -16,7 +16,7 @@
 
 void Res_ReadPic(char *file_name)
 {
-  uint32_t a, temp1 = 0;
+  uint32_t a;
   FRESULT res;
   UINT br;      // File R/W count
   FIL fsrc;     // file objects
@@ -39,14 +39,12 @@ void Res_ReadPic(char *file_name)
     }
     for (a = 0; a < br; a++)
     {
-      temp1 = (uint8_t)(SystemBuf[a]);
-      LcdDrvWriteData(temp1);
+      LcdDrvWriteData(SystemBuf[a]);
       pic_size++;
     }
    }
 
-  temp1 = (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3;
-  if (pic_size != temp1)
+  if (pic_size != (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3)
   {
     UserPrintf("Error:picture size %d\n", pic_size);
   }

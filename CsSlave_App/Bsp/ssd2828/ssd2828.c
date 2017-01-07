@@ -52,11 +52,11 @@ static void SSD2828WriteCmd(uint8_t cmd)
 	
 	SPI_CS = 0;
   SPI_SDO = 0;
-  Delay(4);
+  Delay(1);
   SPI_SCK = 0;
-  Delay(4);
+  Delay(1);
   SPI_SCK = 1;
-  Delay(4);
+  Delay(1);
   for (i = 0; i < 8; i++)
   {
     if ((cmd & 0x80) == 0x80)
@@ -67,11 +67,11 @@ static void SSD2828WriteCmd(uint8_t cmd)
     {
       SPI_SDO = 0;
     }
-    Delay(4);
+    Delay(1);
     SPI_SCK = 0;
-    Delay(4);
+    Delay(1);
     SPI_SCK = 1;
-    Delay(4);
+    Delay(1);
     cmd = cmd << 1;
   }
   Delay(0);
@@ -85,11 +85,11 @@ void SSD2828WriteData(uint8_t data)
 
 	SPI_CS = 0;
   SPI_SDO = 1;
-  Delay(4);
+  Delay(1);
   SPI_SCK = 0;
-  Delay(4);
+  Delay(1);
   SPI_SCK = 1;
-  Delay(4);
+  Delay(1);
   for (i = 0; i < 8; i++)
   {
     if ((data & 0x80) == 0x80)
@@ -100,14 +100,14 @@ void SSD2828WriteData(uint8_t data)
     {
       SPI_SDO = 0;
     }
-    Delay(4);
+    Delay(1);
     SPI_SCK = 0;
-    Delay(4);
+    Delay(1);
     SPI_SCK = 1;
-    Delay(4);
+    Delay(1);
     data = data << 1;
   }
-  Delay(4);
+  Delay(1);
 	SPI_CS = 1;
 }
 

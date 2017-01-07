@@ -26,6 +26,7 @@ FontColorTypeDef FontColor = {0xffffff,0};
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
 
+static uint8_t ShowIDPattern = 0;
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -83,9 +84,9 @@ void ResetRGBLcd(void)
 //  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
 //  HAL_Delay(10);
   RGB_RESET = 0;
-  HAL_Delay(100);
+  HAL_Delay(120);
   RGB_RESET = 1;
-  HAL_Delay(50);	
+  HAL_Delay(120);	
 }
 
 void SetRGBSPI8Or9BitLcdInitCode(void)
@@ -347,6 +348,30 @@ void SetMipiLcdInitCode(void)
   }
 }
 
+static void ShowID(void)
+{
+	uint16_t j = 0,x = 0, y = 0;
+	char temp[16];
+	
+	LcdDrvSetCharIndex(ShowIDPattern);
+	
+	while(j<ReadBackAmount)
+	{
+		uint8_t len = ReadBackTemp[j++];
+		uint8_t n;
+		
+		for(n = 0 ; n<len ; n++)
+		{
+			memset(temp,0,sizeof(temp));
+			sprintf(temp,"0x%02X ",ReadBackTemp[j++]);
+			x += 16*n*5;
+			LCD_ShowString(x,y,temp);
+		}
+		x= 0;
+		y+=32;
+	}	
+}
+
 void SetPattern(void)
 {
   uint16_t size = (SystemConfig.Pattern[0] << 8) | SystemConfig.Pattern[1];
@@ -354,14 +379,14 @@ void SetPattern(void)
   uint16_t i = 0;
   uint8_t r, g, b;
   uint16_t stay_time;
-	uint16_t j,x, y;
-	char temp[16];
+
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
 
   LcdDrvSetPattern();
   while (i < size)
   {
+		uint8_t is_pattern = 1;
     if (PatternProperty.Counter > PATTERN_AMOUNT)
     {
       break;
@@ -370,7 +395,7 @@ void SetPattern(void)
     switch ((PatternTypeDef) * (p + i++))
     {
     case PATTERN_START:
-
+			is_pattern = 0;
       break;
 
     case RGB:
@@ -383,31 +408,12 @@ void SetPattern(void)
       break;
 		
 		case SHOW_ID:
-			x = 0;
-			y = 0;
-			j = 0;
 			if(PatternProperty.Counter!=0)
-				LcdDrvSetCharIndex(PatternProperty.Counter -1);
+				ShowIDPattern =PatternProperty.Counter -1;
 			else
-				LcdDrvSetCharIndex(0);
-			
-			while(j<ReadBackAmount)
-			{
-				uint8_t len = ReadBackTemp[j++];
-				uint8_t n;
-				
-				for(n = 0 ; n<len ; n++)
-				{
-					memset(temp,0,sizeof(temp));
-					sprintf(temp,"0x%02X ",ReadBackTemp[j++]);
-					x += 16*n*5;
-					LCD_ShowString(x,y,temp);
-				}
-				x= 0;
-				y+=32;
-			}
-			
-			
+				ShowIDPattern =0;
+
+			ShowID();
 			break;
 
     case FLICKERV:
@@ -487,6 +493,7 @@ void SetPattern(void)
 
 
     case PATTERN_END:
+			is_pattern = 0;
       break;
 
     case PATTERN_STAY:
@@ -496,6 +503,7 @@ void SetPattern(void)
       {
         PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;
       }
+			is_pattern = 0;
       break;
 
     default:
@@ -508,7 +516,8 @@ void SetPattern(void)
       break;
     }
 
-    HAL_Delay(500);
+		if(is_pattern)
+			HAL_Delay(500);
   }
 
   LcdDrvShowPattern(0);
@@ -610,6 +619,7 @@ void Lcd_LightOn(void)
 		ResetRGBLcd();
 		SetRGBSPI8Or9BitLcdInitCode();
 	}
+	ShowID();
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
 }

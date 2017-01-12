@@ -52,11 +52,11 @@ static void SSD2828WriteCmd(uint8_t cmd)
 	
 	SPI_CS = 0;
   SPI_SDO = 0;
-  Delay(1);
+  Delay(4);
   SPI_SCK = 0;
-  Delay(1);
+  Delay(4);
   SPI_SCK = 1;
-  Delay(1);
+  Delay(4);
   for (i = 0; i < 8; i++)
   {
     if ((cmd & 0x80) == 0x80)
@@ -67,11 +67,11 @@ static void SSD2828WriteCmd(uint8_t cmd)
     {
       SPI_SDO = 0;
     }
-    Delay(1);
+    Delay(4);
     SPI_SCK = 0;
-    Delay(1);
+    Delay(4);
     SPI_SCK = 1;
-    Delay(1);
+    Delay(4);
     cmd = cmd << 1;
   }
   Delay(0);
@@ -85,11 +85,11 @@ void SSD2828WriteData(uint8_t data)
 
 	SPI_CS = 0;
   SPI_SDO = 1;
-  Delay(1);
+  Delay(4);
   SPI_SCK = 0;
-  Delay(1);
+  Delay(4);
   SPI_SCK = 1;
-  Delay(1);
+  Delay(4);
   for (i = 0; i < 8; i++)
   {
     if ((data & 0x80) == 0x80)
@@ -100,14 +100,14 @@ void SSD2828WriteData(uint8_t data)
     {
       SPI_SDO = 0;
     }
-    Delay(1);
+    Delay(4);
     SPI_SCK = 0;
-    Delay(1);
+    Delay(4);
     SPI_SCK = 1;
-    Delay(1);
+    Delay(4);
     data = data << 1;
   }
-  Delay(1);
+  Delay(4);
 	SPI_CS = 1;
 }
 
@@ -188,13 +188,13 @@ static uint8_t SSD2828Read()
   uint16_t i;
   uint8_t tmp = 0;
 	SPI_CS = 0;
-  Delay(1);
+  Delay(4);
   for (i = 0; i < 8; i++)
   {
     SPI_SCK = 0;
-    Delay(1);
+    Delay(4);
     SPI_SCK = 1;
-    Delay(1);
+    Delay(4);
     tmp <<= 1;
     if (SPI_SDI)
     {
@@ -415,7 +415,7 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
   mode = m;
   if (mode == VD)
   {
-    SSD2828WriteReg(0x00b7, 0x03, 0x0B);
+    SSD2828WriteReg(0x00b7, 0x02, 0x4B);//030b
 			SSD2828_SHUT = 0;
   }
 }
@@ -444,14 +444,56 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
     UserPrintf("Error:SSD2828 configuration failed\n");
   }
 
+	SSD2828WriteReg(0xb7,0x00,0X50);	
+	SSD2828WriteReg(0xb8,0x00,0X00); 	
+	SSD2828WriteReg(0xb9,0x00,0X00);
+	SSD2828WriteReg(0xb1, LCDTiming.VSPW, LCDTiming.HSPW);
+	SSD2828WriteReg(0xb2, LCDTiming.VBPD, LCDTiming.HBPD+10);
+	SSD2828WriteReg(0xb3, LCDTiming.VFPD, LCDTiming.HFPD);
+	SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
+	SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
+	SSD2828WriteReg(0xb6,0x00,0xCB);	
+	SSD2828WriteReg(0xC9, 0x10, 0x03);
+	SSD2828WriteReg(0xCA, 0x21, 0x02);
+	SSD2828WriteReg(0xCB, 0x04, 0x48);
+	SSD2828WriteReg(0xCC, 0x08, 0x09);
+	SSD2828WriteReg(0xCD, 0x10, 0x00);
+	SSD2828WriteReg(0xCE, 0x04, 0x05);
+	SSD2828WriteReg(0xCF, 0x00, 0x00);
+	SSD2828WriteReg(0xD0, 0x00, 0x10);
+	
+	SSD2828WriteReg(0xD8, 0x03, 0xC3);
+	SSD2828WriteReg(0xD9, 0x62, 0x03);
+	SSD2828WriteReg(0xDA, 0xBF, 0x24);
+	SSD2828WriteReg(0xDB, 0x10, 0x98);
+	
+	if (data_rate < 500)
+	{
+	SSD2828WriteReg(0xba, 0x82, data_rate / 12);
+	}
+	else
+	{
+	SSD2828WriteReg(0xba, 0xc1, data_rate / 24);
+	}
+	SSD2828WriteReg(0xBB, 0x00, 0x0A);
+	SSD2828WriteReg(0xBC, 0x00, 0x00);
+	SSD2828WriteReg(0xBD, 0x00, 0x00);
+	SSD2828WriteReg(0xBE, 0x1D, 0xFF);
+	SSD2828WriteReg(0xDE, 0x00, lane - 1);
+	SSD2828WriteReg(0xD6, 0x00, 0x05);
+	SSD2828WriteReg(0xB8, 0x00, 0x00);
+	SSD2828WriteReg(0xC4, 0x00, 0x01);
+	SSD2828WriteReg(0xB9, 0x00, 0x01);
+	SSD2828WriteReg(0xb7, 0x02, 0x50);
 
+	/*
   SSD2828WriteReg(0x00b9, 0x00, 0x00);
   SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
   SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD + 10);
   SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
   SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
   SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
-  SSD2828WriteReg(0x00b6, 0x00, 0x07);
+  SSD2828WriteReg(0x00b6, 0x00, 0xCB);
   if (data_rate < 500)
   {
     SSD2828WriteReg(0x00ba, 0x82, data_rate / 12);
@@ -470,10 +512,11 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   SSD2828WriteReg(0x00d6, 0x00, 0x05);
   SSD2828WriteReg(0x00c4, 0x00, 0x01);
   SSD2828WriteReg(0x00eb, 0x80, 0x00);
+	
   HAL_Delay(10);
   SSD2828WriteReg(0x00b9, 0x00, 0x01);
   HAL_Delay(20);
-
+	*/
 }
 
 

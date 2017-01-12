@@ -26,7 +26,7 @@ FontColorTypeDef FontColor = {0xffffff,0};
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
 
-static uint8_t ShowIDPattern = 0;
+static uint8_t ShowIDPattern = 0xff;
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -83,6 +83,7 @@ void ResetRGBLcd(void)
   HAL_Delay(10);
 //  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
 //  HAL_Delay(10);
+	
   RGB_RESET = 0;
   HAL_Delay(120);
   RGB_RESET = 1;
@@ -412,7 +413,7 @@ void SetPattern(void)
 				ShowIDPattern =PatternProperty.Counter -1;
 			else
 				ShowIDPattern =0;
-
+			
 			ShowID();
 			break;
 
@@ -551,8 +552,8 @@ void ResetMipiLcd(void)
 {
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   HAL_Delay(10);
-//  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
-//  HAL_Delay(10);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_Delay(10);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_RESET);
   HAL_Delay(100);
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
@@ -619,7 +620,8 @@ void Lcd_LightOn(void)
 		ResetRGBLcd();
 		SetRGBSPI8Or9BitLcdInitCode();
 	}
-	ShowID();
+	if(ShowIDPattern != 0xff)
+		ShowID();
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
 }

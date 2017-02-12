@@ -87,6 +87,7 @@ typedef enum
 	RGB_SPI16BIT,
 	RGB_SPI8BIT,
 	RGB_SPI9BIT,
+	SPI_2_Data_Lane,
 }LcdTypeDef;
 
 void Lcd_ReInit(void);

@@ -41,6 +41,7 @@ typedef enum
  */
 #define SPI_SDI          PEin(5)  /*< SPI SDI */
 #define SPI_SDA          PEout(4) /*< SPI SDO */
+#define SPI_SDA2          PEout(2) /*< SPI SDO */
 #define SPI_SCK          PEout(3) /*< SPI CLK */
 #define SPI_CS           PEout(0) /*< RGB 2 ?SPI??PIN,????? */
 #define RGB_RESET    		 PEout(6) /*< RGB Reset pin */
@@ -50,4 +51,7 @@ void RGB_SPIWrite_16Bit(uint16_t address , uint8_t data , SPIEdgeTypeDef edge);
 uint8_t RGB_SPIRead_16Bit(uint16_t address , SPIEdgeTypeDef edge);
 void RGB_SPIWrite8Bit(uint8_t data ,SPIDataCommandTypeDef rs);
 void RGB_SPIWrite9Bit(uint8_t data ,SPIDataCommandTypeDef rs);
+void SPI_2DataLaneWritePixel(uint16_t color);
+void SPI_WriteFrame(uint16_t color);
+
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

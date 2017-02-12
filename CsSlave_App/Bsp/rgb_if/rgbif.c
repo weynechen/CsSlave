@@ -8,13 +8,13 @@
  * @attention   COYPRIGHT WEYNE
  */
 #include "rgbif.h"
+#include "sysconfig.h"
 
 static void Delay_10us(volatile uint8_t t)
 {
-  volatile uint8_t i = 15;
-
   while (t--)
   {
+	  uint8_t i = 15;
     while (i--)
     {
     }
@@ -266,4 +266,45 @@ void RGB_SPIWrite9Bit(uint8_t data ,SPIDataCommandTypeDef rs)
 }
 
 
+void SPI_2DataLaneWritePixel(uint16_t color)	
+{
+	uint8_t i,data_h,data_l;
+	data_h=color>>8;
+	data_l=color;
+	SPI_CS=0;
+	Delay_10us(2);
+	SPI_SDA=1;
+	SPI_SDA2=1;
+	Delay_10us(2);
+	SPI_SCK=0;
+	Delay_10us(2);
+	SPI_SCK=1;
+	Delay_10us(2);
+	for (i = 0; i < 8; i++)
+  {
+		SPI_SDA = data_h >>(7-i);
+		SPI_SDA2 = data_l >>(7-i);
+    Delay_10us(2);
+    SPI_SCK = 0;
+    Delay_10us(2);
+    SPI_SCK = 1;
+    Delay_10us(2);
+	}
+	SPI_CS = 1;
+}
+
+
+void SPI_WriteFrame(uint16_t color)
+{
+	uint16_t i;
+	uint16_t j;
+
+   for(i=0;i<LCDTiming.LCDV;i++)   
+	 {
+			for(j=0;j<LCDTiming.LCDH;j++)
+			{	
+				 SPI_2DataLaneWritePixel(color); 	
+			}
+	 }	
+}
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

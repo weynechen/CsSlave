@@ -403,7 +403,15 @@ void SetPattern(void)
       r = *(p + i++);
       g = *(p + i++);
       b = *(p + i++);
-      Img_Full(r, g, b);
+		  if(SystemConfig.LcdType == SPI_2_Data_Lane)
+			{
+				uint16_t color = (r & 0xf8) << 11;
+				color = color | ((g & 0xfc) << 5);
+				color = color | (b & 0xf8);
+				SPI_WriteFrame(color);
+			}
+			else
+				Img_Full(r, g, b);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%02X,%02X,%02X)", PatternProperty.Counter, r, g, b);
       PatternProperty.Counter++;
       break;
@@ -584,7 +592,7 @@ void Lcd_ReInit(void)
 		ResetRGBLcd();
 		SetRGBSPI16BitLcdInitCode();
 	}
-	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT) || (SystemConfig.LcdType == SPI_2_Data_Lane))
 	{
 		ResetRGBLcd();
 		SetRGBSPI8Or9BitLcdInitCode();
@@ -594,7 +602,7 @@ void Lcd_ReInit(void)
 	
 	Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
-	//RGB_SPI_Test();
+	
   SetPattern();
 
 //	LcdDrvShowPattern(1);
@@ -615,7 +623,7 @@ void Lcd_LightOn(void)
 		ResetRGBLcd();
 		SetRGBSPI16BitLcdInitCode();
 	}
-	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT) || (SystemConfig.LcdType == SPI_2_Data_Lane))
 	{
 		ResetRGBLcd();
 		SetRGBSPI8Or9BitLcdInitCode();

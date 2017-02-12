@@ -13,6 +13,8 @@
 #include "sysconfig.h"
 #include "fpga.h"
 #include "ack.h"
+#include "lcd.h"
+#include "rgbif.h"
 
 void Res_ReadPic(char *file_name)
 {
@@ -37,13 +39,27 @@ void Res_ReadPic(char *file_name)
     {
       break;                     // error or eof
     }
-    for (a = 0; a < br; a++)
+		
+		if(SystemConfig.LcdType != SPI_2_Data_Lane)
     {
-      LcdDrvWriteData(SystemBuf[a]);
-      pic_size++;
-    }
+			for (a = 0; a < br; a++)
+			{
+				LcdDrvWriteData(SystemBuf[a]);
+				pic_size++;
+			}
+	  }
+		else
+		{
+			for (a = 0; a < br; a+=2)
+			{
+				uint16_t *color = (uint16_t *)(SystemBuf+a);
+				SPI_2DataLaneWritePixel(*color);
+			}
+				
+		}
    }
-
+	
+if(SystemConfig.LcdType != SPI_2_Data_Lane)
   if (pic_size != (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3)
   {
     UserPrintf("Error:picture size %d\n", pic_size);

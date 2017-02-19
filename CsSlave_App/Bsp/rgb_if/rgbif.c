@@ -21,6 +21,13 @@ static void Delay_10us(volatile uint8_t t)
   }
 }
 
+static void Delay(volatile uint8_t t)
+{
+  while (t--)
+  {
+  }
+}
+
 static void RGB_SPI16BitFallingEdgeWrite(SPIRWTypeDef rw , SPIDataCommandTypeDef data_command , SPIByteTypeDef high_low_byte , uint8_t data)
 {
 	uint16_t tmp = 0;
@@ -272,23 +279,23 @@ void SPI_2DataLaneWritePixel(uint16_t color)
 	data_h=color>>8;
 	data_l=color;
 	SPI_CS=0;
-	Delay_10us(2);
+	Delay(1);
 	SPI_SDA=1;
 	SPI_SDA2=1;
-	Delay_10us(2);
+	Delay(1);
 	SPI_SCK=0;
-	Delay_10us(2);
+	Delay(1);
 	SPI_SCK=1;
-	Delay_10us(2);
+	Delay(1);
 	for (i = 0; i < 8; i++)
   {
 		SPI_SDA = data_h >>(7-i);
 		SPI_SDA2 = data_l >>(7-i);
-    Delay_10us(2);
+    Delay(1);
     SPI_SCK = 0;
-    Delay_10us(2);
+    Delay(1);
     SPI_SCK = 1;
-    Delay_10us(2);
+    Delay(1);
 	}
 	SPI_CS = 1;
 }

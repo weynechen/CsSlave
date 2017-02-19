@@ -39,5 +39,5 @@ void SSD2828WriteData(uint8_t data);
 uint16_t SSD2828ReadReg(uint8_t reg);
 void SSD2828WriteReg(uint8_t cmd, uint8_t dat1, uint8_t dat2);
 void SSD2828_SetReset(uint8_t t);
-
+void SSD2828_Reset(void);
 #endif

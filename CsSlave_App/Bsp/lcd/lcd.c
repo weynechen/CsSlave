@@ -67,14 +67,32 @@ void SetLcdTiming(void)
   LcdDrvSetTiming();
 }
 
-
 void SetMipiPara(void)
 {
-  uint8_t lane = SystemConfig.MIPIConfig[3];
-  uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
-
-  SSD2828_Init(lane, speed);
+  uint8_t size = *(uint8_t *)SystemConfig.MIPIConfig;
+  uint16_t i;
+	
+	if(size%3!=0)
+		return;
+	
+	if(size == 3)
+	{
+		uint8_t lane = SystemConfig.MIPIConfig[3];
+		uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
+		
+		SSD2828_Init(lane, speed);
+	}
+	else
+	{
+		SSD2828_Reset();
+		
+		for(i=1;i<size;i+=3)
+		{
+			SSD2828WriteReg(SystemConfig.MIPIConfig[i],SystemConfig.MIPIConfig[i+1],SystemConfig.MIPIConfig[i+2]);
+		}
+	}
 }
+
 
 
 void ResetRGBLcd(void)

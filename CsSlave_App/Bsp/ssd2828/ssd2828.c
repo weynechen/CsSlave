@@ -420,6 +420,15 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
   }
 }
 
+void SSD2828_Reset(void)
+{
+	SSD2828_RESET = 0;
+	SSD2828_SHUT = 1;
+	HAL_Delay(50);
+	SSD2828_RESET = 1;
+	HAL_Delay(10);
+}
+
 
 /**
  * @brief  SSD2828 初始化
@@ -429,12 +438,7 @@ void SSD2828_SetMode(MIPI_ModeTypeDef m)
  */
 void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 {
-  SSD2828_RESET = 0;
-  SSD2828_SHUT = 1;
-  HAL_Delay(50);
-  SSD2828_RESET = 1;
-  HAL_Delay(10);
-	
+	SSD2828_Reset();
   if (SSD2828ReadReg(0xB0) == 0x2828)
   {
     UserPrintf("Info:SSD2828 OK %d\n",SSD2828ReadReg(0xB7));
@@ -443,7 +447,6 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   {
     UserPrintf("Error:SSD2828 configuration failed\n");
   }
-
 	SSD2828WriteReg(0xb7,0x00,0X50);	
 	SSD2828WriteReg(0xb8,0x00,0X00); 	
 	SSD2828WriteReg(0xb9,0x00,0X00);

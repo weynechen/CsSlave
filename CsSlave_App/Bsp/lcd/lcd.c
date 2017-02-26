@@ -90,6 +90,7 @@ void SetMipiPara(void)
 		{
 			SSD2828WriteReg(SystemConfig.MIPIConfig[i],SystemConfig.MIPIConfig[i+1],SystemConfig.MIPIConfig[i+2]);
 		}
+		HAL_Delay(20);
 	}
 }
 

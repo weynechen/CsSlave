@@ -90,8 +90,10 @@ void Flicker(void)
 {
   uint16_t i, j;
   uint16_t half_lcd_h = LCDTiming.LCDH / 2;
-
-  for (j = 0; j < LCDTiming.LCDV; j++)
+	uint16_t v = LCDTiming.LCDV;
+	if(v==1024)
+		v=854;
+  for (j = 0; j < v; j++)
   {
     for (i = 0; i < half_lcd_h; i++)
     {
@@ -103,6 +105,17 @@ void Flicker(void)
       LcdDrvWriteData(0x00);
     }
   }
+	
+	if(v==854)
+	{
+		for(i=0;i<1024-854;i++)
+			for (j = 0; j < LCDTiming.LCDH; j++)
+			{
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+			}
+	}
 }
 
 
@@ -238,13 +251,16 @@ void Img_Chcker58()
 
 void Img_Box(void)
 {
-  uint32_t x, y;
-
-  for (y = 0; y < LCDTiming.LCDV; y++)
+  uint32_t x, y,i,j;
+	uint16_t v = LCDTiming.LCDV;
+	if(v == 1024)
+		v = 854;
+	
+  for (y = 0; y < v; y++)
   {
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
-      if ((x == 0) || (x == LCDTiming.LCDH - 1) || (y == 0) || (y == LCDTiming.LCDV - 1))
+      if ((x == 0) || (x == LCDTiming.LCDH - 1) || (y == 0) || (y == v - 1))
       {
         LcdDrvWriteData(0xff);
         LcdDrvWriteData(0xFF);
@@ -258,6 +274,17 @@ void Img_Box(void)
       }
     }
   }
+	
+	if(v == 854)
+	{
+		for(i=0;i<1024-854;i++)
+			for (j = 0; j < LCDTiming.LCDH; j++)
+			{
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+			}
+	}
 }
 
 
@@ -500,9 +527,13 @@ void Img_ColorBar(void)
 void Img_ColorBarV(void)
 {
   uint32_t i, j, y;
+	uint16_t v = LCDTiming.LCDV;
+	
+	if(v==1024)
+		v=854;
+		
+  y = v / 8;
 
-  y = LCDTiming.LCDV / 8;
-
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
@@ -575,7 +606,7 @@ void Img_ColorBarV(void)
       LcdDrvWriteData(0x00);
     }
   }
-  y = LCDTiming.LCDV % 8;
+  y = v % 8;
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
@@ -585,6 +616,17 @@ void Img_ColorBarV(void)
       LcdDrvWriteData(0x00);
     }
   }
+	
+	if(v==854)
+	{
+		for(i=0;i<1024-854;i++)
+			for (j = 0; j < LCDTiming.LCDH; j++)
+			{
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+			}
+	}
 }
 
 
@@ -699,9 +741,16 @@ void MAX_Current(void)
 void RGBBar(void)
 {
   uint32_t i, j, y, mod;
-
-  y = LCDTiming.LCDV / 3;
-  mod = LCDTiming.LCDV % 3;
+	uint16_t v;
+	
+	if(LCDTiming.LCDV == 1024)
+		v = 854;
+	else
+		v = LCDTiming.LCDV;
+	
+	
+  y = v / 3;
+  mod = v % 3;
 
   for (i = 0; i < y; i++)
   {
@@ -740,6 +789,18 @@ void RGBBar(void)
       LcdDrvWriteData(0xff);
     }
   }
+	
+	if(v==854)
+	{
+		for(i=0;i<1024-854;i++)
+			for (j = 0; j < LCDTiming.LCDH; j++)
+			{
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+				LcdDrvWriteData(0x00);
+			}
+  }
+		
 }
 
 

@@ -192,7 +192,7 @@ int main(void)
     case KEY_UP:
       key_control = 1;
 			if(mtp_mode == 0)
-				PageTuning(PAGE_UP);
+				PageTurning(PAGE_UP);
 			else
 				TuningVcom(KEY_UP);
       break;
@@ -200,7 +200,7 @@ int main(void)
     case KEY_DOWN:
       key_control = 1;
 			if(mtp_mode == 0)
-				PageTuning(PAGE_DOWN);
+				PageTurning(PAGE_DOWN);
 			else
 				TuningVcom(KEY_DOWN);
       break;
@@ -213,7 +213,7 @@ int main(void)
       {
 				if(SystemConfig.LcdType == MIPI_LCD)
 				{
-					MipiLcdSleep();
+					MipiLcdSleepIn();
 					SSD2828_SetReset(0);
         }
 				SetLcdPower(OFF);
@@ -254,11 +254,7 @@ int main(void)
     {
       if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)
       {
-        LcdDrvShowPattern(PatternProperty.CurrentPattern++);
-        if (PatternProperty.CurrentPattern == PatternProperty.Counter)
-        {
-          PatternProperty.CurrentPattern = 0;
-        }
+				PageTurning(PAGE_UP);
       }
     }
 

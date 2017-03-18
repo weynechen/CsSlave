@@ -494,7 +494,7 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   SSD2828WriteReg(0x00b9, 0x00, 0x00);
   SSD2828WriteReg(0x00b1, LCDTiming.VSPW, LCDTiming.HSPW);
   SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD + 10);
-  SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD);
+  //SSD2828WriteReg(0x00b2, LCDTiming.VBPD, LCDTiming.HBPD);
 	SSD2828WriteReg(0x00b3, LCDTiming.VFPD, LCDTiming.HFPD);
   SSD2828WriteReg(0xb4, (LCDTiming.LCDH >> 8) & 0xff, LCDTiming.LCDH & 0xff);
   SSD2828WriteReg(0xb5, (LCDTiming.LCDV >> 8) & 0xff, LCDTiming.LCDV & 0xff);
@@ -516,8 +516,8 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   SSD2828WriteReg(0x00cc, 0x10, 0x05);
   SSD2828WriteReg(0x00de, 0x00, lane - 1);
   SSD2828WriteReg(0x00d6, 0x00, 0x05);
-  SSD2828WriteReg(0x00c4, 0x00, 0x01);
-  SSD2828WriteReg(0x00eb, 0x80, 0x00);
+ // SSD2828WriteReg(0x00c4, 0x00, 0x01);
+  //SSD2828WriteReg(0x00eb, 0x80, 0x00);
 	
   HAL_Delay(10);
   SSD2828WriteReg(0x00b9, 0x00, 0x01);

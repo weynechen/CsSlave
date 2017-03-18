@@ -64,6 +64,8 @@ typedef enum
   PATTERN_STAY,
   NULL_PATTERN,
 	SHOW_ID,
+	SLEEP_IN,
+	SLEEP_OUT,
   PATTERN_END
 } PatternTypeDef;
 
@@ -78,7 +80,7 @@ typedef enum
 {
 	PAGE_UP,
 	PAGE_DOWN,
-}PageTuningTypeDef;
+}PageTurningTypeDef;
 
 
 typedef enum
@@ -91,13 +93,14 @@ typedef enum
 
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
-void MipiLcdSleep(void);
+void MipiLcdSleepIn(void);
+void MipiLcdSleepOut(void);
 void SetLcdPower(StateTypeDef state);
 void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars);
 void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
-void PageTuning(PageTuningTypeDef page);
+void PageTurning(PageTurningTypeDef page);
 void ResetMipiLcd(void);
 void SetMipiPara(void);
 

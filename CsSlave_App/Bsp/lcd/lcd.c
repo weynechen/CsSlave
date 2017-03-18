@@ -525,7 +525,21 @@ void SetPattern(void)
       }
 			is_pattern = 0;
       break;
-
+			
+		case SLEEP_IN:
+			Img_Full(0xff,0xff,0xff);
+			sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepIn");
+      PatternProperty.Counter++;
+			is_pattern = 0;
+			break;
+		
+		case SLEEP_OUT:
+			Img_Full(0xff,0xff,0xff);
+			sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepOut");
+      PatternProperty.Counter++;
+			is_pattern = 0;
+			break;
+		
     default:
       UserPrintf("Error:pattern syntax error\n");
       break;
@@ -646,10 +660,26 @@ void Lcd_LightOn(void)
 }
 
 
-void MipiLcdSleep(void)
+void MipiLcdSleepIn(void)
+{
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x28);
+	HAL_Delay(10);
+
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x10);
+	HAL_Delay(10);
+}
+
+void MipiLcdSleepOut(void)
 {
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x11);
+	HAL_Delay(120);
+
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x29);
+	HAL_Delay(120);
 }
 
 
@@ -726,7 +756,23 @@ void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
     }  
 }
 
-void PageTuning(PageTuningTypeDef page)
+void static Turning(void)
+{
+	if(strcmp(PatternProperty.Name[PatternProperty.CurrentPattern],"SleepOut")==0)
+	{
+		MipiLcdSleepOut();
+	}
+	else if(strcmp(PatternProperty.Name[PatternProperty.CurrentPattern],"SleepIn")==0)
+	{
+		MipiLcdSleepIn();
+	}
+	else
+	{
+		LcdDrvShowPattern(PatternProperty.CurrentPattern);	
+	}
+}
+
+void PageTurning(PageTurningTypeDef page)
 {
 	if(page == PAGE_UP)
 	{
@@ -739,7 +785,6 @@ void PageTuning(PageTuningTypeDef page)
       {
         PatternProperty.CurrentPattern++;
       }
-      LcdDrvShowPattern(PatternProperty.CurrentPattern);	
 	}
 	else
 	{
@@ -751,8 +796,8 @@ void PageTuning(PageTuningTypeDef page)
       {
         PatternProperty.CurrentPattern--;
       }
-      LcdDrvShowPattern(PatternProperty.CurrentPattern);
 	}
+	Turning();
 }
 
 

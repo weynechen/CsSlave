@@ -662,6 +662,7 @@ void Lcd_LightOn(void)
 
 void MipiLcdSleepIn(void)
 {
+	  Power_SetBLCurrent(0);
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x28);
 	HAL_Delay(10);
@@ -680,6 +681,7 @@ void MipiLcdSleepOut(void)
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x29);
 	HAL_Delay(120);
+	  Power_SetBLCurrent(SystemConfig.Backlight);
 }
 
 

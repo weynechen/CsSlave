@@ -84,13 +84,15 @@ typedef struct
  */
 #define PATTERN_AMOUNT      20
 #define PATTERN_NAME_LEN    30
-
+#define FPGA_IO_MODE  0xFE
 typedef struct
 {
   char     Name[PATTERN_AMOUNT][PATTERN_NAME_LEN];
   uint16_t StayTime[PATTERN_AMOUNT];
   uint8_t  Counter;
   uint8_t  CurrentPattern;
+	uint8_t  SDRAMCounter;
+	uint32_t Data[PATTERN_AMOUNT];
 } PatternPropertyTypeDef;
 
 /**

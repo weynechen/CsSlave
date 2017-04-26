@@ -104,23 +104,45 @@ void LcdDrvSetCharIndex(uint8_t frame)
 	
 }
 
-void LcdDrvShowPattern(uint8_t frame)
+void LcdDrvShowPattern(uint32_t data)
 {
   uint32_t address = 0;
   uint8_t i = 0;
   uint8_t *p = (uint8_t *)&address;
 
-  address = LCDTiming.LCDH;
-  address *= LCDTiming.LCDV;
-  address *= frame;
+	
+	if((data & 0xff000000) == 0xff000000)
+	{
+			uint8_t r,g,b;
+			r = (data&0xffffff)>>16;
+			g = (data&0xffffff)>>8;
+			b = (data&0xffffff)>>0;
+			FPGA_WRITE_CMD(0x1B);
+      FPGA_WRITE_DATA(r);
+      FPGA_WRITE_DATA(g);
+      FPGA_WRITE_DATA(b);
+	}
+	else
+	{
+		  FPGA_WRITE_CMD(0x1B);
+      FPGA_WRITE_DATA(0xAA);
+      FPGA_WRITE_DATA(0xAA);
+      FPGA_WRITE_DATA(0xAA);
+		
+			HAL_Delay(1);
+		
+			address = LCDTiming.LCDH;
+			address *= LCDTiming.LCDV;
+			address *= data;
 
 
-  FPGA_WRITE_CMD(0x0B);
+			FPGA_WRITE_CMD(0x0B);
 
-  for ( ; i < sizeof(address); i++)
-  {
-    FPGA_WRITE_DATA(*(p + 3 - i));
-  }
+			for ( ; i < sizeof(address); i++)
+			{
+				FPGA_WRITE_DATA(*(p + 3 - i));
+			}
+	}
 }
 
 

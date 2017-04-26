@@ -21,7 +21,7 @@
 #include "rgbif.h"
 #include "font.h"
 
-FontColorTypeDef FontColor = {0xffffff,0};
+FontColorTypeDef FontColor = {0xffffff, 0};
 
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
@@ -30,7 +30,7 @@ static uint8_t ShowIDPattern = 0xff;
 
 void SetLcdPower(StateTypeDef state)
 {
-  PowerTypeDef power_list[POWER_AMOUT] = { POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN,POWER_OUT5V,POWER_MTP };
+  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP};
   uint8_t i = 0;
 
   if (state == ON)
@@ -59,7 +59,6 @@ void SetLcdPower(StateTypeDef state)
   }
 }
 
-
 void SetLcdTiming(void)
 {
   memcpy((uint16_t *)&LCDTiming, (uint16_t *)SystemConfig.LCDTimingPara, sizeof(SystemConfig.LCDTimingPara));
@@ -71,42 +70,40 @@ void SetMipiPara(void)
 {
   uint8_t size = *(uint8_t *)SystemConfig.MIPIConfig;
   uint16_t i;
-	
-	if(size%3!=0)
-		return;
-	
-	if(size == 3)
-	{
-		uint8_t lane = SystemConfig.MIPIConfig[3];
-		uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
-		
-		SSD2828_Init(lane, speed);
-	}
-	else
-	{
-		SSD2828_Reset();
-		
-		for(i=1;i<size;i+=3)
-		{
-			SSD2828WriteReg(SystemConfig.MIPIConfig[i],SystemConfig.MIPIConfig[i+1],SystemConfig.MIPIConfig[i+2]);
-		}
-		HAL_Delay(20);
-	}
+
+  if (size % 3 != 0)
+    return;
+
+  if (size == 3)
+  {
+    uint8_t lane = SystemConfig.MIPIConfig[3];
+    uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
+
+    SSD2828_Init(lane, speed);
+  }
+  else
+  {
+    SSD2828_Reset();
+
+    for (i = 1; i < size; i += 3)
+    {
+      SSD2828WriteReg(SystemConfig.MIPIConfig[i], SystemConfig.MIPIConfig[i + 1], SystemConfig.MIPIConfig[i + 2]);
+    }
+    HAL_Delay(20);
+  }
 }
-
-
 
 void ResetRGBLcd(void)
 {
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   HAL_Delay(10);
-//  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
-//  HAL_Delay(10);
-	
+  //  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  //  HAL_Delay(10);
+
   RGB_RESET = 0;
   HAL_Delay(120);
   RGB_RESET = 1;
-  HAL_Delay(120);	
+  HAL_Delay(120);
 }
 
 void SetRGBSPI8Or9BitLcdInitCode(void)
@@ -115,23 +112,23 @@ void SetRGBSPI8Or9BitLcdInitCode(void)
   uint8_t *p = &SystemConfig.LCDInitCode[2];
   uint8_t para_amount = 0;
 
-//  SPIEdgeTypeDef package;
+  //  SPIEdgeTypeDef package;
   uint16_t i = 0, j = 0;
   uint16_t delay_time;
   //uint8_t buffer[32];
-	//  uint8_t para;
-	//ReadBackAmount = 0;
-	
+  //  uint8_t para;
+  //ReadBackAmount = 0;
+
   while (i < code_size)
   {
     switch ((RGBTypeDef)(*(p + i++)))
     {
     case RGB_SPI_RISING:
-  //    package = SPI_RISING;
+      //    package = SPI_RISING;
       break;
 
     case RGB_SPI_FALLING:
-    //  package = SPI_FALLING;
+      //  package = SPI_FALLING;
       break;
 
     case RGB_DELAY:
@@ -141,36 +138,35 @@ void SetRGBSPI8Or9BitLcdInitCode(void)
       break;
 
     case RGB_WRITE:
-			para_amount = *(p + i++);
-			if (SystemConfig.LcdType == RGB_SPI8BIT)
+      para_amount = *(p + i++);
+      if (SystemConfig.LcdType == RGB_SPI8BIT)
       {
-				RGB_SPIWrite8Bit(*(p + i++),SPI_COMMAND);
+        RGB_SPIWrite8Bit(*(p + i++), SPI_COMMAND);
 
-				for (j = 0; j < para_amount-1; j++)
-				{
-					RGB_SPIWrite8Bit(*(p + i++),SPI_DATA);
-				}
-			}
+        for (j = 0; j < para_amount - 1; j++)
+        {
+          RGB_SPIWrite8Bit(*(p + i++), SPI_DATA);
+        }
+      }
       else
       {
-				RGB_SPIWrite9Bit(*(p + i++),SPI_COMMAND);
+        RGB_SPIWrite9Bit(*(p + i++), SPI_COMMAND);
 
-				for (j = 0; j < para_amount-1; j++)
-				{
-					RGB_SPIWrite9Bit(*(p + i++),SPI_DATA);
-				}
+        for (j = 0; j < para_amount - 1; j++)
+        {
+          RGB_SPIWrite9Bit(*(p + i++), SPI_DATA);
+        }
       }
       break;
 
     case RGB_READ:
-			UserPrintf("Waring:This function will be supported nexe version!\n");
+      UserPrintf("Waring:This function will be supported nexe version!\n");
       break;
-
 
     default:
       break;
     }
-  }	
+  }
 }
 
 void SetRGBSPI16BitLcdInitCode(void)
@@ -181,9 +177,9 @@ void SetRGBSPI16BitLcdInitCode(void)
   uint8_t para;
   SPIEdgeTypeDef package = SPI_RISING;
   uint16_t delay_time;
-	uint16_t i =0;
-	ReadBackAmount = 0;
-	
+  uint16_t i = 0;
+  ReadBackAmount = 0;
+
   while (i < code_size)
   {
     switch ((RGBTypeDef)(*(p + i++)))
@@ -203,39 +199,36 @@ void SetRGBSPI16BitLcdInitCode(void)
       break;
 
     case RGB_WRITE:
-			reg = 0;
-			reg = *(p + i++);
-		  reg = *(p + i++)<<8 | reg;
-		  para = *(p + i++);
-			RGB_SPIWrite_16Bit(reg,para,package);	
+      reg = 0;
+      reg = *(p + i++);
+      reg = *(p + i++) << 8 | reg;
+      para = *(p + i++);
+      RGB_SPIWrite_16Bit(reg, para, package);
       break;
 
     case RGB_READ:
-			reg = 0;
-			reg = *(p + i++);
-		  reg = *(p + i++)<<8 | reg;
+      reg = 0;
+      reg = *(p + i++);
+      reg = *(p + i++) << 8 | reg;
 
-	
-			UserPrintf("Info:read 0x%04X\n", reg);
-			para = RGB_SPIRead_16Bit(reg,package);
-			if(sizeof(ReadBackTemp) - ReadBackAmount >  + 2)
-			{
-				ReadBackTemp[ReadBackAmount++] = 2; //len
-				ReadBackTemp[ReadBackAmount++] = reg; //register
-				ReadBackTemp[ReadBackAmount++] = para;
-			}
+      UserPrintf("Info:read 0x%04X\n", reg);
+      para = RGB_SPIRead_16Bit(reg, package);
+      if (sizeof(ReadBackTemp) - ReadBackAmount > +2)
+      {
+        ReadBackTemp[ReadBackAmount++] = 2;   //len
+        ReadBackTemp[ReadBackAmount++] = reg; //register
+        ReadBackTemp[ReadBackAmount++] = para;
+      }
 
-			UserPrintf("para = 0x%02X\n", para);
+      UserPrintf("para = 0x%02X\n", para);
 
       break;
-
 
     default:
       break;
     }
   }
 }
-
 
 /**
  * @brief  解析并设定LCD初始化
@@ -256,9 +249,9 @@ void SetMipiLcdInitCode(void)
   MIPI_ReadTypeDef result;
   uint8_t buffer[32];
 
-	ReadBackAmount = 0;
-	SSD2828_SetMode(LP);
-	
+  ReadBackAmount = 0;
+  SSD2828_SetMode(LP);
+
   while (i < code_size)
   {
     switch ((MipiTypeDef)(*(p + i++)))
@@ -339,28 +332,26 @@ void SetMipiLcdInitCode(void)
       if (result == MIPI_READ_SUCCEED)
       {
         UserPrintf("Info:read 0x%02X\n", para);
-				
-				if(sizeof(ReadBackTemp) - ReadBackAmount > para_amount + 2)
-				{
-					ReadBackTemp[ReadBackAmount++] = para_amount + 1; //len
-					ReadBackTemp[ReadBackAmount++] = para; //register
-					memcpy(ReadBackTemp + ReadBackAmount,buffer,para_amount);
-					ReadBackAmount++;
-				}
-				
-				for (j = 0; j < para_amount; j++)
+
+        if (sizeof(ReadBackTemp) - ReadBackAmount > para_amount + 2)
         {
-					HAL_Delay(10);
+          ReadBackTemp[ReadBackAmount++] = para_amount + 1; //len
+          ReadBackTemp[ReadBackAmount++] = para;            //register
+          memcpy(ReadBackTemp + ReadBackAmount, buffer, para_amount);
+          ReadBackAmount++;
+        }
+
+        for (j = 0; j < para_amount; j++)
+        {
+          HAL_Delay(10);
           UserPrintf("para%d = 0x%02X\n", j + 1, buffer[j]);
         }
-				
       }
       else
       {
         UserPrintf("Waring:MIPI read failed!\n");
       }
       break;
-
 
     default:
       break;
@@ -370,26 +361,26 @@ void SetMipiLcdInitCode(void)
 
 static void ShowID(void)
 {
-	uint16_t j = 0,x = 0, y = 0;
-	char temp[16];
-	
-	LcdDrvSetCharIndex(ShowIDPattern);
-	
-	while(j<ReadBackAmount)
-	{
-		uint8_t len = ReadBackTemp[j++];
-		uint8_t n;
-		
-		for(n = 0 ; n<len ; n++)
-		{
-			memset(temp,0,sizeof(temp));
-			sprintf(temp,"0x%02X ",ReadBackTemp[j++]);
-			x += 16*n*5;
-			LCD_ShowString(x,y,temp);
-		}
-		x= 0;
-		y+=32;
-	}	
+  uint16_t j = 0, x = 0, y = 0;
+  char temp[16];
+
+  LcdDrvSetCharIndex(ShowIDPattern);
+
+  while (j < ReadBackAmount)
+  {
+    uint8_t len = ReadBackTemp[j++];
+    uint8_t n;
+
+    for (n = 0; n < len; n++)
+    {
+      memset(temp, 0, sizeof(temp));
+      sprintf(temp, "0x%02X ", ReadBackTemp[j++]);
+      x += 16 * n * 5;
+      LCD_ShowString(x, y, temp);
+    }
+    x = 0;
+    y += 32;
+  }
 }
 
 void SetPattern(void)
@@ -400,13 +391,18 @@ void SetPattern(void)
   uint8_t r, g, b;
   uint16_t stay_time;
 
-
   memset(&PatternProperty, 0, sizeof(PatternProperty));
 
   LcdDrvSetPattern();
   while (i < size)
   {
-		uint8_t is_pattern = 1;
+    uint8_t is_pattern = 1;
+    
+		FPGA_WRITE_CMD(0x1B);
+		FPGA_WRITE_DATA(0xAA);
+		FPGA_WRITE_DATA(0xAA);
+		FPGA_WRITE_DATA(0xAA);
+		
     if (PatternProperty.Counter > PATTERN_AMOUNT)
     {
       break;
@@ -415,105 +411,121 @@ void SetPattern(void)
     switch ((PatternTypeDef) * (p + i++))
     {
     case PATTERN_START:
-			is_pattern = 0;
+      is_pattern = 0;
       break;
 
     case RGB:
       r = *(p + i++);
       g = *(p + i++);
       b = *(p + i++);
-      Img_Full(r, g, b);
+      //Img_Full(r, g, b);
+      FPGA_WRITE_CMD(0x1B);
+      FPGA_WRITE_DATA(r);
+      FPGA_WRITE_DATA(g);
+      FPGA_WRITE_DATA(b);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%02X,%02X,%02X)", PatternProperty.Counter, r, g, b);
+			PatternProperty.Data[PatternProperty.Counter] = (uint32_t)((uint32_t)(FPGA_IO_MODE) | (uint32_t)r<<16 | (uint32_t)g<<8 |(uint32_t)b);
       PatternProperty.Counter++;
       break;
-		
-		case SHOW_ID:
-			if(PatternProperty.Counter!=0)
-				ShowIDPattern =PatternProperty.Counter -1;
-			else
-				ShowIDPattern =0;
-			
-			ShowID();
-			break;
+
+    case SHOW_ID:
+      if (PatternProperty.Counter != 0)
+        ShowIDPattern = PatternProperty.Counter - 1;
+      else
+        ShowIDPattern = 0;
+
+      ShowID();
+      break;
 
     case FLICKERV:
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
+			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
     case FLICKERH:
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
+			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
     case COLORBARV:
       Img_ColorBarV();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical colorbar", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case COLORBARH:
       Img_ColorBar();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal colorbar", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case GRAYLEVEL_V:
       Img_Gray256_V();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical gray level", PatternProperty.Counter);
-      PatternProperty.Counter++;
+			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case GRAYLEVEL_H:
       Img_Gray256_H();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal gray level", PatternProperty.Counter);
+			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
     case CROSSTALK:
       Img_CT();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,crosstalk", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case CHESSBOARD:
       Img_Chcker58();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,chessboard", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+		  PatternProperty.Counter++;
       break;
 
     case RGBBAR:
       RGBBar();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,rgbbar", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case RGBLEVEL:
       RGBLevel();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,rgblevel", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case FRAME:
       Img_Box();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,frame", PatternProperty.Counter);
-      PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       break;
 
     case PIC:
       Res_ReadPic((char *)(p + i));
 
-      snprintf(PatternProperty.Name[PatternProperty.Counter], PATTERN_NAME_LEN,"%d,PIC %s", PatternProperty.Counter, (char *)(p + i));
-      PatternProperty.Counter++;
+      snprintf(PatternProperty.Name[PatternProperty.Counter], PATTERN_NAME_LEN, "%d,PIC %s", PatternProperty.Counter, (char *)(p + i));
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+			PatternProperty.Counter++;
       i += strlen((char *)p + i);
-			i++; // 跳过结束符
+      i++; // 跳过结束符
       break;
 
-
     case PATTERN_END:
-			is_pattern = 0;
+      is_pattern = 0;
       break;
 
     case PATTERN_STAY:
@@ -523,23 +535,25 @@ void SetPattern(void)
       {
         PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;
       }
-			is_pattern = 0;
+      is_pattern = 0;
       break;
-			
-		case SLEEP_IN:
-			Img_Full(0xff,0xff,0xff);
-			sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepIn");
-      PatternProperty.Counter++;
-			is_pattern = 0;
-			break;
-		
-		case SLEEP_OUT:
-			Img_Full(0xff,0xff,0xff);
-			sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepOut");
-      PatternProperty.Counter++;
-			is_pattern = 0;
-			break;
-		
+
+    case SLEEP_IN:
+      Img_Full(0xff, 0xff, 0xff);
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepIn");
+      PatternProperty.Data[PatternProperty.Counter] = 0xff000000;
+			PatternProperty.Counter++;
+      is_pattern = 0;
+      break;
+
+    case SLEEP_OUT:
+      Img_Full(0xff, 0xff, 0xff);
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepOut");
+      PatternProperty.Data[PatternProperty.Counter] = 0xff000001;
+			PatternProperty.Counter++;
+      is_pattern = 0;
+      break;
+
     default:
       UserPrintf("Error:pattern syntax error\n");
       break;
@@ -550,13 +564,12 @@ void SetPattern(void)
       break;
     }
 
-		if(is_pattern)
-			HAL_Delay(500);
+    if (is_pattern)
+      HAL_Delay(500);
   }
 
   LcdDrvShowPattern(0);
 }
-
 
 uint8_t IsStayTimeOver(uint8_t frame)
 {
@@ -574,12 +587,10 @@ uint8_t IsStayTimeOver(uint8_t frame)
   return 0;
 }
 
-
 void ResetStayTimeCounter(void)
 {
   htim3.Instance->CNT = 0;
 }
-
 
 void ResetMipiLcd(void)
 {
@@ -593,101 +604,94 @@ void ResetMipiLcd(void)
   HAL_Delay(120);
 }
 
-
 void Lcd_ReInit(void)
 {
   memset(&PatternProperty, 0, sizeof(PatternProperty));
-	HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   SetLcdTiming();
-	
-	HAL_Delay(10);
+
+  HAL_Delay(10);
   SetLcdPower(OFF);
-	HAL_Delay(10);
+  HAL_Delay(10);
   SetLcdPower(ON);
-	
-	if(SystemConfig.LcdType == MIPI_LCD)
-	{
-		SetMipiPara();
-		ResetMipiLcd();
-		SetMipiLcdInitCode();
-		SSD2828_SetMode(VD);
+
+  if (SystemConfig.LcdType == MIPI_LCD)
+  {
+    SetMipiPara();
+    ResetMipiLcd();
+    SetMipiLcdInitCode();
+    SSD2828_SetMode(VD);
   }
-	else if(SystemConfig.LcdType == RGB_SPI16BIT)
-	{
-		ResetRGBLcd();
-		SetRGBSPI16BitLcdInitCode();
-	}
-	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
-	{
-		ResetRGBLcd();
-		SetRGBSPI8Or9BitLcdInitCode();
-	}
-	else
-		UserPrintf("Error:LCD type definition error!\n");
-	
-	Power_SetBLCurrent(SystemConfig.Backlight);
+  else if (SystemConfig.LcdType == RGB_SPI16BIT)
+  {
+    ResetRGBLcd();
+    SetRGBSPI16BitLcdInitCode();
+  }
+  else if ((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+  {
+    ResetRGBLcd();
+    SetRGBSPI8Or9BitLcdInitCode();
+  }
+  else
+    UserPrintf("Error:LCD type definition error!\n");
+
+  Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
-	//RGB_SPI_Test();
+  //RGB_SPI_Test();
   SetPattern();
 
-//	LcdDrvShowPattern(1);
+  //	LcdDrvShowPattern(1);
 }
 
 void Lcd_LightOn(void)
 {
   SetLcdPower(ON);
-	if(SystemConfig.LcdType == MIPI_LCD)
-	{
-		SetMipiPara();
-		ResetMipiLcd();
-		SetMipiLcdInitCode();
-		SSD2828_SetMode(VD);
+  if (SystemConfig.LcdType == MIPI_LCD)
+  {
+    SetMipiPara();
+    ResetMipiLcd();
+    SetMipiLcdInitCode();
+    SSD2828_SetMode(VD);
   }
-	else if(SystemConfig.LcdType == RGB_SPI16BIT)
-	{
-		ResetRGBLcd();
-		SetRGBSPI16BitLcdInitCode();
-	}
-	else if((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
-	{
-		ResetRGBLcd();
-		SetRGBSPI8Or9BitLcdInitCode();
-	}
-	if(ShowIDPattern != 0xff)
-		ShowID();
+  else if (SystemConfig.LcdType == RGB_SPI16BIT)
+  {
+    ResetRGBLcd();
+    SetRGBSPI16BitLcdInitCode();
+  }
+  else if ((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
+  {
+    ResetRGBLcd();
+    SetRGBSPI8Or9BitLcdInitCode();
+  }
+  if (ShowIDPattern != 0xff)
+    ShowID();
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
 }
 
-
 void MipiLcdSleepIn(void)
 {
-	  Power_SetBLCurrent(0);
+  Power_SetBLCurrent(0);
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x28);
-	HAL_Delay(10);
+  HAL_Delay(10);
 
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x10);
-	HAL_Delay(10);
+  HAL_Delay(10);
 }
 
 void MipiLcdSleepOut(void)
 {
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x11);
-	HAL_Delay(120);
+  HAL_Delay(120);
 
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x29);
-	HAL_Delay(120);
-	  Power_SetBLCurrent(SystemConfig.Backlight);
+  HAL_Delay(120);
+  Power_SetBLCurrent(SystemConfig.Backlight);
 }
-
-
-
-
-
 
 /*
 static void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
@@ -708,19 +712,19 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   for (pos = 0; pos < 64; pos += 2)
   {
     LcdDrvSetXY(x, y + (pos >> 1));
-		
+
     temp = asc2_3216[chars][pos];
     for (t = 0; t < 8; t++)
     {
       if (temp & 0x01)
       {
-				LcdDrvWriteData(FontColor.Fore >> 16);
+        LcdDrvWriteData(FontColor.Fore >> 16);
         LcdDrvWriteData(FontColor.Fore >> 8);
         LcdDrvWriteData(FontColor.Fore);
       }
       else
       {
-				LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 16);
         LcdDrvWriteData(FontColor.Background >> 8);
         LcdDrvWriteData(FontColor.Background);
       }
@@ -731,13 +735,13 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
     {
       if (temp & 0x01)
       {
-				LcdDrvWriteData(FontColor.Fore >> 16);
+        LcdDrvWriteData(FontColor.Fore >> 16);
         LcdDrvWriteData(FontColor.Fore >> 8);
         LcdDrvWriteData(FontColor.Fore);
       }
       else
       {
-				LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 16);
         LcdDrvWriteData(FontColor.Background >> 8);
         LcdDrvWriteData(FontColor.Background);
       }
@@ -746,63 +750,59 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   }
 }
 
-void LCD_ShowString(uint16_t x,uint16_t y,const char *p)
-{         
-	
+void LCD_ShowString(uint16_t x, uint16_t y, const char *p)
+{
 
-    while(*p!='\0')
-    {       
-        LCD_ShowChar(x,y,*p);
-				x=x+16;
-        p++;
-    }  
+  while (*p != '\0')
+  {
+    LCD_ShowChar(x, y, *p);
+    x = x + 16;
+    p++;
+  }
 }
 
 void static Turning(void)
 {
-	if(strcmp(PatternProperty.Name[PatternProperty.CurrentPattern],"SleepOut")==0)
-	{
-		MipiLcdSleepOut();
-	}
-	else if(strcmp(PatternProperty.Name[PatternProperty.CurrentPattern],"SleepIn")==0)
-	{
-		MipiLcdSleepIn();
-	}
-	else
-	{
-		LcdDrvShowPattern(PatternProperty.CurrentPattern);	
-	}
+  if (strcmp(PatternProperty.Name[PatternProperty.CurrentPattern], "SleepOut") == 0)
+  {
+    MipiLcdSleepOut();
+  }
+  else if (strcmp(PatternProperty.Name[PatternProperty.CurrentPattern], "SleepIn") == 0)
+  {
+    MipiLcdSleepIn();
+  }
+  else
+  {
+    LcdDrvShowPattern(PatternProperty.Data[PatternProperty.CurrentPattern]);
+  }
 }
 
 void PageTurning(PageTurningTypeDef page)
 {
-	if(page == PAGE_UP)
-	{
-	
-      if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
-      {
-        PatternProperty.CurrentPattern = 0;
-      }
-      else
-      {
-        PatternProperty.CurrentPattern++;
-      }
-	}
-	else
-	{
-			if (PatternProperty.CurrentPattern == 0)
-      {
-        PatternProperty.CurrentPattern = PatternProperty.Counter - 1;
-      }
-      else
-      {
-        PatternProperty.CurrentPattern--;
-      }
-	}
-	Turning();
+  if (page == PAGE_UP)
+  {
+
+    if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
+    {
+      PatternProperty.CurrentPattern = 0;
+    }
+    else
+    {
+      PatternProperty.CurrentPattern++;
+    }
+  }
+  else
+  {
+    if (PatternProperty.CurrentPattern == 0)
+    {
+      PatternProperty.CurrentPattern = PatternProperty.Counter - 1;
+    }
+    else
+    {
+      PatternProperty.CurrentPattern--;
+    }
+  }
+  Turning();
 }
-
-
-
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

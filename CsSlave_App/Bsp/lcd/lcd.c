@@ -393,7 +393,7 @@ void SetPattern(void)
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
 
-  LcdDrvSetPattern();
+
   while (i < size)
   {
     uint8_t is_pattern = 1;
@@ -402,7 +402,7 @@ void SetPattern(void)
 		FPGA_WRITE_DATA(0xAA);
 		FPGA_WRITE_DATA(0xAA);
 		FPGA_WRITE_DATA(0xAA);
-		
+		LcdDrvSetPattern();
     if (PatternProperty.Counter > PATTERN_AMOUNT)
     {
       break;

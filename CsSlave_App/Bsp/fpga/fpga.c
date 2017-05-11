@@ -111,7 +111,7 @@ void LcdDrvShowPattern(uint32_t data)
   uint8_t *p = (uint8_t *)&address;
 
 	
-	if((data & 0xff000000) == 0xff000000)
+	if((data & FPGA_IO_MODE) == FPGA_IO_MODE)
 	{
 			uint8_t r,g,b;
 			r = (data&0xffffff)>>16;

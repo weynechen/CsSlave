@@ -84,7 +84,7 @@ typedef struct
  */
 #define PATTERN_AMOUNT      20
 #define PATTERN_NAME_LEN    30
-#define FPGA_IO_MODE  0xFE
+#define FPGA_IO_MODE  0xFF000000
 typedef struct
 {
   char     Name[PATTERN_AMOUNT][PATTERN_NAME_LEN];

@@ -109,8 +109,10 @@
 #define SSD1_CS_GPIO_Port GPIOE
 #define SSD2_CS_Pin GPIO_PIN_1
 #define SSD2_CS_GPIO_Port GPIOE
-#define LED_Pin GPIO_PIN_15
-#define LED_GPIO_Port GPIOC
+#define RED_LED_Pin GPIO_PIN_15
+#define RED_LED_GPIO_Port GPIOC
+#define GREEN_LED_Pin GPIO_PIN_14
+#define GREEN_LED_GPIO_Port GPIOC
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

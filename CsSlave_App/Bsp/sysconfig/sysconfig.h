@@ -148,8 +148,11 @@ void SoftwareReset(void);
 void GetFirmwareVersion(void);
 void CacheData(void);
 
-#define SIGNAL_LIGHT_ON 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET)
-#define SIGNAL_LIGTH_OFF    		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET)
+#define RED_LIGHT_ON 				HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin,GPIO_PIN_SET)
+#define RED_LIGHT_OFF    		HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin,GPIO_PIN_RESET)
+#define GREEN_LIGHT_ON 				HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin,GPIO_PIN_SET)
+#define GREEN_LIGHT_OFF    		HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin,GPIO_PIN_RESET)
+
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

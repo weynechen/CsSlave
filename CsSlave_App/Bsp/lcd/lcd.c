@@ -606,6 +606,8 @@ void ResetMipiLcd(void)
 
 void Lcd_ReInit(void)
 {
+	GREEN_LIGHT_OFF;
+	RED_LIGHT_ON;
   memset(&PatternProperty, 0, sizeof(PatternProperty));
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   SetLcdTiming();
@@ -639,7 +641,8 @@ void Lcd_ReInit(void)
   LcdDrvOpenRGB();
   //RGB_SPI_Test();
   SetPattern();
-
+	GREEN_LIGHT_ON;
+	RED_LIGHT_OFF;
   //	LcdDrvShowPattern(1);
 }
 

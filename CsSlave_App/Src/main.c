@@ -211,6 +211,8 @@ int main(void)
 		
       if (power_on == 1)
       {
+				GREEN_LIGHT_OFF;
+				RED_LIGHT_ON;
 				if(SystemConfig.LcdType == MIPI_LCD)
 				{
 					MipiLcdSleepIn();
@@ -219,15 +221,15 @@ int main(void)
 				SetLcdPower(OFF);
         Power_SetBLCurrent(0);
         power_on = 0;
-				SIGNAL_LIGTH_OFF;
       }
       else
       {
+				RED_LIGHT_OFF;
+				GREEN_LIGHT_ON;
         Lcd_LightOn();
         LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
         power_on = 1;
         ResetStayTimeCounter();
-				SIGNAL_LIGHT_ON;
       }
       break;
 

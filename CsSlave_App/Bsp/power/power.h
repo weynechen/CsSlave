@@ -12,7 +12,7 @@
 #include "sys.h"
 
 
-#define POWER_AMOUT    7
+#define POWER_AMOUT    8
 
 /* 修改下面BITBAND中宏，即可修改power控制脚 */
 typedef enum
@@ -24,12 +24,9 @@ typedef enum
   POWER_VSN = BITBAND(GPIOB_ODR_Addr, 12),
 	POWER_OUT5V = BITBAND(GPIOC_ODR_Addr,0),
   POWER_MTP = BITBAND(GPIOD_ODR_Addr, 3),
-	/*
-	POWER_AVDD = BITBAND(
-	POWER_VCOM
-	POWER_VGL
-	POWER_VGH
-	*/
+	POWER_AVDD = BITBAND(GPIOB_ODR_Addr,2),
+	POWER_VCOM = BITBAND(GPIOB_ODR_Addr,11),
+	POWER_VGH = BITBAND(GPIOB_ODR_Addr,1),
 } PowerTypeDef;
 
 

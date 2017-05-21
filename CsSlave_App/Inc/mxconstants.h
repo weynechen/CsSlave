@@ -71,6 +71,12 @@
 #define EN_3V3_GPIO_Port GPIOC
 #define EN_1V8_Pin GPIO_PIN_0
 #define EN_1V8_GPIO_Port GPIOB
+#define EN_VGH_Pin GPIO_PIN_1
+#define EN_VGH_GPIO_Port GPIOB
+#define EN_VCOM_Pin GPIO_PIN_11
+#define EN_VCOM_GPIO_Port GPIOB
+#define EN_AVDD_Pin GPIO_PIN_2
+#define EN_AVDD_GPIO_Port GPIOB
 #define KEY_MTP_Pin GPIO_PIN_10
 #define KEY_MTP_GPIO_Port GPIOB
 #define KEY_POWER_Pin GPIO_PIN_11

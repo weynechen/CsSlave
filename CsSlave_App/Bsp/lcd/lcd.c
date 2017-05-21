@@ -30,7 +30,7 @@ static uint8_t ShowIDPattern = 0xff;
 
 void SetLcdPower(StateTypeDef state)
 {
-  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP};
+  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP ,POWER_AVDD};
   uint8_t i = 0;
 
   if (state == ON)

@@ -426,7 +426,8 @@ bool CheckAppValidity(void)
 	uint32_t key_random[6];
 	uint32_t key_seed[5] = {0x1234,0x3456,0x5555,0x5589,0x9954};
   uint32_t key_store;
-
+	uint32_t result = 0;
+	
   hcrc.Instance->CR = CRC_CR_RESET;
 
   for (i = APP_BASE_ADDRESS; i < APP_BASE_ADDRESS + NUMBER_OF_APP_PAGAES; i += 4)
@@ -451,14 +452,15 @@ bool CheckAppValidity(void)
 	
   if (key_store == KEY_STORE)
   {
-		
+		FLASH_If_Erase(KEY_STORE_ADDRESS, 1);	
+		result = FLASH_If_Write(KEY_STORE_ADDRESS, key_random, 6);
     return TRUE;
   }
   else
   {
     if (key_cal == key_store)
     {
-			FLASH_If_Write(KEY_STORE_ADDRESS, key_random, 6);
+
       return TRUE;
     }
     else

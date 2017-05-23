@@ -460,7 +460,6 @@ bool CheckAppValidity(void)
   {
     if (key_cal == key_store)
     {
-
       return TRUE;
     }
     else

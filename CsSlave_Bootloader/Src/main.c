@@ -35,6 +35,7 @@
 
 /* USER CODE BEGIN Includes */
 #include "firmwareupgrade.h"
+#include "system_config.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -57,6 +58,57 @@ static void MX_CRC_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+static uint32_t CalSecurityCode(void)
+{
+  uint32_t i;
+
+  typedef struct
+  {
+    uint32_t id1;
+    uint32_t id2;
+    uint32_t id3;
+  } UIDTypeDef;
+
+  UIDTypeDef id = *(volatile UIDTypeDef *)(0x1FFF0000 + 0xF7E8);
+  uint32_t result = 0;
+
+  for (i = 0x08000000; i < BOOT_KEY_ADDRESS; i += 4)
+  {
+    result ^= *((volatile uint32_t *)i);
+  }
+
+  result ^= 0x12345678;
+  result ^= id.id1;
+  result ^= id.id2;
+  result ^= id.id3;
+
+  return result;
+}
+
+static bool CheckSecurity(void)
+{
+  uint32_t key_store = (uint32_t) * (vu32 *)(BOOT_KEY_ADDRESS);
+  uint32_t key_cal = CalSecurityCode();
+
+  if (key_store == 0x5A2F5D85)
+  {
+    FLASH_If_Erase(BOOT_KEY_ADDRESS, 1);
+    FLASH_If_Write(BOOT_KEY_ADDRESS, &key_cal, 1);
+  }
+  else
+  {
+    if (key_cal == key_store)
+    {
+      return TRUE;
+    }
+    else
+    {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}
 
 /* USER CODE END 0 */
 
@@ -80,13 +132,17 @@ int main(void)
   MX_CRC_Init();
 
   /* USER CODE BEGIN 2 */
-	if(IsNeedToUpdate() == TRUE)
-		WriteFirmwareToApp();
-	
-	if(CheckAppValidity() == TRUE)
-	{
-		JumpToApp();
-	}
+
+  if (CheckSecurity() == TRUE)
+  {
+    if (IsNeedToUpdate() == TRUE)
+      WriteFirmwareToApp();
+
+    if (CheckAppValidity() == TRUE)
+    {
+      JumpToApp();
+    }
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -94,15 +150,13 @@ int main(void)
   while (1)
   {
 
-	 HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);	
-	 HAL_Delay(1000);
-		/* USER CODE END WHILE */
+    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+    HAL_Delay(1000);
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
-
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
 }
 
 /** System Clock Configuration
@@ -124,8 +178,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -135,7 +188,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -152,7 +205,6 @@ static void MX_CRC_Init(void)
   {
     Error_Handler();
   }
-
 }
 
 /** Configure pins as 
@@ -179,7 +231,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -195,10 +246,10 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
+  while (1)
   {
   }
-  /* USER CODE END Error_Handler */ 
+  /* USER CODE END Error_Handler */
 }
 
 #ifdef USE_FULL_ASSERT
@@ -210,23 +261,22 @@ void Error_Handler(void)
    * @param line: assert_param error line source number
    * @retval None
    */
-void assert_failed(uint8_t* file, uint32_t line)
+void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
 
 #endif
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-*/ 
+*/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

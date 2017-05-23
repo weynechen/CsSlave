@@ -19,9 +19,11 @@
 #define FIRMWARE_BASE_ADDRESS                 ADDR_FLASH_PAGE_17
 #define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS    ADDR_FLASH_PAGE_56
 #define KEY_STORE_ADDRESS                     ADDR_FLASH_PAGE_10
+#define BOOT_KEY_ADDRESS ADDR_FLASH_PAGE_5
 #define NUMBER_OF_UPGRADE_PAGES               40
 #define NUMBER_OF_CONFIG_PAGES                5
 #define NUMBER_OF_APP_PAGAES                  40
+
 
 #define CDC_USB 0
 #define COMPOSITE_USB 1
@@ -104,6 +106,9 @@ typedef enum
   DATA_READY,
 } ComStateTypeDef;
 
+
+typedef __IO uint32_t  vu32;
+
 /**
  * @brief  操作数据包ID号，同一个数据包只能有一个ACTION.
  */
@@ -140,6 +145,7 @@ extern uint8_t USBPlugin;
 extern uint32_t RecCounter;
 extern PackageDataStruct RecPackage;
 extern uint8_t ConfigData[];
+extern uint8_t Security;
 
 void FlashConfig(void);
 void ReadSystemConfig(void);

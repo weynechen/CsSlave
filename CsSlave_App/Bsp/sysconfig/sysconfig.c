@@ -24,6 +24,7 @@ uint32_t RecCounter = 0;
 PackageDataStruct RecPackage;
 /*缓存一些配置数据*/
 uint8_t ConfigData[128];
+uint8_t Security = 1;
 
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;
@@ -72,8 +73,59 @@ void ReadSystemConfig(void)
 }
 
 
+static uint32_t CalSecurityCode(void)
+{
+  uint32_t i;
+
+  typedef struct
+  {
+    uint32_t id1;
+    uint32_t id2;
+    uint32_t id3;
+  } UIDTypeDef;
+
+  UIDTypeDef id = *(volatile UIDTypeDef *)(0x1FFF0000 + 0xF7E8);
+  uint32_t result = 0;
+
+  for (i = 0x08000000; i < BOOT_KEY_ADDRESS; i += 4)
+  {
+    result ^= *((volatile uint32_t *)i);
+  }
+
+  result ^= 0x12345678;
+  result ^= id.id1;
+  result ^= id.id2;
+  result ^= id.id3;
+
+  return result;
+}
+
+static uint8_t CheckSecurity(void)
+{
+  uint32_t key_store = (uint32_t) * (vu32 *)(BOOT_KEY_ADDRESS);
+  uint32_t key_cal = CalSecurityCode();
+
+	if (key_cal == key_store)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+  
+}
+
+
 void InitSystemConfig(void)
 {
+	if(CheckSecurity() == 0)
+	{
+		Security = 0;
+		UserPrintf("Error: bad firmware \n");
+		while(1);
+	}
+	
   RecPackage.DataID = ACTION_NULL;
   RecPackage.DataInBuff = RecBuffer;
   RecPackage.DataOutBuff = SystemBuf;

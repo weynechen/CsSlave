@@ -28,6 +28,11 @@ static void FPGAWrite16BitData(uint16_t data)
 
 void LcdDrvSetTiming(void)
 {
+	
+	if(Security == 0)
+		return;
+	
+	
   FPGA_WRITE_CMD(0xB0);
   FPGAWrite16BitData(LCDTiming.LCDH);
   FPGAWrite16BitData(LCDTiming.LCDV);

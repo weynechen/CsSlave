@@ -18,8 +18,6 @@
 #define CONFIG_BASE_ADDRESS                   ADDR_FLASH_PAGE_11
 #define FIRMWARE_BASE_ADDRESS                 ADDR_FLASH_PAGE_17
 #define FIRMWARE_UPGRADE_FLAG_BASE_ADDRESS    ADDR_FLASH_PAGE_56
-#define KEY_STORE_ADDRESS                     ADDR_FLASH_PAGE_10
-#define BOOT_KEY_ADDRESS ADDR_FLASH_PAGE_5
 #define NUMBER_OF_UPGRADE_PAGES               40
 #define NUMBER_OF_CONFIG_PAGES                5
 #define NUMBER_OF_APP_PAGAES                  40

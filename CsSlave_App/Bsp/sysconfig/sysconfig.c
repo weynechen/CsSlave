@@ -11,11 +11,14 @@
 #include "ack.h"
 #include "string.h"
 
+#define KEY_STORE_ADDRESS ADDR_FLASH_PAGE_10
+#define BOOT_KEY_ADDRESS ADDR_FLASH_PAGE_5
+
 //KEY
 const uint32_t __attribute__((at(KEY_STORE_ADDRESS + 20))) KeyStore = 0x5A2F5D81;
 
 /* 数据缓冲区，读写SDCard,flash等用*/
-uint8_t SystemBuf[BUFFER_SIZE+1];
+uint8_t SystemBuf[BUFFER_SIZE + 1];
 /*接收串口和USB口数据用*/
 uint8_t RecBuffer[BUFFER_SIZE];
 /*接收有效数据计数*/
@@ -58,7 +61,6 @@ void FlashConfig(void)
   }
 }
 
-
 void ReadSystemConfig(void)
 {
   SystemConfig = *((ConfigTypeDef *)CONFIG_BASE_ADDRESS);
@@ -71,7 +73,6 @@ void ReadSystemConfig(void)
     UserPrintf("Error: LCD config not found or wrong\n");
   }
 }
-
 
 static uint32_t CalSecurityCode(void)
 {
@@ -105,35 +106,33 @@ static uint8_t CheckSecurity(void)
   uint32_t key_store = (uint32_t) * (vu32 *)(BOOT_KEY_ADDRESS);
   uint32_t key_cal = CalSecurityCode();
 
-	if (key_cal == key_store)
-	{
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-  
+  if (key_cal == key_store)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
 }
-
 
 void InitSystemConfig(void)
 {
-	if(CheckSecurity() == 0)
-	{
-		Security = 0;
-		UserPrintf("Error: bad firmware \n");
-		while(1);
-	}
-	
+  if (CheckSecurity() == 0)
+  {
+    Security = 0;
+    UserPrintf("Error: bad firmware \n");
+    while (1)
+      ;
+  }
+
   RecPackage.DataID = ACTION_NULL;
   RecPackage.DataInBuff = RecBuffer;
   RecPackage.DataOutBuff = SystemBuf;
   RecPackage.DataOutLen = &RecCounter;
-	
-	memset(&PatternProperty,0,sizeof(PatternProperty));
-}
 
+  memset(&PatternProperty, 0, sizeof(PatternProperty));
+}
 
 void GetFirmwareVersion(void)
 {
@@ -142,7 +141,6 @@ void GetFirmwareVersion(void)
 
   UserPrintf("Info:Version--v%d.%d.%d\n", *(p + 3), *(p + 2), *p);
 }
-
 
 void CacheData(void)
 {
@@ -156,9 +154,9 @@ void CacheData(void)
     ConfigData[0] = *RecPackage.DataOutBuff;
     break;
 
-	case ACT_SET_KEY:
-	ConfigData[0] = *RecPackage.DataOutBuff;
-	break;
+  case ACT_SET_KEY:
+    ConfigData[0] = *RecPackage.DataOutBuff;
+    break;
 
   case ACT_SET_SSD2828:
     memcpy(ConfigData, RecPackage.DataOutBuff, RecCounter);
@@ -169,7 +167,6 @@ void CacheData(void)
   }
 }
 
-
 /**
  * @brief  软件复位
  * @param  None
@@ -177,19 +174,18 @@ void CacheData(void)
  */
 void SoftwareReset(void)
 {
-  __set_FAULTMASK(1);       // close all interrupt
-  SCB->VTOR = 0x08000000;   //re-located boot address
-  __DSB();                  /* Ensure all outstanding memory accesses included
+  __set_FAULTMASK(1);     // close all interrupt
+  SCB->VTOR = 0x08000000; //re-located boot address
+  __DSB();                /* Ensure all outstanding memory accesses included
                              *  buffered write are completed before reset */
   SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) |
                 (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
                 SCB_AIRCR_VECTCLRACTIVE_Msk |
-                SCB_AIRCR_SYSRESETREQ_Msk);   /* Keep priority group unchanged */
-  __DSB();                                    /* Ensure completion of memory access */
+                SCB_AIRCR_SYSRESETREQ_Msk); /* Keep priority group unchanged */
+  __DSB();                                  /* Ensure completion of memory access */
   while (1)
   {
   }
 }
-
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

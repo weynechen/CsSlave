@@ -42,6 +42,7 @@
 #include "ack.h"
 #include "pro.h"
 #include "string.h"
+#include "flickersensor.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -288,7 +289,10 @@ void USART3_IRQHandler(void)
 	{
 		__HAL_UART_CLEAR_IDLEFLAG(&huart3);	
     UART3_RestartDMA();
-
+    if(ParseFlickerData()==1)
+    {
+      FlickerDataReady = 1;
+    }
 		//RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
 
 	}

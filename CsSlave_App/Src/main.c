@@ -59,6 +59,7 @@
 #include "task.h"
 #include "ctrlbox.h"
 #include "mtp.h"
+#include "flickersensor.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -84,48 +85,100 @@ static uint8_t Vcom = 0x9B;
 
 static void SetVcom(void)
 {
-	SSD2828_GenericLongWrite(3);
-	SSD2828WriteData(0xD4);
-	SSD2828WriteData(0x00);
-	SSD2828WriteData(Vcom);	
-}
-
-static void TuningVcom(KeyTypeDef key)
-{
-	char temp[4];
-	if(key == KEY_UP)
-	{
-		Vcom ++;
-	}
-	else if(key == KEY_DOWN)
-	{
-		Vcom --;
-	}
-	SetVcom();
-	snprintf(temp,sizeof(temp),"%02X",Vcom);
-	LCD_ShowString(0,0,temp);
+  SSD2828_GenericLongWrite(3);
+  SSD2828WriteData(0xD4);
+  SSD2828WriteData(0x00);
+  SSD2828WriteData(Vcom);
 }
 
 static void MTP(void)
 {
-	Power_SetBLCurrent(0);
-	
-	ResetMipiLcd();
-	SetMipiPara();
-	SetMTPCode(Vcom);
-	ResetMipiLcd();
-	
-	SSD2828_DcsShortWrite(1);
-	SSD2828WriteData(0x11);
-	HAL_Delay(100);
-	SSD2828_DcsShortWrite(1);
-	SSD2828WriteData(0x29);
-	
-	Power_SetBLCurrent(SystemConfig.Backlight);
+  Power_SetBLCurrent(0);
+
+  ResetMipiLcd();
+  SetMipiPara();
+  SetMTPCode(Vcom);
+  ResetMipiLcd();
+
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x11);
+  HAL_Delay(100);
+  SSD2828_DcsShortWrite(1);
+  SSD2828WriteData(0x29);
+
+  Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
-	SSD2828_SetMode(VD);
+  SSD2828_SetMode(VD);
 }
 
+static void TuningVcom(KeyTypeDef key)
+{
+  char temp[4];
+  if (key == KEY_UP)
+  {
+    Vcom++;
+  }
+  else if (key == KEY_DOWN)
+  {
+    Vcom--;
+  }
+  SetVcom();
+  snprintf(temp, sizeof(temp), "%02X", Vcom);
+  LCD_ShowString(0, 0, temp);
+}
+
+const static float TargetFlickerValue = 10.0;
+const static uint8_t VcomMin = 0;
+const static uint8_t VcomMax = 0xff;
+
+static uint8_t AutoTuningVcom(void)
+{
+  float flicker;
+  float last_flicker = 0;
+
+  if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
+  {
+    LCD_ShowString(0, 0, "flicker sensor error");
+    return 0;
+  }
+
+  //简单判断vcom的调整方向
+  Vcom += 5;
+  SetVcom();
+  GetFlickerValue(&flicker);
+
+  //根据不同的方向调整vcom值
+  if (flicker < last_flicker)
+  {
+    while ((Vcom < VcomMax) && (Vcom > VcomMin))
+    {
+      if (flicker <= TargetFlickerValue)
+        return 1;
+
+      Vcom++;
+      SetVcom();
+
+      if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
+        return 0;
+    }
+  }
+  else
+  {
+    while ((Vcom < VcomMax) && (Vcom > VcomMin))
+    {
+      if (flicker <= TargetFlickerValue)
+        return 1;
+
+      Vcom--;
+      SetVcom();
+
+      if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
+        return 0;
+    }
+  }
+
+  return 0;
+}
 
 /* USER CODE END 0 */
 
@@ -134,8 +187,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
   uint8_t key_control = 0;
   uint8_t power_on = 1;
-	uint8_t mtp_mode = 0;
-	
+  uint8_t mtp_mode = 0;
+
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -173,59 +226,59 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-	/*@TODO 
+  /*@TODO 
 	W25Nxx_Init();
   */
-	SSD2828_Init(4, 480);
+  SSD2828_Init(4, 480);
   ReadSystemConfig();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {    
-		ScanKey();
+  {
+    ScanKey();
     SwitchTask();
 
     switch (CtrlKey)
     {
     case KEY_UP:
       key_control = 1;
-			if(mtp_mode == 0)
-				PageTurning(PAGE_UP);
-			else
-				TuningVcom(KEY_UP);
+      if (mtp_mode == 0)
+        PageTurning(PAGE_UP);
+      else
+        TuningVcom(KEY_UP);
       break;
 
     case KEY_DOWN:
       key_control = 1;
-			if(mtp_mode == 0)
-				PageTurning(PAGE_DOWN);
-			else
-				TuningVcom(KEY_DOWN);
+      if (mtp_mode == 0)
+        PageTurning(PAGE_DOWN);
+      else
+        TuningVcom(KEY_DOWN);
       break;
 
     case KEY_POWER:
       key_control = 0;
-			mtp_mode =0;
-		
+      mtp_mode = 0;
+
       if (power_on == 1)
       {
-				GREEN_LIGHT_OFF;
-				RED_LIGHT_ON;
-				if(SystemConfig.LcdType == MIPI_LCD)
-				{
-					MipiLcdSleepIn();
-					SSD2828_SetReset(0);
+        GREEN_LIGHT_OFF;
+        RED_LIGHT_ON;
+        if (SystemConfig.LcdType == MIPI_LCD)
+        {
+          MipiLcdSleepIn();
+          SSD2828_SetReset(0);
         }
-				SetLcdPower(OFF);
+        SetLcdPower(OFF);
         Power_SetBLCurrent(0);
         power_on = 0;
       }
       else
       {
-				RED_LIGHT_OFF;
-				GREEN_LIGHT_ON;
+        RED_LIGHT_OFF;
+        GREEN_LIGHT_ON;
         Lcd_LightOn();
         LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
         power_on = 1;
@@ -233,34 +286,38 @@ int main(void)
       }
       break;
 
-		case KEY_MTP:
-			if(mtp_mode == 0)
-			{
-				LcdDrvSetCharIndex(PatternProperty.CurrentPattern);
-				mtp_mode =1;
-			}
-			else
-			{
-				//TODO
-				MTP();
-				mtp_mode =0;
-			}
-			break;
-			
+    case KEY_MTP:
+      if (mtp_mode == 0)
+      {
+        LcdDrvSetCharIndex(PatternProperty.CurrentPattern);
+        mtp_mode = 1;
+      }
+      else
+      {
+        //TODO
+        //LCD_ShowString(0, 0, "start");
+        if(AutoTuningVcom() == 1)
+          {
+            MTP();
+            SendVcomToFlickerSensor(Vcom);
+            SendIdToFlickerSensor(0);
+          }
+        mtp_mode = 0;
+      }
+      break;
+
     default:
       break;
     }
-		CtrlKey = KEY_NULL;
-		
-    if ((SystemConfig.IsAutoRun == 1) && (key_control == 0) &&(power_on == 1))
+    CtrlKey = KEY_NULL;
+
+    if ((SystemConfig.IsAutoRun == 1) && (key_control == 0) && (power_on == 1))
     {
       if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)
       {
-				PageTurning(PAGE_UP);
+        PageTurning(PAGE_UP);
       }
     }
-
-
 
     /* USER CODE END WHILE */
 
@@ -268,7 +325,6 @@ int main(void)
   }
   /* USER CODE END 3 */
 }
-
 
 /** System Clock Configuration
  */
@@ -289,8 +345,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-    | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -316,7 +371,6 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-
 /** NVIC Configuration
  */
 static void MX_NVIC_Init(void)
@@ -324,7 +378,7 @@ static void MX_NVIC_Init(void)
   /* DMA1_Channel5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-	
+
   /* USART1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
   HAL_NVIC_EnableIRQ(USART1_IRQn);
@@ -334,15 +388,14 @@ static void MX_NVIC_Init(void)
   /* SDIO_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SDIO_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(SDIO_IRQn);
-	
-	HAL_NVIC_SetPriority(DMA2_Channel4_IRQn, 2, 0);
+
+  HAL_NVIC_SetPriority(DMA2_Channel4_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(DMA2_Channel4_IRQn);
-	
+
   /* USB_LP_CAN1_RX0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
-
 
 /* USER CODE BEGIN 4 */
 int fputc(int ch, FILE *file)
@@ -353,7 +406,6 @@ int fputc(int ch, FILE *file)
   return ch;
 }
 
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim2)
@@ -361,7 +413,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     SendHeartBeat();
   }
 }
-
 
 /* USER CODE END 4 */
 
@@ -379,7 +430,6 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler */
 }
-
 
 #ifdef USE_FULL_ASSERT
 

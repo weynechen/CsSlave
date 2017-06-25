@@ -4,7 +4,7 @@
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
-  * COPYRIGHT(c) 2016 STMicroelectronics
+  * COPYRIGHT(c) 2017 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -50,6 +50,7 @@ extern DMA_HandleTypeDef hdma_sdio;
 extern SD_HandleTypeDef hsd;
 extern TIM_HandleTypeDef htim2;
 extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart3_rx;
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 
@@ -196,6 +197,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+* @brief This function handles DMA1 channel3 global interrupt.
+*/
+void DMA1_Channel3_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel3_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel3_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart3_rx);
+  /* USER CODE BEGIN DMA1_Channel3_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel3_IRQn 1 */
+}
+
+/**
 * @brief This function handles DMA1 channel5 global interrupt.
 */
 void DMA1_Channel5_IRQHandler(void)
@@ -253,7 +268,7 @@ void USART1_IRQHandler(void)
 		{
 			TaskID = (ActionIDTypeDef)RecPackage.DataID;
 			CacheData();
-			UART_RestartDMA();
+			UART1_RestartDMA();
 		}
 	}
   /* USER CODE END USART1_IRQn 0 */
@@ -269,7 +284,14 @@ void USART1_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
+	if(__HAL_UART_GET_IT_SOURCE(&huart3,UART_IT_IDLE))
+	{
+		__HAL_UART_CLEAR_IDLEFLAG(&huart3);	
+    UART3_RestartDMA();
 
+		//RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
+
+	}
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */

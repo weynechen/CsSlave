@@ -31,8 +31,8 @@
 /**
  * @brief 系统缓冲区的长度
  */
- #define BUFFER_SIZE                           8192 //在SD卡DMA模式时，必须为512的倍数
-
+#define BUFFER_SIZE                           8192 //在SD卡DMA模式时，必须为512的倍数
+#define  UART3_BUFFER_SIZE                     128
 
 /**
  * @brief  系统配置数据长度
@@ -131,6 +131,7 @@ typedef enum
 
 extern uint8_t SystemBuf[BUFFER_SIZE+1];
 extern uint8_t RecBuffer[BUFFER_SIZE];
+extern uint8_t Uart3RxBuffer[UART3_BUFFER_SIZE];
 extern ConfigTypeDef SystemConfig;
 extern LCDTimingParaTypeDef LCDTiming;
 extern PatternPropertyTypeDef PatternProperty;

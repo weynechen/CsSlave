@@ -12,7 +12,7 @@
 #define __FLICKERSENSOR_H
 #include "sysconfig.h"
 
-#define FLICKER_TIMEOUT 255
+#define FLICKER_TIMEOUT 0
 
 __packed typedef struct
 {

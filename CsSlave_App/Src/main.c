@@ -81,7 +81,9 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN 0 */
 
-static uint8_t Vcom = 0x9B;
+#define VCOM_VALUE 0x7B
+
+static int16_t Vcom = VCOM_VALUE;
 
 static void SetVcom(void)
 {
@@ -133,48 +135,35 @@ const static uint8_t VcomMax = 0xff;
 
 static uint8_t AutoTuningVcom(void)
 {
-  float flicker;
+  float flicker = 0;
   float last_flicker = 0;
+	int8_t k;
 
-  if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
-  {
-    LCD_ShowString(0, 0, "flicker sensor error");
-    return 0;
-  }
-
-  //简单判断vcom的调整方向
-  Vcom += 5;
+  Vcom = VCOM_VALUE;
   SetVcom();
-  GetFlickerValue(&flicker);
-
-  //根据不同的方向调整vcom值
-  if (flicker < last_flicker)
+  HAL_Delay(500);
+	if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
+		return 0;
+	
+	k = (flicker < last_flicker) ? 1 : -1;
+	
+  while ((Vcom < VcomMax) && (Vcom > VcomMin))
   {
-    while ((Vcom < VcomMax) && (Vcom > VcomMin))
-    {
-      if (flicker <= TargetFlickerValue)
-        return 1;
-
-      Vcom++;
-      SetVcom();
-
-      if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
-        return 0;
-    }
-  }
-  else
-  {
-    while ((Vcom < VcomMax) && (Vcom > VcomMin))
-    {
-      if (flicker <= TargetFlickerValue)
-        return 1;
-
-      Vcom--;
-      SetVcom();
-
-      if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
-        return 0;
-    }
+		if(flicker - last_flicker > 5)
+		{
+			k = (k==1)?-1:1;
+			last_flicker = flicker;
+		}
+		
+    Vcom += k;
+    SetVcom();
+    HAL_Delay(200);
+    if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
+      return 0;
+		
+		if (flicker <= TargetFlickerValue)
+      return 1;
+		
   }
 
   return 0;
@@ -296,12 +285,13 @@ int main(void)
       {
         //TODO
         //LCD_ShowString(0, 0, "start");
-        if(AutoTuningVcom() == 1)
-          {
-            MTP();
-            SendVcomToFlickerSensor(Vcom);
-            SendIdToFlickerSensor(0);
-          }
+        if (AutoTuningVcom() == 1)
+        {
+          UserPrintf("vcom:0x%x\n", Vcom);
+          //MTP();
+          SendVcomToFlickerSensor(Vcom);
+          SendIdToFlickerSensor(0);
+        }
         mtp_mode = 0;
       }
       break;

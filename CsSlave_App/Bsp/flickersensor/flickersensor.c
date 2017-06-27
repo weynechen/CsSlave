@@ -73,7 +73,7 @@ uint8_t ParseFlickerData(void)
 
 uint8_t GetFlickerValue(float *flicker)
 {
-    uint32_t timeout = 0xffff;
+    uint32_t timeout = 0xffffff;
     FlickerPackageTypeDef *data = ( FlickerPackageTypeDef *)Uart3RxBuffer;
 
     while(FlickerDataReady != 1)

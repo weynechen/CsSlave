@@ -59,6 +59,7 @@ ehthumbs.db
 *.lst
 *.bin
 *.__i
+*.Scr
 /listings
 /objects
 

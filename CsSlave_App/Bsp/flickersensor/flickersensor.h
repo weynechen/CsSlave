@@ -32,7 +32,7 @@ typedef enum {
 typedef enum {
     FLICKER_VALUE,
     VCOM_VALUE,
-    ID,
+    ID_VALUE,
 
 } FlickerSensorTypeDef;
 

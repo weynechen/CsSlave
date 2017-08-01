@@ -52,44 +52,41 @@ uint8_t CalCrc8(const uint8_t *data, uint16_t data_len)
     return crc;
 }
 
-
 uint8_t ParseFlickerData(void)
 {
-    FlickerPackageTypeDef data = *( FlickerPackageTypeDef *)Uart3RxBuffer;
+    FlickerPackageTypeDef data = *(FlickerPackageTypeDef *)Uart3RxBuffer;
     uint8_t crc;
-    crc = CalCrc8((uint8_t *)&data,sizeof(data)-1);
-    if(crc != data.Crc8)
+    crc = CalCrc8((uint8_t *)&data, sizeof(data) - 1);
+    if (crc != data.Crc8)
         return 0;
 
-    if(data.DeviceID != FLCIKER_SENSOR)
+    if (data.DeviceID != FLCIKER_SENSOR)
         return 0;
 
-    if(data.PackageID != FLICKER_VALUE)
+    if (data.PackageID != FLICKER_VALUE)
         return 0;
 
-    return  1;
+    return 1;
 }
-
 
 uint8_t GetFlickerValue(float *flicker)
 {
     uint32_t timeout = 0xffffff;
-    FlickerPackageTypeDef *data = ( FlickerPackageTypeDef *)Uart3RxBuffer;
+    FlickerPackageTypeDef *data = (FlickerPackageTypeDef *)Uart3RxBuffer;
 
-    while(FlickerDataReady != 1)
+    while (FlickerDataReady != 1)
     {
-        timeout -- ;
-        if(timeout == 0)
+        timeout--;
+        if (timeout == 0)
             return FLICKER_TIMEOUT;
     }
 
     FlickerDataReady = 0;
 
-    *flicker = (float)data->Data/10.0; 
+    *flicker = (float)data->Data / 10.0;
 
     return 1;
 }
-
 
 void SendVcomToFlickerSensor(uint16_t vcom)
 {
@@ -100,19 +97,25 @@ void SendVcomToFlickerSensor(uint16_t vcom)
     package.Data = vcom;
     package.Crc8 = CalCrc8((uint8_t *)&package, sizeof(package) - 1);
 
+    __HAL_RCC_FSMC_CLK_DISABLE();
     HAL_UART_Transmit(&huart3, (uint8_t *)&package, sizeof(package), 100);
+    __HAL_RCC_FSMC_CLK_ENABLE();
+    HAL_Delay(50);
 }
 
 void SendIdToFlickerSensor(uint16_t id)
 {
     FlickerPackageTypeDef package;
     package.DeviceID = FLCIKER_SENSOR;
-    package.PackageID = VCOM_VALUE;
+    package.PackageID = ID_VALUE;
     package.DataLength = 2;
     package.Data = id;
     package.Crc8 = CalCrc8((uint8_t *)&package, sizeof(package) - 1);
 
+    __HAL_RCC_FSMC_CLK_DISABLE();
     HAL_UART_Transmit(&huart3, (uint8_t *)&package, sizeof(package), 100);
+    __HAL_RCC_FSMC_CLK_ENABLE();
+    HAL_Delay(50);
 }
 
 /********************* (C) COPYRIGHT WEYNE CHEN *******END OF FILE ********/

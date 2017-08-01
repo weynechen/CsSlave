@@ -99,6 +99,7 @@ static void MTP(void)
 
   ResetMipiLcd();
   SetMipiPara();
+  SSD2828_SetMode(LP);
   SetMTPCode(Vcom);
   ResetMipiLcd();
 
@@ -137,33 +138,32 @@ static uint8_t AutoTuningVcom(void)
 {
   float flicker = 0;
   float last_flicker = 0;
-	int8_t k;
+  int8_t k;
 
   Vcom = VCOM_VALUE;
   SetVcom();
   HAL_Delay(500);
-	if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
-		return 0;
-	
-	k = (flicker < last_flicker) ? 1 : -1;
-	
+  if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
+    return 0;
+
+  k = (flicker < last_flicker) ? 1 : -1;
+
   while ((Vcom < VcomMax) && (Vcom > VcomMin))
   {
-		if(flicker - last_flicker > 5)
-		{
-			k = (k==1)?-1:1;
-			last_flicker = flicker;
-		}
-		
+    if (flicker - last_flicker > 5)
+    {
+      k = (k == 1) ? -1 : 1;
+      last_flicker = flicker;
+    }
+
     Vcom += k;
     SetVcom();
     HAL_Delay(200);
     if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
       return 0;
-		
-		if (flicker <= TargetFlickerValue)
+
+    if (flicker <= TargetFlickerValue)
       return 1;
-		
   }
 
   return 0;
@@ -285,7 +285,7 @@ int main(void)
       {
         //TODO
         //LCD_ShowString(0, 0, "start");
-        if (AutoTuningVcom() == 1)
+        // if (AutoTuningVcom() == 1)
         {
           UserPrintf("vcom:0x%x\n", Vcom);
           //MTP();

@@ -43,6 +43,8 @@
 #include "pro.h"
 #include "string.h"
 #include "flickersensor.h"
+#include "ppro.h"
+#include "tp.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -56,7 +58,7 @@ extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 
 /******************************************************************************/
-/*            Cortex-M3 Processor Interruption and Exception Handlers         */ 
+/*            Cortex-M3 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
 
 /**
@@ -258,20 +260,19 @@ void TIM2_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-	if(__HAL_UART_GET_IT_SOURCE(&huart1,UART_IT_IDLE))
-	{
-		__HAL_UART_CLEAR_IDLEFLAG(&huart1);	
+  if (__HAL_UART_GET_IT_SOURCE(&huart1, UART_IT_IDLE))
+  {
+    __HAL_UART_CLEAR_IDLEFLAG(&huart1);
 
+    RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
 
-		RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
-
-		if(Unpacking(&RecPackage) == PACK_OK)
-		{
-			TaskID = (ActionIDTypeDef)RecPackage.DataID;
-			CacheData();
-			UART1_RestartDMA();
-		}
-	}
+    if (Unpacking(&RecPackage) == PACK_OK)
+    {
+      TaskID = (ActionIDTypeDef)RecPackage.DataID;
+      CacheData();
+      UART1_RestartDMA();
+    }
+  }
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
@@ -285,17 +286,29 @@ void USART1_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   /* USER CODE BEGIN USART3_IRQn 0 */
-	if(__HAL_UART_GET_IT_SOURCE(&huart3,UART_IT_IDLE))
-	{
-		__HAL_UART_CLEAR_IDLEFLAG(&huart3);	
-    UART3_RestartDMA();
-    if(ParseFlickerData()==1)
+  if (__HAL_UART_GET_IT_SOURCE(&huart3, UART_IT_IDLE))
+  {
+    __HAL_UART_CLEAR_IDLEFLAG(&huart3);
+    if (Ppro_ParseData(Uart3RxBuffer) == 1)
     {
-      FlickerDataReady = 1;
-    }
-		//RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
+      PproTypeDef data = *(PproTypeDef *)Uart3RxBuffer;
+      switch(data.DeviceID)
+      {
+        case TP:
+        TP_Callback(&data);
+        break;
 
-	}
+        case FLCIKER_SENSOR:
+        FS_Callback(&data);
+        break;
+
+        default:
+        break;
+      }
+    }
+    UART3_RestartDMA();
+    //RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
+  }
   /* USER CODE END USART3_IRQn 0 */
   HAL_UART_IRQHandler(&huart3);
   /* USER CODE BEGIN USART3_IRQn 1 */

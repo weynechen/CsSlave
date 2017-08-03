@@ -24,8 +24,18 @@ void ScanKey(void)
   }
   else if (HAL_GPIO_ReadPin(GPIOE, KEY_UP_Pin) == GPIO_PIN_RESET)
   {
+    uint32_t times = 0;
     HAL_Delay(30);
     while (HAL_GPIO_ReadPin(GPIOE, KEY_UP_Pin) == GPIO_PIN_RESET)
+    {
+      times++;
+      HAL_Delay(1);
+    }
+    if(times > 2400)
+    {
+      CtrlKey = KEY_TP;
+    }
+    else
     {
       CtrlKey = KEY_UP;
     }
@@ -37,20 +47,19 @@ void ScanKey(void)
     {
       CtrlKey = KEY_DOWN;
     }
-	}
+  }
   else if (HAL_GPIO_ReadPin(GPIOB, KEY_MTP_Pin) == GPIO_PIN_RESET)
   {
     HAL_Delay(30);
     while (HAL_GPIO_ReadPin(GPIOB, KEY_MTP_Pin) == GPIO_PIN_RESET)
     {
       CtrlKey = KEY_MTP;
-    }		
+    }
   }
-//	else
-//	{
-//		CtrlKey = KEY_NULL;
-//	}
+  //	else
+  //	{
+  //		CtrlKey = KEY_NULL;
+  //	}
 }
-
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

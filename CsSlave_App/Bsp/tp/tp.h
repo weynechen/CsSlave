@@ -13,6 +13,7 @@
 #include "ppro.h"
 
 void TP_Callback(PproTypeDef *data);
+uint8_t TP_StartTest(void);
 
 typedef enum {
     TP_START,  /*开始测试*/

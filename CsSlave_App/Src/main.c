@@ -60,6 +60,7 @@
 #include "ctrlbox.h"
 #include "mtp.h"
 #include "flickersensor.h"
+#include "tp.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -293,6 +294,17 @@ int main(void)
           SendIdToFlickerSensor(0);
         }
         mtp_mode = 0;
+      }
+      break;
+
+    case KEY_TP:
+      if (TP_StartTest() == 1)
+      {
+        LCD_ShowString(0, 0, "TP OK");
+      }
+      else
+      {
+        LCD_ShowString(0, 0, "TP NG");
       }
       break;
 

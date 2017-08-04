@@ -333,7 +333,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xE</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;..\Bsp\power;..\Protocol;..\Bsp\sysconfig;..\Algorithm\pattern;..\Bsp\fpga;..\Bsp\res;..\Bsp\lcd;..\Bsp\flash_if;..\Bsp\spi_flash;..\Algorithm\upgrade;..\USBConfig;..\Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\ctlbox;..\Bsp\rgb_if;..\Bsp\flickersensor</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FatFs/src/drivers;../Middlewares/Third_Party/FatFs/src;../Drivers/CMSIS/Include;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;..\Bsp\cdce;..\Bsp\ssd2828;..\Bsp\power;..\Protocol;..\Bsp\sysconfig;..\Algorithm\pattern;..\Bsp\fpga;..\Bsp\res;..\Bsp\lcd;..\Bsp\flash_if;..\Bsp\spi_flash;..\Algorithm\upgrade;..\USBConfig;..\Middlewares\ST\STM32_USB_Device_Library\Class\MSC\Inc;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;..\Bsp\ctlbox;..\Bsp\rgb_if;..\Bsp\flickersensor;..\Bsp\tp</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -650,6 +650,16 @@
               <FileName>flickersensor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Bsp\flickersensor\flickersensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>tp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Bsp\tp\tp.c</FilePath>
+            </File>
+            <File>
+              <FileName>ppro.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Protocol\ppro.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -103,7 +103,7 @@ void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
 void PageTurning(PageTurningTypeDef page);
 void ResetMipiLcd(void);
 void SetMipiPara(void);
-
+void PrepareBg(void);
 extern FontColorTypeDef FontColor;
 
 #endif

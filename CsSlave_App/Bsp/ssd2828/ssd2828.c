@@ -427,6 +427,7 @@ void SSD2828_Reset(void)
 	HAL_Delay(50);
 	SSD2828_RESET = 1;
 	HAL_Delay(10);
+	SSD2828_SetMode(LP);
 }
 
 

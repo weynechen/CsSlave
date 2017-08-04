@@ -47,7 +47,7 @@ void LcdDrvSetTiming(void);
 void LcdDrvSetPattern(void);
 void LcdDrvShowPattern(uint32_t data);
 void LcdDrvOpenRGB(void);
-void LcdDrvSetXY(uint16_t x , uint16_t y);
+void LcdDrvSetXY(uint16_t x, uint16_t y);
 void LcdDrvSetCharIndex(uint8_t frame);
 #endif
 

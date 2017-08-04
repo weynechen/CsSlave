@@ -14,6 +14,12 @@
 uint8_t FlickerDataReady = 0;
 static uint16_t FlickerValue;
 
+static void FS_SendData(uint8_t pid, uint16_t data)
+{
+    Ppro_SendData(FLCIKER_SENSOR, pid, data);
+    HAL_Delay(50);
+}
+
 void FS_Callback(PproTypeDef *data)
 {
     switch (data->PackageID)
@@ -30,13 +36,16 @@ void FS_Callback(PproTypeDef *data)
 
 uint8_t GetFlickerValue(float *flicker)
 {
-    uint32_t timeout = 0xffffff;
-
+    uint32_t timeout = 10;
+    FS_SendData(FLICKER_VALUE, 0);
     while (FlickerDataReady != 1)
     {
         timeout--;
         if (timeout == 0)
             return FLICKER_TIMEOUT;
+
+        FS_SendData(FLICKER_VALUE, 0);
+        HAL_Delay(100);
     }
 
     FlickerDataReady = 0;
@@ -44,12 +53,6 @@ uint8_t GetFlickerValue(float *flicker)
     *flicker = (float)FlickerValue / 10.0;
 
     return 1;
-}
-
-static void FS_SendData(uint8_t pid, uint16_t data)
-{
-    Ppro_SendData(FLCIKER_SENSOR, pid, data);
-    HAL_Delay(50);
 }
 
 void SendVcomToFlickerSensor(uint16_t vcom)

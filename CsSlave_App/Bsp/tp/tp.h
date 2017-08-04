@@ -18,9 +18,9 @@ uint8_t TP_StartTest(void);
 typedef enum {
     TP_START,  /*开始测试*/
     TP_ECHO,   /*测试开始后的心跳信号*/
-    TP_RESULT, /*测试结果*/
     TP_WAKUP,  /*唤醒USART1*/
     TP_SLEEP,  /*关闭USART1*/
+    TP_RESULT = 128, /*测试结果*/
 } TPPIDTypeDef;
 
 #endif

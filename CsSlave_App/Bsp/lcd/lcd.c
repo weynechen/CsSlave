@@ -28,9 +28,11 @@ uint8_t ReadBackTemp[32];
 
 static uint8_t ShowIDPattern = 0xff;
 
+static uint8_t FindSDRAMPatternAmount(void);
+
 void SetLcdPower(StateTypeDef state)
 {
-  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP ,POWER_AVDD};
+  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP, POWER_AVDD};
   uint8_t i = 0;
 
   if (state == ON)
@@ -363,8 +365,9 @@ static void ShowID(void)
 {
   uint16_t j = 0, x = 0, y = 0;
   char temp[16];
+  uint8_t amount = FindSDRAMPatternAmount();
 
-  LcdDrvSetCharIndex(ShowIDPattern);
+  PrepareBg();
 
   while (j < ReadBackAmount)
   {
@@ -393,16 +396,15 @@ void SetPattern(void)
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
 
-
   while (i < size)
   {
     uint8_t is_pattern = 1;
-    
-		FPGA_WRITE_CMD(0x1B);
-		FPGA_WRITE_DATA(0xAA);
-		FPGA_WRITE_DATA(0xAA);
-		FPGA_WRITE_DATA(0xAA);
-		LcdDrvSetPattern();
+
+    FPGA_WRITE_CMD(0x1B);
+    FPGA_WRITE_DATA(0xAA);
+    FPGA_WRITE_DATA(0xAA);
+    FPGA_WRITE_DATA(0xAA);
+    LcdDrvSetPattern();
     if (PatternProperty.Counter > PATTERN_AMOUNT)
     {
       break;
@@ -424,7 +426,7 @@ void SetPattern(void)
       FPGA_WRITE_DATA(g);
       FPGA_WRITE_DATA(b);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,RGB(0x%02X,%02X,%02X)", PatternProperty.Counter, r, g, b);
-			PatternProperty.Data[PatternProperty.Counter] = (uint32_t)((uint32_t)(FPGA_IO_MODE) | (uint32_t)r<<16 | (uint32_t)g<<8 |(uint32_t)b);
+      PatternProperty.Data[PatternProperty.Counter] = (uint32_t)((uint32_t)(FPGA_IO_MODE) | (uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
       PatternProperty.Counter++;
       break;
 
@@ -434,20 +436,20 @@ void SetPattern(void)
       else
         ShowIDPattern = 0;
 
-      ShowID();
+      //ShowID();
       break;
 
     case FLICKERV:
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
-			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
     case FLICKERH:
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
-			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
@@ -455,27 +457,27 @@ void SetPattern(void)
       Img_ColorBarV();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical colorbar", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case COLORBARH:
       Img_ColorBar();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal colorbar", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case GRAYLEVEL_V:
       Img_Gray256_V();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical gray level", PatternProperty.Counter);
-			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
       break;
 
     case GRAYLEVEL_H:
       Img_Gray256_H();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal gray level", PatternProperty.Counter);
-			PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
@@ -483,35 +485,35 @@ void SetPattern(void)
       Img_CT();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,crosstalk", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case CHESSBOARD:
       Img_Chcker58();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,chessboard", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-		  PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case RGBBAR:
       RGBBar();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,rgbbar", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case RGBLEVEL:
       RGBLevel();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,rgblevel", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case FRAME:
       Img_Box();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,frame", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       break;
 
     case PIC:
@@ -519,7 +521,7 @@ void SetPattern(void)
 
       snprintf(PatternProperty.Name[PatternProperty.Counter], PATTERN_NAME_LEN, "%d,PIC %s", PatternProperty.Counter, (char *)(p + i));
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       i += strlen((char *)p + i);
       i++; // 跳过结束符
       break;
@@ -542,7 +544,7 @@ void SetPattern(void)
       Img_Full(0xff, 0xff, 0xff);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepIn");
       PatternProperty.Data[PatternProperty.Counter] = 0xff000000;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       is_pattern = 0;
       break;
 
@@ -550,7 +552,7 @@ void SetPattern(void)
       Img_Full(0xff, 0xff, 0xff);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "SleepOut");
       PatternProperty.Data[PatternProperty.Counter] = 0xff000001;
-			PatternProperty.Counter++;
+      PatternProperty.Counter++;
       is_pattern = 0;
       break;
 
@@ -567,7 +569,12 @@ void SetPattern(void)
     if (is_pattern)
       HAL_Delay(500);
   }
-
+  FPGA_WRITE_CMD(0x1B);
+  FPGA_WRITE_DATA(0xAA);
+  FPGA_WRITE_DATA(0xAA);
+  FPGA_WRITE_DATA(0xAA);
+  LcdDrvSetPattern();
+  Img_Full(0xff, 0xff, 0xff);
   LcdDrvShowPattern(0);
 }
 
@@ -606,8 +613,8 @@ void ResetMipiLcd(void)
 
 void Lcd_ReInit(void)
 {
-	GREEN_LIGHT_OFF;
-	RED_LIGHT_ON;
+  GREEN_LIGHT_OFF;
+  RED_LIGHT_ON;
   memset(&PatternProperty, 0, sizeof(PatternProperty));
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   SetLcdTiming();
@@ -641,8 +648,8 @@ void Lcd_ReInit(void)
   LcdDrvOpenRGB();
   //RGB_SPI_Test();
   SetPattern();
-	GREEN_LIGHT_ON;
-	RED_LIGHT_OFF;
+  GREEN_LIGHT_ON;
+  RED_LIGHT_OFF;
   //	LcdDrvShowPattern(1);
 }
 
@@ -666,10 +673,21 @@ void Lcd_LightOn(void)
     ResetRGBLcd();
     SetRGBSPI8Or9BitLcdInitCode();
   }
-  if (ShowIDPattern != 0xff)
-    ShowID();
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
+  if (ShowIDPattern != 0xff)
+  {
+		uint16_t times=0;
+    ShowID();
+		while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_SET)
+		{
+			times++;
+			if(times>10000)
+				break;
+			HAL_Delay(1);
+		}	
+		while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET);		
+  }
 }
 
 void MipiLcdSleepIn(void)
@@ -715,7 +733,6 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   for (pos = 0; pos < 64; pos += 2)
   {
     LcdDrvSetXY(x, y + (pos >> 1));
-
     temp = asc2_3216[chars][pos];
     for (t = 0; t < 8; t++)
     {
@@ -755,7 +772,6 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 
 void LCD_ShowString(uint16_t x, uint16_t y, const char *p)
 {
-
   while (*p != '\0')
   {
     LCD_ShowChar(x, y, *p);
@@ -806,6 +822,42 @@ void PageTurning(PageTurningTypeDef page)
     }
   }
   Turning();
+}
+
+static uint8_t FindSDRAMPatternAmount(void)
+{
+  uint8_t i;
+  uint8_t counter = 0;
+
+  for (i = 0; i < PatternProperty.Counter; i++)
+  {
+    uint32_t data = PatternProperty.Data[i];
+    if ((data & FPGA_IO_MODE) != FPGA_IO_MODE)
+    {
+      counter++;
+    }
+  }
+
+  return counter;
+}
+
+void PrepareBg(void)
+{
+	uint16_t i,j;
+  uint8_t amount = FindSDRAMPatternAmount();
+  LcdDrvShowPattern(amount);
+  LcdDrvSetCharIndex(amount);
+	for (j = 0; j < LCDTiming.LCDV/4; j++)
+  {
+    LcdDrvSetXY(0,j);
+    for (i = 0; i < LCDTiming.LCDH/4; i++)
+    {
+        LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 8);
+        LcdDrvWriteData(FontColor.Background);
+    }
+	}
+  LcdDrvSetCharIndex(amount);
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

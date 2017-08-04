@@ -82,7 +82,7 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN 0 */
 
-#define VCOM_VALUE 0x7B
+#define VCOM_VALUE 0x8B
 
 static int16_t Vcom = VCOM_VALUE;
 
@@ -134,6 +134,7 @@ static void TuningVcom(KeyTypeDef key)
 const static float TargetFlickerValue = 10.0;
 const static uint8_t VcomMin = 0;
 const static uint8_t VcomMax = 0xff;
+const static int8_t Step = 1;
 
 static uint8_t AutoTuningVcom(void)
 {
@@ -143,7 +144,7 @@ static uint8_t AutoTuningVcom(void)
 
   Vcom = VCOM_VALUE;
   SetVcom();
-  HAL_Delay(500);
+  HAL_Delay(20);
   if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
     return 0;
 
@@ -153,13 +154,13 @@ static uint8_t AutoTuningVcom(void)
   {
     if (flicker - last_flicker > 5)
     {
-      k = (k == 1) ? -1 : 1;
+      k = (k == Step) ? -Step : Step;
       last_flicker = flicker;
     }
 
     Vcom += k;
-    SetVcom();
-    HAL_Delay(200);
+    SetVcom();  
+		HAL_Delay(10);
     if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
       return 0;
 
@@ -279,15 +280,16 @@ int main(void)
     case KEY_MTP:
       if (mtp_mode == 0)
       {
-        LcdDrvSetCharIndex(PatternProperty.CurrentPattern);
+        LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
         mtp_mode = 1;
       }
       else
       {
         //TODO
         //LCD_ShowString(0, 0, "start");
-        // if (AutoTuningVcom() == 1)
+        if (AutoTuningVcom() == 1)
         {
+					LCD_ShowString(0, 0, "OK");
           UserPrintf("vcom:0x%x\n", Vcom);
           //MTP();
           SendVcomToFlickerSensor(Vcom);
@@ -298,13 +300,15 @@ int main(void)
       break;
 
     case KEY_TP:
+			PrepareBg();
+			LCD_ShowString(0, 0, "TP Testing...");
       if (TP_StartTest() == 1)
       {
-        LCD_ShowString(0, 0, "TP OK");
+        LCD_ShowString(0, 32, "TP OK");
       }
       else
       {
-        LCD_ShowString(0, 0, "TP NG");
+        LCD_ShowString(0, 32, "TP NG");
       }
       break;
 

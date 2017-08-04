@@ -31,7 +31,7 @@ void ScanKey(void)
       times++;
       HAL_Delay(1);
     }
-    if(times > 2400)
+    if(times > 2000)
     {
       CtrlKey = KEY_TP;
     }

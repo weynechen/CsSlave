@@ -10,29 +10,25 @@
 #include "fpga.h"
 #include "sysconfig.h"
 
-
 void LcdDrvWriteData(uint8_t para)
 {
   FPGA_WRITE_DATA(para);
 }
 
-
 static void FPGAWrite16BitData(uint16_t data)
 {
-	if(data > 0)
-  data = data - 1;
+  if (data > 0)
+    data = data - 1;
   FPGA_WRITE_DATA(data >> 8);
   FPGA_WRITE_DATA(data);
 }
 
-
 void LcdDrvSetTiming(void)
 {
-	
-	if(Security == 0)
-		return;
-	
-	
+
+  if (Security == 0)
+    return;
+
   FPGA_WRITE_CMD(0xB0);
   FPGAWrite16BitData(LCDTiming.LCDH);
   FPGAWrite16BitData(LCDTiming.LCDV);
@@ -50,43 +46,49 @@ void LcdDrvSetTiming(void)
   FPGA_WRITE_CMD(0x28);
 }
 
-
 void LcdDrvOpenRGB(void)
 {
   FPGA_WRITE_CMD(0x29);
 }
-
 
 void LcdDrvCloseRGB(void)
 {
   FPGA_WRITE_CMD(0x28);
 }
 
-
 void LcdDrvSetPattern(void)
 {
-  FPGA_WRITE_CMD(0x3C);
+  FPGA_WRITE_CMD(0x2C);
 }
 
-void LcdDrvSetXY(uint16_t x , uint16_t y)
+uint32_t CalRAMAddress(uint8_t frame)
+{
+  uint32_t address;
+  address = LCDTiming.LCDH;
+  address *= LCDTiming.LCDV;
+  address *= frame;
+
+  return address;
+}
+
+void LcdDrvSetXY(uint16_t x, uint16_t y)
 {
   uint32_t address = 0;
   uint8_t i = 0;
   uint8_t *p = (uint8_t *)&address;
-	
-	address = LCDTiming.LCDH;
-	address *= y;
-	address += x;
-	
+
+  address = LCDTiming.LCDH;
+  address *= y;
+  address += x;
+
   FPGA_WRITE_CMD(0x2A);
-	
-  for ( ; i < sizeof(address); i++)
+
+  for (; i < sizeof(address); i++)
   {
     FPGA_WRITE_DATA(*(p + 3 - i));
   }
 
-	FPGA_WRITE_CMD(0x2C);	
-	
+  FPGA_WRITE_CMD(0x2C);
 }
 
 void LcdDrvSetCharIndex(uint8_t frame)
@@ -95,18 +97,14 @@ void LcdDrvSetCharIndex(uint8_t frame)
   uint8_t i = 0;
   uint8_t *p = (uint8_t *)&address;
 
-  address = LCDTiming.LCDH;
-  address *= LCDTiming.LCDV;
-  address *= frame;
-
+  address = CalRAMAddress(frame);
 
   FPGA_WRITE_CMD(0x3A);
 
-  for ( ; i < sizeof(address); i++)
+  for (; i < sizeof(address); i++)
   {
     FPGA_WRITE_DATA(*(p + 3 - i));
-  }	
-	
+  }
 }
 
 void LcdDrvShowPattern(uint32_t data)
@@ -115,40 +113,35 @@ void LcdDrvShowPattern(uint32_t data)
   uint8_t i = 0;
   uint8_t *p = (uint8_t *)&address;
 
-	
-	if((data & FPGA_IO_MODE) == FPGA_IO_MODE)
-	{
-			uint8_t r,g,b;
-			r = (data&0xffffff)>>16;
-			g = (data&0xffffff)>>8;
-			b = (data&0xffffff)>>0;
-			FPGA_WRITE_CMD(0x1B);
-      FPGA_WRITE_DATA(r);
-      FPGA_WRITE_DATA(g);
-      FPGA_WRITE_DATA(b);
-	}
-	else
-	{
-		  FPGA_WRITE_CMD(0x1B);
-      FPGA_WRITE_DATA(0xAA);
-      FPGA_WRITE_DATA(0xAA);
-      FPGA_WRITE_DATA(0xAA);
-		
-			HAL_Delay(1);
-		
-			address = LCDTiming.LCDH;
-			address *= LCDTiming.LCDV;
-			address *= data;
+  if ((data & FPGA_IO_MODE) == FPGA_IO_MODE)
+  {
+    uint8_t r, g, b;
+    r = (data & 0xffffff) >> 16;
+    g = (data & 0xffffff) >> 8;
+    b = (data & 0xffffff) >> 0;
+    FPGA_WRITE_CMD(0x1B);
+    FPGA_WRITE_DATA(r);
+    FPGA_WRITE_DATA(g);
+    FPGA_WRITE_DATA(b);
+  }
+  else
+  {
+    FPGA_WRITE_CMD(0x1B);
+    FPGA_WRITE_DATA(0xAA);
+    FPGA_WRITE_DATA(0xAA);
+    FPGA_WRITE_DATA(0xAA);
 
+    HAL_Delay(1);
 
-			FPGA_WRITE_CMD(0x0B);
+    address = CalRAMAddress(data);
 
-			for ( ; i < sizeof(address); i++)
-			{
-				FPGA_WRITE_DATA(*(p + 3 - i));
-			}
-	}
+    FPGA_WRITE_CMD(0x0B);
+
+    for (; i < sizeof(address); i++)
+    {
+      FPGA_WRITE_DATA(*(p + 3 - i));
+    }
+  }
 }
-
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

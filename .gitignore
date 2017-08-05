@@ -48,7 +48,6 @@ ehthumbs.db
 *.uvopt
 *.ini
 *.dep
-*.bat
 *.uvguix.*
 *.uvmpw.*
 *.uvoptx

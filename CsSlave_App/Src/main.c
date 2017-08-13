@@ -94,8 +94,57 @@ static void SetVcom(void)
   SSD2828WriteData(Vcom);
 }
 
-static void MTP(void)
+static uint8_t CheckResult(void)
 {
+  uint8_t buffer[3];
+  uint8_t result = 1;
+  if (SSD2828_GenericReadDT14(0x04, 3, buffer) == MIPI_READ_SUCCEED)
+  {
+    UserPrintf("vcom:0x%x 0x%x 0x%x\n", buffer[0],buffer[1],buffer[2]);
+    if ((buffer[0] == 0X20) && (buffer[1] == 0X17) && (buffer[2] == 0X06))
+    {
+    }
+    else
+    {
+      result = 0;
+    }
+  }
+  else
+  {
+    UserPrintf("Read ID Failed!\n");
+    result = 0;
+  }
+
+  SSD2828_GenericLongWrite(4);
+  SSD2828WriteData(0xA2);
+  SSD2828WriteData(0x87);
+  SSD2828WriteData(0x78);
+  SSD2828WriteData(0x01);
+
+  if (SSD2828_GenericReadDT14(0xA3, 1, buffer) == MIPI_READ_SUCCEED)
+  {
+    UserPrintf("vcom:0x%x\n", buffer[0]);
+    if (buffer[0] == Vcom)
+    {
+    }
+    else
+    {
+      result = 0;
+    }
+  }
+  else
+  {
+    UserPrintf("Read VCOM Failed!\n");
+    result = 0;
+  }
+	
+	return result;
+}
+
+static uint8_t MTP(void)
+{
+  uint8_t result = 1;
+
   Power_SetBLCurrent(0);
 
   ResetMipiLcd();
@@ -103,7 +152,9 @@ static void MTP(void)
   SSD2828_SetMode(LP);
   SetMTPCode(Vcom);
   ResetMipiLcd();
-
+  if (CheckResult() == 0)
+    result = 0;
+    
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x11);
   HAL_Delay(100);
@@ -113,6 +164,8 @@ static void MTP(void)
   Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
   SSD2828_SetMode(VD);
+
+  return result;
 }
 
 static void TuningVcom(KeyTypeDef key)
@@ -159,8 +212,8 @@ static uint8_t AutoTuningVcom(void)
     }
 
     Vcom += k;
-    SetVcom();  
-		HAL_Delay(10);
+    SetVcom();
+    HAL_Delay(10);
     if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
       return 0;
 
@@ -289,9 +342,15 @@ int main(void)
         //LCD_ShowString(0, 0, "start");
         if (AutoTuningVcom() == 1)
         {
-					LCD_ShowString(0, 0, "OK");
           UserPrintf("vcom:0x%x\n", Vcom);
-          //MTP();
+          if (MTP() == 1)
+          {
+            LCD_ShowString(0, 0, "OK");
+          }
+          else
+          {
+            LCD_ShowString(0, 0, "NG");
+          }
           SendVcomToFlickerSensor(Vcom);
           SendIdToFlickerSensor(0);
         }
@@ -300,8 +359,8 @@ int main(void)
       break;
 
     case KEY_TP:
-			PrepareBg();
-			LCD_ShowString(0, 0, "TP Testing...");
+      PrepareBg();
+      LCD_ShowString(0, 0, "TP Testing...");
       if (TP_StartTest() == 1)
       {
         LCD_ShowString(0, 32, "TP OK");

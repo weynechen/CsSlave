@@ -3,7 +3,7 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'CsSlave_app' 
+ * Project: 'CsSlave_app_lib' 
  * Target:  'CsSlave_app' 
  */
 

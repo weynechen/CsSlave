@@ -40,7 +40,7 @@ static void TP_SendData(uint8_t pid, uint16_t data)
 uint8_t TP_StartTest(void)
 {
     /*定义总的测试时间，不能测试太久(ms)*/
-    uint16_t timeout = 30000;
+    uint16_t timeout = 60000;
 
     /*心跳超时时间(ms)*/
     HeartBeats = 1500;

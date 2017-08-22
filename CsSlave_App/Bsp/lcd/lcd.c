@@ -677,16 +677,17 @@ void Lcd_LightOn(void)
   LcdDrvOpenRGB();
   if (ShowIDPattern != 0xff)
   {
-		uint16_t times=0;
+    uint16_t times = 0;
     ShowID();
-		while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_SET)
-		{
-			times++;
-			if(times>10000)
-				break;
-			HAL_Delay(1);
-		}	
-		while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET);		
+    while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_SET)
+    {
+      times++;
+      if (times > 10000)
+        break;
+      HAL_Delay(1);
+    }
+    while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET)
+      ;
   }
 }
 
@@ -723,49 +724,58 @@ static void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
 }
 */
 
+static uint8_t FontScale = 1;
+void LCD_SetFontScale(uint8_t scale)
+{
+  FontScale = scale;
+}
+
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 {
   uint8_t temp = 0x01;
-  uint8_t pos, t;
+  uint8_t pos, t, i;
 
   chars = chars - ' ';
 
   for (pos = 0; pos < 64; pos += 2)
   {
-    LcdDrvSetXY(x, y + (pos >> 1));
-    temp = asc2_3216[chars][pos];
-    for (t = 0; t < 8; t++)
+    for (i = 0; i < FontScale; i++)
     {
-      if (temp & 0x01)
+      LcdDrvSetXY(x, y + (pos >> 1)+i);
+      temp = asc2_3216[chars][pos];
+      for (t = 0; t < 8; t++)
       {
-        LcdDrvWriteData(FontColor.Fore >> 16);
-        LcdDrvWriteData(FontColor.Fore >> 8);
-        LcdDrvWriteData(FontColor.Fore);
+        if (temp & 0x01)
+        {
+          LcdDrvWriteData(FontColor.Fore >> 16);
+          LcdDrvWriteData(FontColor.Fore >> 8);
+          LcdDrvWriteData(FontColor.Fore);
+        }
+        else
+        {
+          LcdDrvWriteData(FontColor.Background >> 16);
+          LcdDrvWriteData(FontColor.Background >> 8);
+          LcdDrvWriteData(FontColor.Background);
+        }
+        temp >>= 1;
       }
-      else
+      temp = asc2_3216[chars][pos + 1];
+      for (t = 8; t < 16; t++)
       {
-        LcdDrvWriteData(FontColor.Background >> 16);
-        LcdDrvWriteData(FontColor.Background >> 8);
-        LcdDrvWriteData(FontColor.Background);
+        if (temp & 0x01)
+        {
+          LcdDrvWriteData(FontColor.Fore >> 16);
+          LcdDrvWriteData(FontColor.Fore >> 8);
+          LcdDrvWriteData(FontColor.Fore);
+        }
+        else
+        {
+          LcdDrvWriteData(FontColor.Background >> 16);
+          LcdDrvWriteData(FontColor.Background >> 8);
+          LcdDrvWriteData(FontColor.Background);
+        }
+        temp >>= 1;
       }
-      temp >>= 1;
-    }
-    temp = asc2_3216[chars][pos + 1];
-    for (t = 8; t < 16; t++)
-    {
-      if (temp & 0x01)
-      {
-        LcdDrvWriteData(FontColor.Fore >> 16);
-        LcdDrvWriteData(FontColor.Fore >> 8);
-        LcdDrvWriteData(FontColor.Fore);
-      }
-      else
-      {
-        LcdDrvWriteData(FontColor.Background >> 16);
-        LcdDrvWriteData(FontColor.Background >> 8);
-        LcdDrvWriteData(FontColor.Background);
-      }
-      temp >>= 1;
     }
   }
 }
@@ -843,20 +853,20 @@ static uint8_t FindSDRAMPatternAmount(void)
 
 void PrepareBg(void)
 {
-	uint16_t i,j;
+  uint16_t i, j;
   uint8_t amount = FindSDRAMPatternAmount();
   LcdDrvShowPattern(amount);
   LcdDrvSetCharIndex(amount);
-	for (j = 0; j < LCDTiming.LCDV/4; j++)
+  for (j = 0; j < LCDTiming.LCDV / 4; j++)
   {
-    LcdDrvSetXY(0,j);
-    for (i = 0; i < LCDTiming.LCDH/4; i++)
+    LcdDrvSetXY(0, j);
+    for (i = 0; i < LCDTiming.LCDH / 4; i++)
     {
-        LcdDrvWriteData(FontColor.Background >> 16);
-        LcdDrvWriteData(FontColor.Background >> 8);
-        LcdDrvWriteData(FontColor.Background);
+      LcdDrvWriteData(FontColor.Background >> 16);
+      LcdDrvWriteData(FontColor.Background >> 8);
+      LcdDrvWriteData(FontColor.Background);
     }
-	}
+  }
   LcdDrvSetCharIndex(amount);
 }
 

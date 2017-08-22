@@ -104,6 +104,7 @@ void PageTurning(PageTurningTypeDef page);
 void ResetMipiLcd(void);
 void SetMipiPara(void);
 void PrepareBg(void);
+void LCD_SetFontScale(uint8_t scale);
 extern FontColorTypeDef FontColor;
 
 #endif

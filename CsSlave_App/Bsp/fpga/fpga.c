@@ -10,6 +10,8 @@
 #include "fpga.h"
 #include "sysconfig.h"
 
+extern uint8_t Security;
+
 void LcdDrvWriteData(uint8_t para)
 {
   FPGA_WRITE_DATA(para);
@@ -26,7 +28,7 @@ static void FPGAWrite16BitData(uint16_t data)
 void LcdDrvSetTiming(void)
 {
 
-  if (Security == 0)
+  if (Security != 0x18)
     return;
 
   FPGA_WRITE_CMD(0xB0);

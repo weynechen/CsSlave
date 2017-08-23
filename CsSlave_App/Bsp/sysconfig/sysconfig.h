@@ -144,7 +144,6 @@ extern uint8_t USBPlugin;
 extern uint32_t RecCounter;
 extern PackageDataStruct RecPackage;
 extern uint8_t ConfigData[];
-extern uint8_t Security;
 
 void FlashConfig(void);
 void ReadSystemConfig(void);

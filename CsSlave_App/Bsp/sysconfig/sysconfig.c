@@ -28,7 +28,7 @@ uint32_t RecCounter = 0;
 PackageDataStruct RecPackage;
 /*缓存一些配置数据*/
 uint8_t ConfigData[128];
-uint8_t Security = 1;
+uint8_t Security = 0x18;
 
 ConfigTypeDef SystemConfig;
 LCDTimingParaTypeDef LCDTiming;

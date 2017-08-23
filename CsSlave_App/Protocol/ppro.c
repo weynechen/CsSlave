@@ -52,10 +52,12 @@ uint8_t CalCrc8(const uint8_t *data, uint16_t data_len)
 
 uint8_t Ppro_ParseData(uint8_t *buffer)
 {
-    PproTypeDef data = *(PproTypeDef *)buffer;
-    uint8_t crc;
-    crc = CalCrc8((uint8_t *)&data, sizeof(PproTypeDef) - 1);
-    if (crc != data.Crc8)
+    PproTypeDef *data = (PproTypeDef *)buffer;
+    uint8_t data_size = PPROTYPE_SIZE + data->DataLength - 1;
+    uint8_t crc = buffer[data_size - 1];
+    uint8_t crc_cal;
+    crc_cal = CalCrc8(buffer, data_size - 1);
+    if (crc != crc_cal)
         return 0;
     else
         return 1;
@@ -63,7 +65,7 @@ uint8_t Ppro_ParseData(uint8_t *buffer)
 
 void Ppro_SendData(uint8_t device_id, uint8_t package_id, uint16_t data)
 {
-    PproTypeDef package;
+    PproFixTypeDef package;
     package.DeviceID = device_id;
     package.PackageID = package_id;
     package.DataLength = sizeof(data);

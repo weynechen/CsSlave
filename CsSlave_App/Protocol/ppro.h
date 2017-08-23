@@ -17,9 +17,20 @@ __packed typedef struct
     uint8_t DeviceID;
     uint8_t PackageID;
     uint16_t DataLength;
-    uint16_t Data;
+    uint8_t* Data;
     uint8_t Crc8;
 } PproTypeDef;
+
+#define PPROTYPE_SIZE (6)
+
+__packed typedef struct
+{
+    uint8_t DeviceID;
+    uint8_t PackageID;
+    uint16_t DataLength;
+    uint16_t Data;
+    uint8_t Crc8;
+} PproFixTypeDef;
 
 typedef enum {
     TP = 0,

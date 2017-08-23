@@ -26,7 +26,7 @@ void FS_Callback(PproTypeDef *data)
     {
     case FLICKER_VALUE:
         FlickerDataReady = 1;
-        FlickerValue = data->Data;
+        FlickerValue = *(uint16_t *)(data->Data);
         break;
 
     default:

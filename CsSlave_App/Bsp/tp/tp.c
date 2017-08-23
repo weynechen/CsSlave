@@ -24,7 +24,15 @@ void TP_Callback(PproTypeDef *data)
 
     case TP_RESULT:
         WaitTest = 1;
-        TestResult = data->Data;
+        TestResult = 0;
+        if (*data->Data == 'O')
+            if (*(data->Data + 1) == 'K')
+                TestResult = 1;
+        break;
+
+    case TP_NO_FILE:
+        WaitTest = 1;
+        TestResult = 0;
         break;
 
     default:

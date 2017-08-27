@@ -30,9 +30,28 @@ static uint8_t ShowIDPattern = 0xff;
 
 static uint8_t FindSDRAMPatternAmount(void);
 
+static const PowerTypeDef PowerLUT[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP, POWER_AVDD,
+                                                   POWER_VCOM, POWER_VGH, POWER_VGL};
+
+static struct
+{
+  GPIO_TypeDef *gpio_port;
+  uint16_t gpio_pin;
+} ResetPortPin;
+
+void closeAllPower(void)
+{
+  HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_RESET);
+  //倒序关闭电源
+  for (int i = POWER_AMOUT; i > 0; i--)
+  {
+    Power_SetState(PowerLUT[i - 1], OFF);
+    HAL_Delay(10);
+  }
+}
+
 void SetLcdPower(StateTypeDef state)
 {
-  PowerTypeDef power_list[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP, POWER_AVDD};
   uint8_t i = 0;
 
   if (state == ON)
@@ -42,7 +61,7 @@ void SetLcdPower(StateTypeDef state)
     {
       if (((SystemConfig.PowerSettings >> i) & 0x01) == 0x01)
       {
-        Power_SetState(power_list[i], ON);
+        Power_SetState(PowerLUT[i], ON);
         HAL_Delay(10);
       }
     }
@@ -54,10 +73,76 @@ void SetLcdPower(StateTypeDef state)
     {
       if (((SystemConfig.PowerSettings >> (i - 1)) & 0x01) == 0x01)
       {
-        Power_SetState(power_list[i - 1], OFF);
+        Power_SetState(PowerLUT[i - 1], OFF);
         HAL_Delay(50);
       }
     }
+  }
+}
+
+/*
+每个电源或者reset用3个字节表示，
+第一个字节表示电源索引，
+第二三字节表示延时时间，
+包的第一个字节表示总的索引个数。
+*/
+void SetLcdPowerByUser(StateTypeDef state)
+{
+  uint8_t *p;
+
+  if (state == ON)
+  {
+    p = (uint8_t *)SystemConfig.PowerOnSequence;
+  }
+  else
+  {
+    p = (uint8_t *)SystemConfig.PowerOffSequence;
+  }
+
+  uint8_t len = *p;
+  if (len > POWER_LEN / 3)
+  {
+    //error here
+    UserPrintf("Error:power settings error!\n");
+    return;
+  }
+
+  uint8_t i = 1;
+  while (len--)
+  {
+    uint8_t index = *(p + i);
+    if (index > POWER_AMOUT + 1)
+    {
+      //error here
+      UserPrintf("Error:power settings error!\n");
+      return;
+    }
+
+    //电源查找表后面两个索引解析为reset high和reset low
+    if (index == POWER_AMOUT)
+    {
+      HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_SET);
+    }
+    else if (index == POWER_AMOUT + 1)
+    {
+      HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_RESET);
+    }
+    else
+    {
+      Power_SetState(PowerLUT[index], state);
+    }
+    i++;
+    uint16_t delay_time;
+    delay_time = *(p + i++);
+    delay_time = (delay_time << 8) | *(p + i++);
+
+    if (delay_time > 10000)
+    {
+      //error here
+      UserPrintf("Error:power settings error!\n");
+      return;
+    }
+    HAL_Delay(delay_time);
   }
 }
 
@@ -162,7 +247,7 @@ void SetRGBSPI8Or9BitLcdInitCode(void)
       break;
 
     case RGB_READ:
-      UserPrintf("Waring:This function will be supported nexe version!\n");
+      UserPrintf("Waring:This function will be supported next version!\n");
       break;
 
     default:
@@ -368,11 +453,11 @@ static void ShowID(void)
   uint8_t amount = FindSDRAMPatternAmount();
 
   PrepareBg();
-
   while (j < ReadBackAmount)
   {
     uint8_t len = ReadBackTemp[j++];
     uint8_t n;
+
 
     for (n = 0; n < len; n++)
     {
@@ -611,41 +696,95 @@ void ResetMipiLcd(void)
   HAL_Delay(120);
 }
 
+static void ResetLcdByDefault(void)
+{
+  HAL_Delay(10);
+  HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_SET);
+  HAL_Delay(10);
+  HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_RESET);
+  HAL_Delay(100);
+  HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_SET);
+  HAL_Delay(120);
+}
+
+void PowerOff(void)
+{
+  if (SystemConfig.PowerSettings != 0)
+  {
+    SetLcdPower(OFF);
+  }
+  else
+  {
+    SetLcdPowerByUser(OFF);
+  } 
+}
+
+void PowerOn(void)
+{
+  if (SystemConfig.PowerSettings != 0)
+  {
+    SetLcdPower(ON);
+  }
+  else
+  {
+    SetLcdPowerByUser(ON);
+  }   
+}
+
 void Lcd_ReInit(void)
 {
   GREEN_LIGHT_OFF;
   RED_LIGHT_ON;
   memset(&PatternProperty, 0, sizeof(PatternProperty));
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   SetLcdTiming();
 
-  HAL_Delay(10);
-  SetLcdPower(OFF);
-  HAL_Delay(10);
-  SetLcdPower(ON);
+  if (SystemConfig.LcdType == MIPI_LCD)
+  {
+    ResetPortPin.gpio_port = MIPIRESET_GPIO_Port;
+    ResetPortPin.gpio_pin = MIPIRESET_Pin;
+  }
+  else
+  {
+    ResetPortPin.gpio_port = GPIOE;
+    ResetPortPin.gpio_pin = GPIO_PIN_6;
+  }
+
+  //default settings
+  if (SystemConfig.PowerSettings != 0)
+  {
+    HAL_Delay(10);
+    SetLcdPower(OFF);
+    HAL_Delay(10);
+    SetLcdPower(ON);
+    ResetLcdByDefault();
+  }
+  else
+  {
+    closeAllPower();
+    SetLcdPowerByUser(ON);
+  }
 
   if (SystemConfig.LcdType == MIPI_LCD)
   {
     SetMipiPara();
-    ResetMipiLcd();
     SetMipiLcdInitCode();
     SSD2828_SetMode(VD);
   }
   else if (SystemConfig.LcdType == RGB_SPI16BIT)
   {
-    ResetRGBLcd();
     SetRGBSPI16BitLcdInitCode();
   }
   else if ((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
   {
-    ResetRGBLcd();
     SetRGBSPI8Or9BitLcdInitCode();
   }
   else
     UserPrintf("Error:LCD type definition error!\n");
-
-  Power_SetBLCurrent(SystemConfig.Backlight);
   LcdDrvOpenRGB();
+  Power_SetBLCurrent(SystemConfig.Backlight);
+
   //RGB_SPI_Test();
   SetPattern();
   GREEN_LIGHT_ON;
@@ -655,26 +794,40 @@ void Lcd_ReInit(void)
 
 void Lcd_LightOn(void)
 {
-  SetLcdPower(ON);
+  //default settings
+  if (SystemConfig.PowerSettings != 0)
+  {
+    HAL_Delay(10);
+    SetLcdPower(OFF);
+    HAL_Delay(10);
+    SetLcdPower(ON);
+    ResetLcdByDefault();
+  }
+  else
+  {
+    closeAllPower();
+    SetLcdPowerByUser(ON);
+  }
+
   if (SystemConfig.LcdType == MIPI_LCD)
   {
     SetMipiPara();
-    ResetMipiLcd();
     SetMipiLcdInitCode();
     SSD2828_SetMode(VD);
   }
   else if (SystemConfig.LcdType == RGB_SPI16BIT)
   {
-    ResetRGBLcd();
     SetRGBSPI16BitLcdInitCode();
   }
   else if ((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
   {
-    ResetRGBLcd();
     SetRGBSPI8Or9BitLcdInitCode();
   }
-  Power_SetBLCurrent(SystemConfig.Backlight);
+  else
+    UserPrintf("Error:LCD type definition error!\n");
   LcdDrvOpenRGB();
+  Power_SetBLCurrent(SystemConfig.Backlight);
+  
   if (ShowIDPattern != 0xff)
   {
     uint16_t times = 0;
@@ -741,7 +894,7 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   {
     for (i = 0; i < FontScale; i++)
     {
-      LcdDrvSetXY(x, y + (pos >> 1)+i);
+      LcdDrvSetXY(x, y + (pos >> 1) + i);
       temp = asc2_3216[chars][pos];
       for (t = 0; t < 8; t++)
       {

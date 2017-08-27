@@ -42,13 +42,13 @@
 #define PATTERN_LEN        1024
 #define MIPI_CONFIG_LEN    256
 #define MAX_NAME_LEN       128
-
+#define POWER_LEN          128
 /**
  * @brief  系统配置数据结构体，这一部分数据会被烧录到flash
  */
 typedef struct
 {
-  uint8_t PowerSettings;               /*< 电源设置 */
+  uint8_t PowerSettings;               /*< 默认电源设置 */
   uint8_t Backlight;                   /*< 背光电流设置 */
   uint8_t LCDTimingPara[LCD_PARA_LEN]; /*< LCD 时序参数设置 */
   uint8_t LCDInitCode[LCD_INIT_LEN];   /*< LCD 初始化设置,第一个和第二个字节表示长度*/
@@ -56,7 +56,11 @@ typedef struct
   uint8_t Pattern[PATTERN_LEN];        /*< pattern 设置 第一个和第二个字节表示长度*/
   uint8_t ProjectName[MAX_NAME_LEN];   /*< 项目名称设置 */
   uint8_t IsAutoRun;                   /*< 是否自动跑 */
-	uint8_t LcdType;
+  uint8_t LcdType;                     /*< 接口类型 */
+  uint8_t PowerOnSequence[POWER_LEN];  /*< 自定义上电时序*/
+  uint8_t PowerOffSequence[POWER_LEN]; /*< 自定义下电时序*/
+  uint8_t ConfigVersion;
+  uint8_t Checksum;
 } ConfigTypeDef;
 
 

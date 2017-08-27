@@ -30,7 +30,16 @@ PackageDataStruct RecPackage;
 uint8_t ConfigData[128];
 uint8_t Security = 0x18;
 
-ConfigTypeDef SystemConfig;
+static const uint8_t Version[4] = 
+{
+  [3] = 2,
+  [2] = 0,
+  [0] = 0,
+};
+ConfigTypeDef SystemConfig =
+{
+  .ConfigVersion = 1,
+};
 LCDTimingParaTypeDef LCDTiming;
 PatternPropertyTypeDef PatternProperty;
 ActionIDTypeDef TaskID = ACTION_NULL;
@@ -138,8 +147,12 @@ void InitSystemConfig(void)
 void GetFirmwareVersion(void)
 {
   uint32_t version = *(uint32_t *)VERSION_ADDRESS;
-  uint8_t *p = (uint8_t *)&version;
+  const uint8_t *p = (uint8_t *)&version;
 
+  if(version == 0xffffffff)
+  {
+    p = Version;
+  }
   UserPrintf("Info:Version--v%d.%d.%d\n", *(p + 3), *(p + 2), *p);
 }
 

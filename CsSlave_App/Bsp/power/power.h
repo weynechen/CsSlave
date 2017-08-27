@@ -12,7 +12,7 @@
 #include "sys.h"
 
 
-#define POWER_AMOUT    8
+#define POWER_AMOUT    11
 
 /* 修改下面BITBAND中宏，即可修改power控制脚 */
 typedef enum

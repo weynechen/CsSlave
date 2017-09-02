@@ -19,6 +19,9 @@
 #include "ssd2828.h"
 #include "ctrlbox.h"
 
+static const uint16_t SysConfigSize0 = sizeof(SystemConfig);
+static const uint16_t SysConfigSize1 = sizeof(SystemConfig) - (POWER_LEN * 2 + 2);
+
 void SwitchTask(void)
 {
   uint8_t data8;
@@ -26,9 +29,10 @@ void SwitchTask(void)
   switch (TaskID)
   {
   case ACT_RE_INIT_START:
-		TaskID = ACTION_NULL;
-		
-    if (RecCounter - sizeof(SystemConfig) < 5)
+    TaskID = ACTION_NULL;
+
+    //兼容多版本，并且考虑补全(4的整数倍)
+    if ((RecCounter - SysConfigSize0 < 5) || (RecCounter - SysConfigSize1 < 5))
     {
       Lcd_ReInit();
       UserPrintf("Info: ReInit complete!\n");
@@ -45,12 +49,12 @@ void SwitchTask(void)
     break;
 
   case ACT_FLASH_PARA:
-		TaskID = ACTION_NULL;
+    TaskID = ACTION_NULL;
     FlashConfig();
     break;
 
   case ACT_UPGRADE_FIRMWARE:
-		TaskID = ACTION_NULL;
+    TaskID = ACTION_NULL;
     UpgradeFirmwareData();
 
     break;
@@ -63,12 +67,12 @@ void SwitchTask(void)
     break;
 
   case ACT_GET_VERSION:
-		TaskID = ACTION_NULL;	
+    TaskID = ACTION_NULL;
     GetFirmwareVersion();
     break;
 
   case ACT_READ_SSD2828:
-		TaskID = ACTION_NULL;
+    TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
     if ((data8 < 0xB0) && (data8 > 0xFF))
     {
@@ -81,7 +85,7 @@ void SwitchTask(void)
     break;
 
   case ACT_SET_SSD2828:
-		TaskID = ACTION_NULL;
+    TaskID = ACTION_NULL;
     data8 = (uint8_t)ConfigData[0];
 
     if ((data8 < 0xB0) && (data8 > 0xFF))
@@ -95,16 +99,15 @@ void SwitchTask(void)
 
     break;
 
-	case ACT_SET_KEY:
-		TaskID = ACTION_NULL;
-		CtrlKey = (KeyTypeDef)ConfigData[0];
-		break;		
-		
+  case ACT_SET_KEY:
+    TaskID = ACTION_NULL;
+    CtrlKey = (KeyTypeDef)ConfigData[0];
+    break;
+
   default:
-		TaskID = ACTION_NULL;
+    TaskID = ACTION_NULL;
     break;
   }
 }
-
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

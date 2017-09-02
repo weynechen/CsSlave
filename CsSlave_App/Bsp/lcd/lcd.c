@@ -480,7 +480,7 @@ void SetPattern(void)
   uint16_t stay_time;
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
-
+  ShowIDPattern = 0xff;
   while (i < size)
   {
     uint8_t is_pattern = 1;

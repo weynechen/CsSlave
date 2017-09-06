@@ -458,7 +458,6 @@ static void ShowID(void)
     uint8_t len = ReadBackTemp[j++];
     uint8_t n;
 
-
     for (n = 0; n < len; n++)
     {
       memset(temp, 0, sizeof(temp));
@@ -716,7 +715,7 @@ void PowerOff(void)
   else
   {
     SetLcdPowerByUser(OFF);
-  } 
+  }
 }
 
 void PowerOn(void)
@@ -728,7 +727,7 @@ void PowerOn(void)
   else
   {
     SetLcdPowerByUser(ON);
-  }   
+  }
 }
 
 void Lcd_ReInit(void)
@@ -766,22 +765,44 @@ void Lcd_ReInit(void)
     SetLcdPowerByUser(ON);
   }
 
-  if (SystemConfig.LcdType == MIPI_LCD)
+  switch (SystemConfig.LcdType)
   {
+  case MIPI_LCD:
     SetMipiPara();
     SetMipiLcdInitCode();
     SSD2828_SetMode(VD);
-  }
-  else if (SystemConfig.LcdType == RGB_SPI16BIT)
-  {
+    break;
+
+  case RGB_SPI16BIT:
     SetRGBSPI16BitLcdInitCode();
-  }
-  else if ((SystemConfig.LcdType == RGB_SPI8BIT) || (SystemConfig.LcdType == RGB_SPI9BIT))
-  {
+    break;
+
+  case RGB_SPI8BIT:
+  case RGB_SPI9BIT:
     SetRGBSPI8Or9BitLcdInitCode();
-  }
-  else
+
+    break;
+
+  case LVDS_888_VESA:
+    LcdDrvEnterLVDS(1);
+    break;
+
+  case LVDS_666_VESA:
+    LcdDrvEnterLVDS(2);
+    break;
+
+  case LVDS_888_JEIDA:
+    LcdDrvEnterLVDS(3);
+    break;
+
+  case LVDS_666_JEIDA:
+    LcdDrvEnterLVDS(4);
+    break;
+
+  default:
     UserPrintf("Error:LCD type definition error!\n");
+    break;
+  }
   LcdDrvOpenRGB();
   Power_SetBLCurrent(SystemConfig.Backlight);
 
@@ -827,7 +848,7 @@ void Lcd_LightOn(void)
     UserPrintf("Error:LCD type definition error!\n");
   LcdDrvOpenRGB();
   Power_SetBLCurrent(SystemConfig.Backlight);
-  
+
   if (ShowIDPattern != 0xff)
   {
     uint16_t times = 0;

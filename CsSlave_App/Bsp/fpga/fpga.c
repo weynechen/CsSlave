@@ -58,6 +58,19 @@ void LcdDrvCloseRGB(void)
   FPGA_WRITE_CMD(0x28);
 }
 
+void LcdDrvEnterLVDS(uint8_t mode)
+{
+  FPGA_WRITE_CMD(0x25);
+  FPGA_WRITE_DATA(mode);
+  
+}
+
+void LcdDrvExitLVDS(void)
+{
+  FPGA_WRITE_CMD(0x25);
+}
+
+
 void LcdDrvSetPattern(void)
 {
   FPGA_WRITE_CMD(0x2C);

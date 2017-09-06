@@ -12,11 +12,10 @@
 #include "stm32f1xx_hal.h"
 #include "power.h"
 
-#define RESET_PINA     GPIO_PIN_2
-#define RESET_PORTA    GPIOA
+#define RESET_PINA GPIO_PIN_2
+#define RESET_PORTA GPIOA
 
-typedef enum
-{
+typedef enum {
   MIPI_START,
   MIPI_DCS,
   MIPI_GP,
@@ -26,27 +25,23 @@ typedef enum
   MIPI_END
 } MipiTypeDef;
 
-typedef enum
-{
-	RGB_START,
-	RGB_SPI_RISING,
-	RGB_SPI_FALLING,
-	RGB_DELAY,
-	RGB_WRITE,
-	RGB_READ,
-	RGB_END
-}RGBTypeDef;
+typedef enum {
+  RGB_START,
+  RGB_SPI_RISING,
+  RGB_SPI_FALLING,
+  RGB_DELAY,
+  RGB_WRITE,
+  RGB_READ,
+  RGB_END
+} RGBTypeDef;
 
-
-typedef enum
-{
+typedef enum {
   NO_PACKAGE,
   GP,
   DCS
 } MipiPackageDef;
 
-typedef enum
-{
+typedef enum {
   PATTERN_START,
   RGB,
   FLICKERV,
@@ -63,33 +58,34 @@ typedef enum
   RGBLEVEL,
   PATTERN_STAY,
   NULL_PATTERN,
-	SHOW_ID,
-	SLEEP_IN,
-	SLEEP_OUT,
+  SHOW_ID,
+  SLEEP_IN,
+  SLEEP_OUT,
   PATTERN_END
 } PatternTypeDef;
 
 typedef struct
 {
-	uint32_t Background;
-	uint32_t Fore;
-}FontColorTypeDef;
+  uint32_t Background;
+  uint32_t Fore;
+} FontColorTypeDef;
 
+typedef enum {
+  PAGE_UP,
+  PAGE_DOWN,
+} PageTurningTypeDef;
 
-typedef enum
-{
-	PAGE_UP,
-	PAGE_DOWN,
-}PageTurningTypeDef;
-
-
-typedef enum
-{
-	MIPI_LCD,
-	RGB_SPI16BIT,
-	RGB_SPI8BIT,
-	RGB_SPI9BIT,
-}LcdTypeDef;
+typedef enum {
+  MIPI_LCD,
+  RGB_SPI16BIT,
+  RGB_SPI8BIT,
+  RGB_SPI9BIT,
+  SPI_2_Data_Lane,
+  LVDS_666_VESA,
+  LVDS_666_JEIDA,
+  LVDS_888_VESA,
+  LVDS_888_JEIDA,
+} LcdTypeDef;
 
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
@@ -102,7 +98,7 @@ void PowerOn(void);
 void Lcd_LightOn(void);
 void ResetStayTimeCounter(void);
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars);
-void LCD_ShowString(uint16_t x,uint16_t y,const char *p);
+void LCD_ShowString(uint16_t x, uint16_t y, const char *p);
 void PageTurning(PageTurningTypeDef page);
 void ResetMipiLcd(void);
 void SetMipiPara(void);

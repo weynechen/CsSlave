@@ -363,11 +363,11 @@ int main(void)
       LCD_ShowString(0, 0, "TP Testing...");
       if (TP_StartTest() == 1)
       {
-        LCD_ShowString(0, 32, "TP OK");
+        LCD_ShowString(0, 64, "TP OK");
       }
       else
       {
-        LCD_ShowString(0, 32, "TP NG");
+        LCD_ShowString(0, 64, "TP NG");
       }
       break;
 

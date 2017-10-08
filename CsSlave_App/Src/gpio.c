@@ -118,7 +118,7 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pins : PCPin PCPin PCPin PCPin 
                            PCPin PCPin */
   GPIO_InitStruct.Pin = USB_pull_up_Pin|EN_5V_Pin|IO_EN_Pin|EN_3V3_Pin 
-                          |CDCE_SO_Pin|EN_2V8_Pin|RED_LED_Pin|GREEN_LED_Pin;
+                          |CDCE_SO_Pin|EN_2V8_Pin|RED_LED_Pin|GREEN_LED_Pin|EN_VGL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);

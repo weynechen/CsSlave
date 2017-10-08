@@ -73,6 +73,8 @@
 #define EN_1V8_GPIO_Port GPIOB
 #define EN_VGH_Pin GPIO_PIN_1
 #define EN_VGH_GPIO_Port GPIOB
+#define EN_VGL_Pin GPIO_PIN_3
+#define EN_VGL_GPIO_Port GPIOC
 #define EN_VCOM_Pin GPIO_PIN_11
 #define EN_VCOM_GPIO_Port GPIOB
 #define EN_AVDD_Pin GPIO_PIN_2

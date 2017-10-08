@@ -9,17 +9,26 @@
 **/
 
 #include "tp.h"
+#include "lcd.h"
 
-static uint16_t HeartBeats = 1500;
+static uint16_t HeartBeats = 0;
 static uint8_t WaitTest = 0;
 static uint8_t TestResult = 0;
 
 void TP_Callback(PproTypeDef *data)
 {
+		char s[2];
+		uint8_t echo;
     switch (data->PackageID)
     {
     case TP_ECHO:
-        HeartBeats = 1500;
+				echo = *data->Data;
+				s[1] = echo%10+'0';
+				s[0] = echo/10+'0';
+				//LCD_ShowString(0, 32, s);
+				LCD_ShowChar(0,32,s[0]);
+				LCD_ShowChar(16,32,s[1]);
+        HeartBeats = 1;
         break;
 
     case TP_RESULT:

@@ -105,6 +105,36 @@ void Flicker(void)
   }
 }
 
+void Flicker2Dot(void)
+{
+  uint16_t i, j;
+  uint16_t half_lcd_h = LCDTiming.LCDH / 2;
+  uint16_t half_lcd_v = LCDTiming.LCDV / 2;
+  
+  for (j = 0; j < half_lcd_v; j++)
+  {
+    for (i = 0; i < half_lcd_h; i++)
+    {
+      LcdDrvWriteData(0x80);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x80);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x80);
+      LcdDrvWriteData(0x00);
+    }
+
+    for (i = 0; i < half_lcd_h; i++)
+    {
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x80);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x80);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x80);
+    }
+  }
+}
+
 
 void Img_Full(uint8_t r, uint8_t g, uint8_t b)
 {

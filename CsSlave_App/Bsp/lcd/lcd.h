@@ -61,6 +61,7 @@ typedef enum {
   SHOW_ID,
   SLEEP_IN,
   SLEEP_OUT,
+  FLICKER_2DOT,  
   PATTERN_END
 } PatternTypeDef;
 

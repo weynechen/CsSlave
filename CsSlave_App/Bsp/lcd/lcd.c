@@ -537,6 +537,13 @@ void SetPattern(void)
       PatternProperty.Counter++;
       break;
 
+    case FLICKER_2DOT:
+      Flicker2Dot();
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker2Dot", PatternProperty.Counter);
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
+      break;
+      
     case COLORBARV:
       Img_ColorBarV();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical colorbar", PatternProperty.Counter);

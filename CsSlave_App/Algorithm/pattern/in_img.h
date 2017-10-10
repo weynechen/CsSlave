@@ -21,5 +21,5 @@ void two_windows(void);
 void Img_NG(void);
 void RGBBar(void);
 void RGBLevel(void);
-
+void Flicker2Dot(void);
 #endif

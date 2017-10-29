@@ -15,6 +15,7 @@
 #include "stdlib.h"
 #include "math.h"
 #include "ack.h"
+#include "stdbool.h"
 
 /**
  * @brief CDCE913 接口 PIN 的配置区域
@@ -122,7 +123,7 @@ static void I2C_SendByte(uint8_t txd)
   for (t = 0; t < 8; t++)
   {
     I2C_SDA = (txd & 0x80) >> 7;
-    txd <<= 1;
+    txd   <<= 1;
     I2C_Delay(2);
     I2C_SCL = 1;
     I2C_Delay(4);
@@ -141,7 +142,7 @@ static uint8_t I2C_ReadByte(AckTypeDef ack)
   {
     I2C_SCL = 0;
     I2C_Delay(3);
-    I2C_SCL = 1;
+    I2C_SCL   = 1;
     receive <<= 1;
     if (READ_SDA)
     {
@@ -232,55 +233,63 @@ AckTypeDef CDCE_Read8bit(uint8_t reg, uint16_t para_amount, uint8_t *data)
 }
 
 
+#define CLK_IN    8
+
 void CDCE_Init(uint16_t f_out)
 {
   uint8_t read_back;
+  uint8_t i = 1;
   AckTypeDef ack;
-  uint16_t M, N, Pdiv, Q, R;
+  uint32_t M, N, Pdiv, Q, R;
   uint8_t reg18, reg19, reg1A, reg1B;
   int P;
-  uint8_t fvco;
-  float t, temp;
+  uint16_t f_vco = f_out;
+  bool result    = false;
+  uint8_t f_range;
 
-  for (Pdiv = 1; Pdiv < 127; Pdiv++)
+  while (f_vco < 80)
   {
-    t = (float)(f_out * Pdiv) / 8;
-    if ((t > 14) && (t < 28.75))
-    {
-      break;
-    }
-
-    if (t > 28.75)
-    {
-      UserPrintf("Error:unsupport pclk\n");
-      return;
-    }
+    i++;
+    f_vco = f_out * i;
   }
 
-  for (N = 4095; N > 0; N--)
+  while (f_vco < 231)
   {
-    if (temp == t)
+    for (N = 4095; N > 0; N--)
     {
-      N++;
-      break;
-    }
-    for (M = 1; M < 511; M++)
-    {
-      temp = (float)N / (float)M;
-      if (temp == t)
+      for (M = 511; M > 0; M--)
+      {
+        if ((N * CLK_IN / M) == f_vco)
+        {          
+          {
+            result = true;
+            break;
+          }
+        }
+      }
+      if (result)
       {
         break;
       }
     }
+    if (result)
+    {
+      break;
+    }
+    else
+    {
+      i++;
+      f_vco = f_out * i;
+    }
   }
 
-  if (N == 0)
+  if (!result)
   {
     UserPrintf("Error:unsupport pclk\n");
     return;
   }
 
-  P = 4 - abs(log((double)N / (double)M));
+  P = 4 - (int)((log((double)N / (double)M))/log(2));
   if (P < 0)
   {
     P = 0;
@@ -288,23 +297,21 @@ void CDCE_Init(uint16_t f_out)
   Q = (int)((double)N * pow(2, (double)P) / (double)M);
   R = (double)N * pow(2, (double)P) - M * Q;
 
-  fvco = 8 * N / M;
-
-  if (fvco < 125)
+  if (f_vco < 125)
   {
-    fvco = 0;
+    f_range = 0;
   }
-  else if ((fvco >= 125) && (fvco < 150))
+  else if ((f_vco >= 125) && (f_vco < 150))
   {
-    fvco = 1;
+    f_range = 1;
   }
-  else if ((fvco >= 150) && (fvco < 175))
+  else if ((f_vco >= 150) && (f_vco < 175))
   {
-    fvco = 2;
+    f_range = 2;
   }
   else
   {
-    fvco = 3;
+    f_range = 3;
   }
 
   S0 = 0;
@@ -322,10 +329,14 @@ void CDCE_Init(uint16_t f_out)
     return;
   }
 
+  Pdiv = f_vco / f_out;
+
+  //UserPrintf("M:%d,N:%d,Pdiv:%d,f_vco:%d,P:%d,Q:%d,R:%d\n", M, N, Pdiv,f_vco,P,Q, R);
+
   CDCE_WriteByte(0x02, 0xB4);
   CDCE_WriteByte(0x03, (uint8_t)Pdiv);
   CDCE_WriteByte(0x04, 0x02);
-  CDCE_WriteByte(0x05, 0xA0);
+  CDCE_WriteByte(0x05, 0x00);
   CDCE_WriteByte(0x06, 0x40);
   CDCE_WriteByte(0x12, 0x00);
   CDCE_WriteByte(0x13, 0x01);
@@ -337,7 +348,7 @@ void CDCE_Init(uint16_t f_out)
   reg18 = (N >> 4) & 0xFFF;
   reg19 = (N & 0xf) << 4 | (R & 0xf0) >> 5;
   reg1A = (R & 0x1f) << 3 | ((Q >> 3) & 0x7);
-  reg1B = (Q & 0x7) << 5 | (P & 0x07) << 2 | (fvco & 0x03);
+  reg1B = (Q & 0x7) << 5 | (P & 0x07) << 2 | (f_range & 0x03);
 
   CDCE_WriteByte(0x18, reg18);
   CDCE_WriteByte(0x19, reg19);
@@ -347,7 +358,7 @@ void CDCE_Init(uint16_t f_out)
   CDCE_WriteByte(0x1C, N);
   CDCE_WriteByte(0x1D, ((N & 0xf) << 4) | (R & 0xf0));
   CDCE_WriteByte(0x1E, (R & 0x0f) | (Q & 0xf0));
-  CDCE_WriteByte(0x1F, ((Q & 0x07) << 5) | ((P & 0x07) << 2) | (fvco & 0x03));
+  CDCE_WriteByte(0x1F, ((Q & 0x07) << 5) | ((P & 0x07) << 2) | (f_range & 0x03));
 
   S0 = 1;
   UserPrintf("Info:clk well configured\n");

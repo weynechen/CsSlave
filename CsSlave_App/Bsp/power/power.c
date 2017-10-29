@@ -9,6 +9,8 @@
 
 #include "power.h"
 #include "tim.h"
+#include "adc.h"
+#include "ack.h"
 
 void Power_SetState(PowerTypeDef power, StateTypeDef state)
 {
@@ -23,5 +25,20 @@ void Power_SetBLCurrent(uint16_t value)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 }
 
+
+void BLWatchDog(void)
+{
+  HAL_ADC_Start(&hadc1);
+  if(HAL_ADC_PollForConversion(&hadc1,50)==HAL_OK)
+  {
+    uint16_t value = HAL_ADC_GetValue(&hadc1);
+    if(value < 10)
+    {
+      Power_SetState(POWER_OUT5V,OFF);
+    }
+  }
+  HAL_ADC_Stop(&hadc1);
+  
+}
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

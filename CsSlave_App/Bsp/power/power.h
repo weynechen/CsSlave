@@ -40,5 +40,5 @@ typedef enum
 
 void Power_SetState(PowerTypeDef power, StateTypeDef state);
 void Power_SetBLCurrent(uint16_t value);
-
+void BLWatchDog(void);
 #endif

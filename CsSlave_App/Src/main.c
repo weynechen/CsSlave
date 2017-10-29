@@ -232,6 +232,7 @@ int main(void)
   uint8_t key_control = 0;
   uint8_t power_on = 1;
   uint8_t mtp_mode = 0;
+  uint32_t power_on_time = 0;
 
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
@@ -326,6 +327,7 @@ int main(void)
         Lcd_LightOn();
         LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
         power_on = 1;
+        power_on_time = HAL_GetTick();
         ResetStayTimeCounter();
       }
       break;
@@ -382,6 +384,11 @@ int main(void)
       {
         PageTurning(PAGE_UP);
       }
+    }
+
+    if((HAL_GetTick() - power_on_time) > 2000)
+    {    
+      BLWatchDog();
     }
 
     /* USER CODE END WHILE */

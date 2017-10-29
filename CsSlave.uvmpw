@@ -13,11 +13,11 @@
 
   <project>
     <PathAndName>.\CsSlave_App\MDK-ARM\CsSlave_app.uvprojx</PathAndName>
+    <NodeIsActive>1</NodeIsActive>
   </project>
 
   <project>
     <PathAndName>.\CsSlave_App\MDK-ARM\CsSlave_app_lib.uvprojx</PathAndName>
-    <NodeIsActive>1</NodeIsActive>
   </project>
 
 </ProjectWorkspace>

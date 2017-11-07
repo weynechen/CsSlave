@@ -21,7 +21,7 @@
 #include "rgbif.h"
 #include "font.h"
 
-FontColorTypeDef FontColor = {0xffffff, 0};
+FontColorTypeDef FontColor = { 0xffffff, 0 };
 
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
@@ -30,14 +30,18 @@ static uint8_t ShowIDPattern = 0xff;
 
 static uint8_t FindSDRAMPatternAmount(void);
 
-static const PowerTypeDef PowerLUT[POWER_AMOUT] = {POWER_1V8, POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP, POWER_AVDD,
-                                                   POWER_VCOM, POWER_VGH, POWER_VGL};
+static const PowerTypeDef PowerLUT[POWER_AMOUT] =
+{
+  POWER_1V8,  POWER_2V8, POWER_3V3, POWER_VSP, POWER_VSN, POWER_OUT5V, POWER_MTP, POWER_AVDD,
+  POWER_VCOM, POWER_VGH, POWER_VGL
+};
 
 static struct
 {
   GPIO_TypeDef *gpio_port;
-  uint16_t gpio_pin;
-} ResetPortPin;
+  uint16_t     gpio_pin;
+}
+ResetPortPin;
 
 void closeAllPower(void)
 {
@@ -49,6 +53,7 @@ void closeAllPower(void)
     HAL_Delay(10);
   }
 }
+
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -80,12 +85,13 @@ void SetLcdPower(StateTypeDef state)
   }
 }
 
+
 /*
-每个电源或者reset用3个字节表示，
-第一个字节表示电源索引，
-第二三字节表示延时时间，
-包的第一个字节表示总的索引个数。
-*/
+ * 每个电源或者reset用3个字节表示，
+ * 第一个字节表示电源索引，
+ * 第二三字节表示延时时间，
+ * 包的第一个字节表示总的索引个数。
+ */
 void SetLcdPowerByUser(StateTypeDef state)
 {
   uint8_t *p;
@@ -146,6 +152,7 @@ void SetLcdPowerByUser(StateTypeDef state)
   }
 }
 
+
 void SetLcdTiming(void)
 {
   memcpy((uint16_t *)&LCDTiming, (uint16_t *)SystemConfig.LCDTimingPara, sizeof(SystemConfig.LCDTimingPara));
@@ -153,17 +160,20 @@ void SetLcdTiming(void)
   LcdDrvSetTiming();
 }
 
+
 void SetMipiPara(void)
 {
   uint8_t size = *(uint8_t *)SystemConfig.MIPIConfig;
   uint16_t i;
 
   if (size % 3 != 0)
+  {
     return;
+  }
 
   if (size == 3)
   {
-    uint8_t lane = SystemConfig.MIPIConfig[3];
+    uint8_t lane   = SystemConfig.MIPIConfig[3];
     uint16_t speed = (SystemConfig.MIPIConfig[1] << 8) | SystemConfig.MIPIConfig[2];
 
     SSD2828_Init(lane, speed);
@@ -180,6 +190,7 @@ void SetMipiPara(void)
   }
 }
 
+
 void ResetRGBLcd(void)
 {
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
@@ -193,15 +204,17 @@ void ResetRGBLcd(void)
   HAL_Delay(120);
 }
 
+
 void SetRGBSPI8Or9BitLcdInitCode(void)
 {
-  uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
-  uint8_t *p = &SystemConfig.LCDInitCode[2];
+  uint16_t code_size  = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
+  uint8_t *p          = &SystemConfig.LCDInitCode[2];
   uint8_t para_amount = 0;
 
   //  SPIEdgeTypeDef package;
   uint16_t i = 0, j = 0;
   uint16_t delay_time;
+
   //uint8_t buffer[32];
   //  uint8_t para;
   //ReadBackAmount = 0;
@@ -256,15 +269,17 @@ void SetRGBSPI8Or9BitLcdInitCode(void)
   }
 }
 
+
 void SetRGBSPI16BitLcdInitCode(void)
 {
   uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
-  uint8_t *p = &SystemConfig.LCDInitCode[2];
-  uint16_t reg = 0;
+  uint8_t *p         = &SystemConfig.LCDInitCode[2];
+  uint16_t reg       = 0;
   uint8_t para;
   SPIEdgeTypeDef package = SPI_RISING;
   uint16_t delay_time;
   uint16_t i = 0;
+
   ReadBackAmount = 0;
 
   while (i < code_size)
@@ -286,9 +301,9 @@ void SetRGBSPI16BitLcdInitCode(void)
       break;
 
     case RGB_WRITE:
-      reg = 0;
-      reg = *(p + i++);
-      reg = *(p + i++) << 8 | reg;
+      reg  = 0;
+      reg  = *(p + i++);
+      reg  = *(p + i++) << 8 | reg;
       para = *(p + i++);
       RGB_SPIWrite_16Bit(reg, para, package);
       break;
@@ -317,6 +332,7 @@ void SetRGBSPI16BitLcdInitCode(void)
   }
 }
 
+
 /**
  * @brief  解析并设定LCD初始化
  * @note   头两个字节为整个initcode的长度
@@ -326,12 +342,12 @@ void SetRGBSPI16BitLcdInitCode(void)
  */
 void SetMipiLcdInitCode(void)
 {
-  uint16_t code_size = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
-  uint8_t *p = &SystemConfig.LCDInitCode[2];
+  uint16_t code_size  = (SystemConfig.LCDInitCode[0] << 8) | SystemConfig.LCDInitCode[1];
+  uint8_t *p          = &SystemConfig.LCDInitCode[2];
   uint8_t para_amount = 0;
   uint8_t para;
   MipiPackageDef package = NO_PACKAGE;
-  uint16_t i = 0, j = 0;
+  uint16_t i             = 0, j = 0;
   uint16_t delay_time;
   MIPI_ReadTypeDef result;
   uint8_t buffer[32];
@@ -405,7 +421,7 @@ void SetMipiLcdInitCode(void)
       break;
 
     case MIPI_READ:
-      para = *(p + i++);
+      para        = *(p + i++);
       para_amount = *(p + i++);
       if (package == DCS)
       {
@@ -446,6 +462,7 @@ void SetMipiLcdInitCode(void)
   }
 }
 
+
 static void ShowID(void)
 {
   uint16_t j = 0, x = 0, y = 0;
@@ -465,16 +482,17 @@ static void ShowID(void)
       x += 16 * n * 5;
       LCD_ShowString(x, y, temp);
     }
-    x = 0;
+    x  = 0;
     y += 32;
   }
 }
 
+
 void SetPattern(void)
 {
   uint16_t size = (SystemConfig.Pattern[0] << 8) | SystemConfig.Pattern[1];
-  uint8_t *p = &SystemConfig.Pattern[2];
-  uint16_t i = 0;
+  uint8_t *p    = &SystemConfig.Pattern[2];
+  uint16_t i    = 0;
   uint8_t r, g, b;
   uint16_t stay_time;
 
@@ -516,9 +534,13 @@ void SetPattern(void)
 
     case SHOW_ID:
       if (PatternProperty.Counter != 0)
+      {
         ShowIDPattern = PatternProperty.Counter - 1;
+      }
       else
+      {
         ShowIDPattern = 0;
+      }
 
       //ShowID();
       break;
@@ -537,13 +559,13 @@ void SetPattern(void)
       PatternProperty.Counter++;
       break;
 
-    case FLICKER_2DOT:
+    case FLICKER_DOT:
       Flicker2Dot();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker2Dot", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
-      
+
     case COLORBARV:
       Img_ColorBarV();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical colorbar", PatternProperty.Counter);
@@ -658,7 +680,9 @@ void SetPattern(void)
     }
 
     if (is_pattern)
+    {
       HAL_Delay(500);
+    }
   }
   FPGA_WRITE_CMD(0x1B);
   FPGA_WRITE_DATA(0xAA);
@@ -668,6 +692,7 @@ void SetPattern(void)
   Img_Full(0xff, 0xff, 0xff);
   LcdDrvShowPattern(0);
 }
+
 
 uint8_t IsStayTimeOver(uint8_t frame)
 {
@@ -685,10 +710,12 @@ uint8_t IsStayTimeOver(uint8_t frame)
   return 0;
 }
 
+
 void ResetStayTimeCounter(void)
 {
   htim3.Instance->CNT = 0;
 }
+
 
 void ResetMipiLcd(void)
 {
@@ -702,6 +729,7 @@ void ResetMipiLcd(void)
   HAL_Delay(120);
 }
 
+
 static void ResetLcdByDefault(void)
 {
   HAL_Delay(10);
@@ -712,6 +740,7 @@ static void ResetLcdByDefault(void)
   HAL_GPIO_WritePin(ResetPortPin.gpio_port, ResetPortPin.gpio_pin, GPIO_PIN_SET);
   HAL_Delay(120);
 }
+
 
 void PowerOff(void)
 {
@@ -725,6 +754,7 @@ void PowerOff(void)
   }
 }
 
+
 void PowerOn(void)
 {
   if (SystemConfig.PowerSettings != 0)
@@ -736,6 +766,7 @@ void PowerOn(void)
     SetLcdPowerByUser(ON);
   }
 }
+
 
 void Lcd_ReInit(void)
 {
@@ -749,12 +780,12 @@ void Lcd_ReInit(void)
   if (SystemConfig.LcdType == MIPI_LCD)
   {
     ResetPortPin.gpio_port = MIPIRESET_GPIO_Port;
-    ResetPortPin.gpio_pin = MIPIRESET_Pin;
+    ResetPortPin.gpio_pin  = MIPIRESET_Pin;
   }
   else
   {
     ResetPortPin.gpio_port = GPIOE;
-    ResetPortPin.gpio_pin = GPIO_PIN_6;
+    ResetPortPin.gpio_pin  = GPIO_PIN_6;
   }
 
   //default settings
@@ -820,6 +851,7 @@ void Lcd_ReInit(void)
   //	LcdDrvShowPattern(1);
 }
 
+
 void Lcd_LightOn(void)
 {
   //default settings
@@ -852,7 +884,9 @@ void Lcd_LightOn(void)
     SetRGBSPI8Or9BitLcdInitCode();
   }
   else
+  {
     UserPrintf("Error:LCD type definition error!\n");
+  }
   LcdDrvOpenRGB();
   Power_SetBLCurrent(SystemConfig.Backlight);
 
@@ -864,13 +898,17 @@ void Lcd_LightOn(void)
     {
       times++;
       if (times > 10000)
+      {
         break;
+      }
       HAL_Delay(1);
     }
     while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET)
-      ;
+    {
+    }
   }
 }
+
 
 void MipiLcdSleepIn(void)
 {
@@ -884,6 +922,7 @@ void MipiLcdSleepIn(void)
   HAL_Delay(10);
 }
 
+
 void MipiLcdSleepOut(void)
 {
   SSD2828_DcsShortWrite(1);
@@ -896,20 +935,22 @@ void MipiLcdSleepOut(void)
   Power_SetBLCurrent(SystemConfig.Backlight);
 }
 
+
 /*
-static void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
-{
-  LcdDrvSetXY(x, y);
-  LcdDrvWriteData(color >> 8);
-  LcdDrvWriteData(color);
-}
-*/
+ * static void LCD_DrawPoint(uint16_t x, uint16_t y, uint16_t color)
+ * {
+ * LcdDrvSetXY(x, y);
+ * LcdDrvWriteData(color >> 8);
+ * LcdDrvWriteData(color);
+ * }
+ */
 
 static uint8_t FontScale = 1;
 void LCD_SetFontScale(uint8_t scale)
 {
   FontScale = scale;
 }
+
 
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 {
@@ -961,6 +1002,7 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   }
 }
 
+
 void LCD_ShowString(uint16_t x, uint16_t y, const char *p)
 {
   while (*p != '\0')
@@ -970,6 +1012,7 @@ void LCD_ShowString(uint16_t x, uint16_t y, const char *p)
     p++;
   }
 }
+
 
 void static Turning(void)
 {
@@ -987,11 +1030,11 @@ void static Turning(void)
   }
 }
 
+
 void PageTurning(PageTurningTypeDef page)
 {
   if (page == PAGE_UP)
   {
-
     if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
     {
       PatternProperty.CurrentPattern = 0;
@@ -1015,6 +1058,7 @@ void PageTurning(PageTurningTypeDef page)
   Turning();
 }
 
+
 static uint8_t FindSDRAMPatternAmount(void)
 {
   uint8_t i;
@@ -1032,23 +1076,89 @@ static uint8_t FindSDRAMPatternAmount(void)
   return counter;
 }
 
+
 void PrepareBg(void)
 {
   uint16_t i, j;
   uint8_t amount = FindSDRAMPatternAmount();
+
   LcdDrvShowPattern(amount);
   LcdDrvSetCharIndex(amount);
   for (j = 0; j < LCDTiming.LCDV / 4; j++)
   {
     LcdDrvSetXY(0, j);
-    for (i = 0; i < LCDTiming.LCDH / 4; i++)
+    for (i = 0; i < LCDTiming.LCDH / 8; i++)
     {
-      LcdDrvWriteData(FontColor.Background >> 16);
-      LcdDrvWriteData(FontColor.Background >> 8);
-      LcdDrvWriteData(FontColor.Background);
+      LcdDrvWriteData(0x7f);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x7f);
+      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0x7f);
+      LcdDrvWriteData(0x00);
     }
   }
   LcdDrvSetCharIndex(amount);
 }
+
+
+static FlickertypeDef FlickerType = F_COLUMN;
+
+void LCD_SetFlickerType(FlickertypeDef type)
+{
+  FlickerType = type;
+}
+
+
+void LCD_EraseFlickerString(void)
+{
+  uint16_t i, j;
+
+  LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
+
+  if (FlickerType == F_COLUMN)
+  {
+    for (j = 0; j < LCDTiming.LCDV / 4; j++)
+    {
+      LcdDrvSetXY(0, j);
+      for (i = 0; i < LCDTiming.LCDH / 4; i++)
+      {
+        LcdDrvWriteData(FontColor.Background >> 16);
+        LcdDrvWriteData(FontColor.Background >> 8);
+        LcdDrvWriteData(FontColor.Background);
+      }
+    }
+  }
+  else
+  {
+    uint16_t quarter_h = LCDTiming.LCDH / 8;
+    uint16_t quarter_v = LCDTiming.LCDV / 8;
+    
+    for (j = 0; j < quarter_v; j++)
+    {
+      LcdDrvSetXY(0, j);
+      for (i = 0; i < quarter_h; i++)
+      {
+        LcdDrvWriteData(0x80);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x80);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x80);
+        LcdDrvWriteData(0x00);
+      }
+  
+      for (i = 0; i < quarter_h; i++)
+      {
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x80);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x80);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x80);
+      }
+    }
+  }
+  LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
+}
+
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

@@ -194,6 +194,7 @@ static uint8_t AutoTuningVcom(void)
   float flicker = 0;
   float last_flicker = 0;
   int8_t k;
+  uint32_t time = HAL_GetTick();
 
   Vcom = VCOM_VALUE;
   SetVcom();
@@ -219,6 +220,11 @@ static uint8_t AutoTuningVcom(void)
 
     if (flicker <= TargetFlickerValue)
       return 1;
+
+    if(HAL_GetTick() - time > 30000)
+    {
+      return 0;
+    }
   }
 
   return 0;
@@ -341,7 +347,8 @@ int main(void)
       else
       {
         //TODO
-        //LCD_ShowString(0, 0, "start");
+        LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
+        LCD_EraseFlickerString();
         if (AutoTuningVcom() == 1)
         {
           UserPrintf("vcom:0x%x\n", Vcom);

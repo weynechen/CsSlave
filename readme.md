@@ -13,10 +13,10 @@ page10 由随机数和真秘钥组成，共2kb
 page11 ~ page16 ，共10kb
 
 ### APP 备份区
-page17~page56，用来更新firmware的时候缓冲用,112K
+page17~page56，用来更新firmware的时候缓冲用,80K
 
 ### APP
-page57~page97 ，共112K
+page57~page97 ，共80K
 
 ### version
 0x0803F800第一个一个字用来存放版本号

@@ -61,7 +61,7 @@ typedef enum {
   SHOW_ID,
   SLEEP_IN,
   SLEEP_OUT,
-  FLICKER_2DOT,  
+  FLICKER_DOT,  
   PATTERN_END
 } PatternTypeDef;
 
@@ -88,6 +88,13 @@ typedef enum {
   LVDS_888_JEIDA,
 } LcdTypeDef;
 
+typedef enum
+{
+  F_COLUMN,
+  F_DOT,
+  F_ROW,
+}FlickertypeDef;
+
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
 void MipiLcdSleepIn(void);
@@ -105,6 +112,8 @@ void ResetMipiLcd(void);
 void SetMipiPara(void);
 void PrepareBg(void);
 void LCD_SetFontScale(uint8_t scale);
+void LCD_SetFlickerType(FlickertypeDef type);
+void LCD_EraseFlickerString(void);
 extern FontColorTypeDef FontColor;
 
 #endif

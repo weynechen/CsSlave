@@ -65,4 +65,10 @@ void SendIdToFlickerSensor(uint16_t id)
     FS_SendData(ID_VALUE, id);
 }
 
+void SendOTPTimesToFlickerSensor(uint16_t times)
+{
+    FS_SendData(OTP_TIMES, times);
+    
+}
+
 /********************* (C) COPYRIGHT WEYNE CHEN *******END OF FILE ********/

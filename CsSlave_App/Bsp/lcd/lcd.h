@@ -114,6 +114,10 @@ void PrepareBg(void);
 void LCD_SetFontScale(uint8_t scale);
 void LCD_SetFlickerType(FlickertypeDef type);
 void LCD_EraseFlickerString(void);
+void SetFontColor(uint32_t color);
+void SetBgColor(uint32_t color);
+void  OpInLPMode(void);
+
 extern FontColorTypeDef FontColor;
 
 #endif

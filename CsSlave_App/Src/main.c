@@ -94,6 +94,46 @@ static void SetVcom(void)
   SSD2828WriteData(Vcom);
 }
 
+static uint8_t GetOTPTimes(void)
+{
+  uint8_t val[1];
+  uint8_t ss;
+
+  SSD2828_GenericLongWrite(4);
+  SSD2828WriteData(0xFF);
+  SSD2828WriteData(0x98);
+  SSD2828WriteData(0x81);
+  SSD2828WriteData(0x06);
+
+
+  if (SSD2828_GenericReadDT14(0xE0, 1, val) == MIPI_READ_SUCCEED)
+  {
+    if ((val[0] & 0x38) == 0x00)
+    {
+      ss = 0;
+    }
+    else if ((val[0] & 0x38) == 0x20)
+    {
+      ss = 1;
+    }
+    else if ((val[0] & 0x38) == 0x30)
+    {
+      ss = 2;
+    }
+    else if ((val[0] & 0x38) == 0x38)
+    {
+      ss = 3;
+    }
+  }
+
+  return ss;
+}
+
+void OpInLPMode(void)
+{
+  SendOTPTimesToFlickerSensor(GetOTPTimes());
+}
+
 static uint8_t CheckResult(void)
 {
   uint8_t buffer[3];
@@ -189,18 +229,24 @@ const static uint8_t VcomMin = 0;
 const static uint8_t VcomMax = 0xff;
 const static int8_t Step = 1;
 
+//VCOM自动调节函数，一般不用改动
 static uint8_t AutoTuningVcom(void)
 {
-  float flicker = 0;
+  float flicker      = 0;
   float last_flicker = 0;
+  float init_flicker;
   int8_t k;
   uint32_t time = HAL_GetTick();
 
   Vcom = VCOM_VALUE;
-  SetVcom();
+  SetVcom();              //在high speed mode写VCOM值
   HAL_Delay(20);
   if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
+  {
     return 0;
+  }
+
+  init_flicker = last_flicker;
 
   k = (flicker < last_flicker) ? 1 : -1;
 
@@ -208,23 +254,46 @@ static uint8_t AutoTuningVcom(void)
   {
     if (flicker - last_flicker > 5)
     {
-      k = (k == Step) ? -Step : Step;
+      k            = (k == Step) ? -Step : Step;
       last_flicker = flicker;
     }
 
+    if (abs(init_flicker - flicker) < 3)
+    {
+      if (Vcom > VCOM_VALUE + 20)
+      {
+        Vcom = VCOM_VALUE -10;
+        k            = (k == Step) ? -Step : Step;
+      }
+      else if (Vcom < VCOM_VALUE - 20)
+      {
+        Vcom = VCOM_VALUE +10;
+        k            = (k == Step) ? -Step : Step;        
+      }
+    }
+
     Vcom += k;
-    SetVcom();
+
+    SetVcom();                //high speed 模式下写VCOM寄存器
+
     HAL_Delay(10);
     if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
-      return 0;
-
-    if (flicker <= TargetFlickerValue)
-      return 1;
-
-    if(HAL_GetTick() - time > 30000)
     {
       return 0;
     }
+
+    if (flicker <= TargetFlickerValue)
+    {
+      return 1;
+    }
+
+    if (HAL_GetTick() - time > 30000)//超时时间，单位ms
+    {
+      return 0;
+    }
+
+    UserPrintf("Vcom:0x%X\n",Vcom);
+
   }
 
   return 0;
@@ -335,6 +404,8 @@ int main(void)
         power_on = 1;
         power_on_time = HAL_GetTick();
         ResetStayTimeCounter();
+        // LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
+        // LCD_EraseFlickerString();
       }
       break;
 
@@ -346,9 +417,6 @@ int main(void)
       }
       else
       {
-        //TODO
-        LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
-        LCD_EraseFlickerString();
         if (AutoTuningVcom() == 1)
         {
           UserPrintf("vcom:0x%x\n", Vcom);
@@ -362,6 +430,7 @@ int main(void)
           }
           SendVcomToFlickerSensor(Vcom);
           SendIdToFlickerSensor(0);
+          SendOTPTimesToFlickerSensor(GetOTPTimes());
         }
         mtp_mode = 0;
       }

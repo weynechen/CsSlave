@@ -14,11 +14,14 @@
 
 #define FLICKER_TIMEOUT 0
 
-typedef enum {
+typedef enum
+{
     FLICKER_VALUE,
     VCOM_VALUE,
     ID_VALUE,
-} FlickerSensorTypeDef;
+	OTP_TIMES,
+	TASK_NULL = 0xff,
+}TaskIDTypeDef;
 
 
 extern uint8_t FlickerDataReady;
@@ -26,6 +29,7 @@ extern uint8_t FlickerDataReady;
 uint8_t GetFlickerValue(float *flicker);
 void SendVcomToFlickerSensor(uint16_t vcom);
 void SendIdToFlickerSensor(uint16_t id);
+void SendOTPTimesToFlickerSensor(uint16_t times);
 void FS_Callback(PproTypeDef *data);
 #endif
 /********************* (C) COPYRIGHT WEYNE CHEN *******END OF FILE ********/

@@ -54,6 +54,15 @@ void closeAllPower(void)
   }
 }
 
+void SetFontColor(uint32_t color)
+{
+  FontColor.Fore = color;
+}
+
+void SetBgColor(uint32_t color)
+{
+  FontColor.Background = color;
+}
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -873,6 +882,7 @@ void Lcd_LightOn(void)
   {
     SetMipiPara();
     SetMipiLcdInitCode();
+    OpInLPMode();
     SSD2828_SetMode(VD);
   }
   else if (SystemConfig.LcdType == RGB_SPI16BIT)
@@ -1122,9 +1132,12 @@ void LCD_EraseFlickerString(void)
       LcdDrvSetXY(0, j);
       for (i = 0; i < LCDTiming.LCDH / 4; i++)
       {
-        LcdDrvWriteData(FontColor.Background >> 16);
-        LcdDrvWriteData(FontColor.Background >> 8);
-        LcdDrvWriteData(FontColor.Background);
+        LcdDrvWriteData(0x7f);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x7f);
+        LcdDrvWriteData(0x00);
+        LcdDrvWriteData(0x7f);
+        LcdDrvWriteData(0x00);
       }
     }
   }
@@ -1132,7 +1145,7 @@ void LCD_EraseFlickerString(void)
   {
     uint16_t quarter_h = LCDTiming.LCDH / 8;
     uint16_t quarter_v = LCDTiming.LCDV / 8;
-    
+
     for (j = 0; j < quarter_v; j++)
     {
       LcdDrvSetXY(0, j);
@@ -1145,7 +1158,7 @@ void LCD_EraseFlickerString(void)
         LcdDrvWriteData(0x80);
         LcdDrvWriteData(0x00);
       }
-  
+
       for (i = 0; i < quarter_h; i++)
       {
         LcdDrvWriteData(0x00);

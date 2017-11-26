@@ -82,7 +82,7 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 
 /* USER CODE BEGIN 0 */
 
-#define VCOM_VALUE 0x8B
+#define VCOM_VALUE    0x8B
 
 static int16_t Vcom = VCOM_VALUE;
 
@@ -93,6 +93,7 @@ static void SetVcom(void)
   SSD2828WriteData(0x00);
   SSD2828WriteData(Vcom);
 }
+
 
 static uint8_t GetOTPTimes(void)
 {
@@ -129,18 +130,21 @@ static uint8_t GetOTPTimes(void)
   return ss;
 }
 
+
 void OpInLPMode(void)
 {
   SendOTPTimesToFlickerSensor(GetOTPTimes());
 }
 
+
 static uint8_t CheckResult(void)
 {
   uint8_t buffer[3];
   uint8_t result = 1;
+
   if (SSD2828_GenericReadDT14(0x04, 3, buffer) == MIPI_READ_SUCCEED)
   {
-    UserPrintf("vcom:0x%x 0x%x 0x%x\n", buffer[0],buffer[1],buffer[2]);
+    UserPrintf("vcom:0x%x 0x%x 0x%x\n", buffer[0], buffer[1], buffer[2]);
     if ((buffer[0] == 0X20) && (buffer[1] == 0X17) && (buffer[2] == 0X06))
     {
     }
@@ -177,9 +181,10 @@ static uint8_t CheckResult(void)
     UserPrintf("Read VCOM Failed!\n");
     result = 0;
   }
-	
-	return result;
+
+  return result;
 }
+
 
 static uint8_t MTP(void)
 {
@@ -193,8 +198,10 @@ static uint8_t MTP(void)
   SetMTPCode(Vcom);
   ResetMipiLcd();
   if (CheckResult() == 0)
+  {
     result = 0;
-    
+  }
+
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x11);
   HAL_Delay(100);
@@ -208,9 +215,11 @@ static uint8_t MTP(void)
   return result;
 }
 
+
 static void TuningVcom(KeyTypeDef key)
 {
   char temp[4];
+
   if (key == KEY_UP)
   {
     Vcom++;
@@ -224,89 +233,148 @@ static void TuningVcom(KeyTypeDef key)
   LCD_ShowString(0, 0, temp);
 }
 
-const static float TargetFlickerValue = 10.0;
-const static uint8_t VcomMin = 0;
-const static uint8_t VcomMax = 0xff;
-const static int8_t Step = 1;
 
-//VCOM自动调节函数，一般不用改动
-static uint8_t AutoTuningVcom(void)
+/*--------6,OTP烧录需要修改的函数---------*/
+const static float TargetFlickerValue = 12.0; /*------flicker的目标值，该值根据所需进行调整----*/
+const static uint8_t VcomMin          = 0x05; //最小的vcom值，该值根据所需进行调整
+const static uint8_t VcomMax          = 0xa0; //最大的vcom值，该值根据所需进行调整
+
+//VCOM自动调节函数，不用改动
+#define SAMPLE_AMOUNT    3
+typedef struct
 {
-  float flicker      = 0;
-  float last_flicker = 0;
-  float init_flicker;
-  int8_t k;
+  uint8_t vcom;
+  float   flk;
+} VFMap;
+uint8_t AutoTuningVcom(void)
+{
+  VFMap min = { VCOM_VALUE, 0xff };
+  VFMap tmp[SAMPLE_AMOUNT];
   uint32_t time = HAL_GetTick();
+  float flk;
+  uint8_t status  = 0;
+  uint8_t counter = 0;
+  int k           = 0;
+  int step;
+  uint8_t reverse_times = 0;
 
   Vcom = VCOM_VALUE;
-  SetVcom();              //在high speed mode写VCOM值
-  HAL_Delay(20);
-  if (GetFlickerValue(&last_flicker) == FLICKER_TIMEOUT)
+  for (uint8_t i = 0; i < 3; i++)
   {
-    return 0;
+    SetVcom();
+    if (GetFlickerValue(&flk) == FLICKER_TIMEOUT)
+    {
+      UserPrintf("com err\n");
+      return 0;
+    }
   }
 
-  init_flicker = last_flicker;
-
-  k = (flicker < last_flicker) ? 1 : -1;
-
-  while ((Vcom < VcomMax) && (Vcom > VcomMin))
+  while ((Vcom > VcomMin) && (Vcom < VcomMax))
   {
-    if (flicker - last_flicker > 5)
-    {
-      k            = (k == Step) ? -Step : Step;
-      last_flicker = flicker;
-    }
-
-    if (abs(init_flicker - flicker) < 3)
-    {
-      if (Vcom > VCOM_VALUE + 20)
-      {
-        Vcom = VCOM_VALUE -10;
-        k            = (k == Step) ? -Step : Step;
-      }
-      else if (Vcom < VCOM_VALUE - 20)
-      {
-        Vcom = VCOM_VALUE +10;
-        k            = (k == Step) ? -Step : Step;        
-      }
-    }
-
-    Vcom += k;
-
-    SetVcom();                //high speed 模式下写VCOM寄存器
-
-    HAL_Delay(10);
-    if (GetFlickerValue(&flicker) == FLICKER_TIMEOUT)
+    SetVcom();
+    //HAL_Delay(500);
+    if (GetFlickerValue(&flk) == FLICKER_TIMEOUT)
     {
       return 0;
     }
-
-    if (flicker <= TargetFlickerValue)
+    step = flk / 10;
+    if (step == 0)
     {
-      return 1;
+      step = 1;
+    }
+
+    if (flk < min.flk)
+    {
+      min.flk  = flk;
+      min.vcom = Vcom;
+    }
+
+    switch (status)
+    {
+    case 0:
+      if (flk < 100)
+      {
+        status = 2;
+      }
+      else
+      {
+        Vcom = VcomMin + 10;
+        status++;
+      }
+      break;
+
+    case 1:
+      Vcom += 10;
+      if (flk < 100)
+      {
+        status++;
+      }
+      break;
+
+    case 2:
+      tmp[counter].flk  = flk;
+      tmp[counter].vcom = Vcom;
+      counter++;
+      Vcom += step;
+      if (counter == SAMPLE_AMOUNT)
+      {
+        k    = (tmp[0].flk < tmp[SAMPLE_AMOUNT - 1].flk) ? (-1) : 1;
+        Vcom = (k == 1) ? (tmp[SAMPLE_AMOUNT - 1].vcom + 1) : (tmp[0].vcom - 1);
+        status++;
+      }
+      break;
+
+    case 3:
+      Vcom += step * k;
+      if (flk > min.flk)
+      {
+        reverse_times++;
+        Vcom += step * k;
+      }
+      if (reverse_times > 3)
+      {
+        Vcom = min.vcom;
+        status++;
+      }
+      break;
+
+    case 4:
+      if (flk < TargetFlickerValue)
+      {
+        UserPrintf("time:%dms\n", HAL_GetTick() - time);
+        SetVcom();
+        return 1;
+      }
+      else
+      {
+        k             = 1;
+        min.flk       = 0xff;
+        Vcom          = VcomMin + 5;
+        reverse_times = 0;
+        status        = 3;
+      }
     }
 
     if (HAL_GetTick() - time > 30000)//超时时间，单位ms
     {
+      //UserPrintf("over time\n");
       return 0;
     }
-
-    UserPrintf("Vcom:0x%X\n",Vcom);
-
+    //UserPrintf("vcom:%X,flk:%0.1f\n",Vcom,flk);
   }
 
   return 0;
 }
+
 
 /* USER CODE END 0 */
 
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint8_t key_control = 0;
-  uint8_t power_on = 1;
-  uint8_t mtp_mode = 0;
+  uint8_t key_control    = 0;
+  uint8_t power_on       = 1;
+  uint8_t mtp_mode       = 0;
   uint32_t power_on_time = 0;
 
   SCB->VTOR = APP_BASE_ADDRESS;
@@ -346,9 +414,10 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
-  /*@TODO 
-	W25Nxx_Init();
-  */
+
+  /*@TODO
+   * W25Nxx_Init();
+   */
   SSD2828_Init(4, 480);
   ReadSystemConfig();
   /* USER CODE END 2 */
@@ -365,22 +434,30 @@ int main(void)
     case KEY_UP:
       key_control = 1;
       if (mtp_mode == 0)
+      {
         PageTurning(PAGE_UP);
+      }
       else
+      {
         TuningVcom(KEY_UP);
+      }
       break;
 
     case KEY_DOWN:
       key_control = 1;
       if (mtp_mode == 0)
+      {
         PageTurning(PAGE_DOWN);
+      }
       else
+      {
         TuningVcom(KEY_DOWN);
+      }
       break;
 
     case KEY_POWER:
       key_control = 0;
-      mtp_mode = 0;
+      mtp_mode    = 0;
 
       if (power_on == 1)
       {
@@ -401,7 +478,7 @@ int main(void)
         GREEN_LIGHT_ON;
         Lcd_LightOn();
         LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
-        power_on = 1;
+        power_on      = 1;
         power_on_time = HAL_GetTick();
         ResetStayTimeCounter();
         // LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
@@ -462,8 +539,8 @@ int main(void)
       }
     }
 
-    if((HAL_GetTick() - power_on_time) > 2000)
-    {    
+    if ((HAL_GetTick() - power_on_time) > 2000)
+    {
       BLWatchDog();
     }
 
@@ -474,6 +551,7 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+
 /** System Clock Configuration
  */
 void SystemClock_Config(void)
@@ -483,19 +561,19 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEState       = RCC_HSE_ON;
   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.PLL.PLLState   = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL     = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
@@ -504,8 +582,8 @@ void SystemClock_Config(void)
   }
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC | RCC_PERIPHCLK_USB;
-  PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
-  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
+  PeriphClkInit.AdcClockSelection    = RCC_ADCPCLK2_DIV6;
+  PeriphClkInit.UsbClockSelection    = RCC_USBCLKSOURCE_PLL_DIV1_5;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -518,6 +596,7 @@ void SystemClock_Config(void)
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
+
 
 /** NVIC Configuration
  */
@@ -545,6 +624,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
 }
 
+
 /* USER CODE BEGIN 4 */
 int fputc(int ch, FILE *file)
 {
@@ -554,6 +634,7 @@ int fputc(int ch, FILE *file)
   return ch;
 }
 
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim2)
@@ -561,6 +642,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     SendHeartBeat();
   }
 }
+
 
 /* USER CODE END 4 */
 
@@ -578,6 +660,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler */
 }
+
 
 #ifdef USE_FULL_ASSERT
 

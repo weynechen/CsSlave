@@ -61,6 +61,7 @@
 #include "mtp.h"
 #include "flickersensor.h"
 #include "tp.h"
+#include "sublcd.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -414,6 +415,9 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
+
+  SubLCD_Init();
+  SubLCD_WriteFull(0xf800);
 
   /*@TODO
    * W25Nxx_Init();

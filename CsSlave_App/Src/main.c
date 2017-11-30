@@ -417,7 +417,6 @@ int main(void)
   CDCE_Init(30);
 
   SubLCD_Init();
-  SubLCD_WriteFull(0xf800);
 
   /*@TODO
    * W25Nxx_Init();

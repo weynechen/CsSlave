@@ -19,6 +19,7 @@
 
   <project>
     <PathAndName>.\CsSlave_App\MDK-ARM\CsSlave_app_lib.uvprojx</PathAndName>
+    <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
 </ProjectWorkspace>

@@ -27,7 +27,7 @@ uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
 
 static uint8_t ShowIDPattern = 0xff;
-
+static uint8_t FlickerIndex  = 0xff;
 static uint8_t FindSDRAMPatternAmount(void);
 
 static const PowerTypeDef PowerLUT[POWER_AMOUT] =
@@ -54,15 +54,18 @@ void closeAllPower(void)
   }
 }
 
+
 void SetFontColor(uint32_t color)
 {
   FontColor.Fore = color;
 }
 
+
 void SetBgColor(uint32_t color)
 {
   FontColor.Background = color;
 }
+
 
 void SetLcdPower(StateTypeDef state)
 {
@@ -558,6 +561,7 @@ void SetPattern(void)
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      FlickerIndex = PatternProperty.Counter;
       PatternProperty.Counter++;
       break;
 
@@ -565,6 +569,7 @@ void SetPattern(void)
       Flicker();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      FlickerIndex = PatternProperty.Counter;
       PatternProperty.Counter++;
       break;
 
@@ -572,6 +577,7 @@ void SetPattern(void)
       Flicker2Dot();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,flicker2Dot", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      FlickerIndex = PatternProperty.Counter;
       PatternProperty.Counter++;
       break;
 
@@ -1123,7 +1129,12 @@ void LCD_EraseFlickerString(void)
 {
   uint16_t i, j;
 
-  LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
+  if (FlickerIndex == 0xff)
+  {
+    return;
+  }
+
+  LcdDrvSetCharIndex(PatternProperty.Data[FlickerIndex]);
 
   if (FlickerType == F_COLUMN)
   {
@@ -1170,7 +1181,6 @@ void LCD_EraseFlickerString(void)
       }
     }
   }
-  LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
 }
 
 

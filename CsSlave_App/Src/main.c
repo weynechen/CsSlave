@@ -62,6 +62,7 @@
 #include "flickersensor.h"
 #include "tp.h"
 #include "sublcd.h"
+#include "build_info.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -410,19 +411,19 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n--CD310--\n");
+	UserPrintf("Info:build time:%d-%d-%d %d:%d:%d\n", CURR_YEAR, CURR_MONTH, CURR_DAY, CURR_HOUR, CURR_MIN, CURR_SEC);
   GetFirmwareVersion();
   InitSystemConfig();
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
 
-  SubLCD_Init();
-
   /*@TODO
    * W25Nxx_Init();
    */
   SSD2828_Init(4, 480);
   ReadSystemConfig();
+  //SubLCD_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -480,7 +481,8 @@ int main(void)
         RED_LIGHT_OFF;
         GREEN_LIGHT_ON;
         Lcd_LightOn();
-        LcdDrvShowPattern(PatternProperty.CurrentPattern = 0);
+        PatternProperty.CurrentPattern = 0;
+        LcdDrvShowPattern(PatternProperty.Data[PatternProperty.CurrentPattern]);
         power_on      = 1;
         power_on_time = HAL_GetTick();
         ResetStayTimeCounter();
@@ -490,6 +492,7 @@ int main(void)
       break;
 
     case KEY_MTP:
+			break;
       if (mtp_mode == 0)
       {
         LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
@@ -517,6 +520,7 @@ int main(void)
       break;
 
     case KEY_TP:
+			break;
       PrepareBg();
       LCD_ShowString(0, 0, "TP Testing...");
       if (TP_StartTest() == 1)

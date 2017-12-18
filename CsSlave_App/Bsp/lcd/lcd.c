@@ -928,14 +928,16 @@ void Lcd_LightOn(void)
 
 void MipiLcdSleepIn(void)
 {
+  SSD2828_SetMode(LP);
+  SSD2828WriteReg(0x00b7, 0x01, 0x02);
   Power_SetBLCurrent(0);
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x28);
-  HAL_Delay(10);
+  HAL_Delay(20);
 
   SSD2828_DcsShortWrite(1);
   SSD2828WriteData(0x10);
-  HAL_Delay(10);
+  HAL_Delay(100);
 }
 
 
@@ -1105,12 +1107,9 @@ void PrepareBg(void)
     LcdDrvSetXY(0, j);
     for (i = 0; i < LCDTiming.LCDH / 8; i++)
     {
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
     }
   }
   LcdDrvSetCharIndex(amount);

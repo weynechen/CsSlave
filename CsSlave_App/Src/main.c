@@ -378,7 +378,7 @@ int main(void)
   uint8_t power_on       = 1;
   uint8_t mtp_mode       = 0;
   uint32_t power_on_time = 0;
-
+  bool tp_draw_line  = false;
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -433,6 +433,14 @@ int main(void)
     ScanKey();
     SwitchTask();
 
+    if(tp_draw_line)
+    {
+      if((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
+      {
+        CtrlKey = KEY_NULL;
+      }
+    }
+
     switch (CtrlKey)
     {
     case KEY_UP:
@@ -462,7 +470,7 @@ int main(void)
     case KEY_POWER:
       key_control = 0;
       mtp_mode    = 0;
-
+      tp_draw_line = false;      
       if (power_on == 1)
       {
         GREEN_LIGHT_OFF;
@@ -520,17 +528,20 @@ int main(void)
       break;
 
     case KEY_TP:
-			break;
+			//break;
+      key_control = 1;      
       PrepareBg();
       LCD_ShowString(0, 0, "TP Testing...");
-      if (TP_StartTest() == 1)
-      {
-        LCD_ShowString(0, 64, "TP OK");
-      }
-      else
-      {
-        LCD_ShowString(0, 64, "TP NG");
-      }
+      
+      tp_draw_line = true;
+      // if (TP_StartTest() == 1)
+      // {
+      //   LCD_ShowString(0, 64, "TP OK");
+      // }
+      // else
+      // {
+      //   LCD_ShowString(0, 64, "TP NG");
+      // }
       break;
 
     default:
@@ -549,6 +560,14 @@ int main(void)
     if ((HAL_GetTick() - power_on_time) > 2000)
     {
       BLWatchDog();
+    }
+
+    if(tp_draw_line)
+    {
+      if(IsTPToggle())
+      {
+        TP_DrawLine();
+      }
     }
 
     /* USER CODE END WHILE */

@@ -1153,7 +1153,7 @@ void LCD_EraseFlickerString(void)
   }
   else
   {
-    uint16_t quarter_h = LCDTiming.LCDH / 8;
+    uint16_t quarter_h = LCDTiming.LCDH / 4;
     uint16_t quarter_v = LCDTiming.LCDV / 8;
 
     for (j = 0; j < quarter_v; j++)

@@ -11,16 +11,19 @@
 #ifndef __TP_H
 #define __TP_H
 #include "ppro.h"
+#include "stdbool.h"
 
 void TP_Callback(PproTypeDef *data);
 uint8_t TP_StartTest(void);
-
+void TP_DrawLine(void);
+bool IsTPToggle(void);
 typedef enum {
     TP_START,  /*开始测试*/
     TP_ECHO,   /*测试开始后的心跳信号*/
 		TP_NO_FILE,
     TP_WAKUP,  /*唤醒USART1*/
     TP_SLEEP,  /*关闭USART1*/
+    TP_COORDINATE = 0x87,
     TP_RESULT = 128, /*测试结果*/
 } TPPIDTypeDef;
 

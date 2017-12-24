@@ -1102,10 +1102,10 @@ void PrepareBg(void)
 
   LcdDrvShowPattern(amount);
   LcdDrvSetCharIndex(amount);
-  for (j = 0; j < LCDTiming.LCDV / 4; j++)
+  for (j = 0; j < LCDTiming.LCDV; j++)
   {
     LcdDrvSetXY(0, j);
-    for (i = 0; i < LCDTiming.LCDH / 8; i++)
+    for (i = 0; i < LCDTiming.LCDH; i++)
     {
       LcdDrvWriteData(0xff);
       LcdDrvWriteData(0xff);

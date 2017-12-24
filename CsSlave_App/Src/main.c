@@ -531,7 +531,8 @@ int main(void)
 			//break;
       key_control = 1;      
       PrepareBg();
-      LCD_ShowString(0, 0, "TP Testing...");
+      TP_DrawBG();
+      //LCD_ShowString(0, 0, "TP Testing...");
       
       tp_draw_line = true;
       // if (TP_StartTest() == 1)

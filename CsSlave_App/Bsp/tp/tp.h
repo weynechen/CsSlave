@@ -17,6 +17,7 @@ void TP_Callback(PproTypeDef *data);
 uint8_t TP_StartTest(void);
 void TP_DrawLine(void);
 bool IsTPToggle(void);
+void TP_DrawBG(void);
 typedef enum {
     TP_START,  /*开始测试*/
     TP_ECHO,   /*测试开始后的心跳信号*/

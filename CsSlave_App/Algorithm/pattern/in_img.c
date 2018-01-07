@@ -105,12 +105,13 @@ void Flicker(void)
   }
 }
 
+
 void Flicker2Dot(void)
 {
   uint16_t i, j;
   uint16_t half_lcd_h = LCDTiming.LCDH / 2;
   uint16_t half_lcd_v = LCDTiming.LCDV / 2;
-  
+
   for (j = 0; j < half_lcd_v; j++)
   {
     for (i = 0; i < half_lcd_h; i++)
@@ -291,22 +292,32 @@ void Img_Box(void)
 }
 
 
-void Img_Gray256_H(void)
+void Img_Gray256_H(uint16_t level)
 {
   uint32_t x, y;
-  uint32_t lcd_h;
-  uint8_t w;
+  uint16_t div          = LCDTiming.LCDV / level;
+ // uint16_t mod          = LCDTiming.LCDV % level;
+  uint16_t color_factor = 256 / level;
+  uint16_t color        = 0;
 
-  lcd_h = LCDTiming.LCDH - 1;
-
-  for (y = 0; y < LCDTiming.LCDV; y++)
+  for (y = 0; y < div * level; y += div)
   {
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
-      w = (x * 255) / (lcd_h);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(w);
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
+    }
+    color = y / div * color_factor;
+  }
+
+  for (y = div * level; y < LCDTiming.LCDV; y++)
+  {
+    for (x = 0; x < LCDTiming.LCDH; x++)
+    {
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
     }
   }
 }
@@ -375,22 +386,32 @@ void Img_BLUE256_H(void)
 }
 
 
-void Img_Gray256_V(void)
+void Img_Gray256_V(uint16_t level)
 {
-  uint32_t x, y;
-  uint32_t lcd_y;
-  uint8_t w;
-
-  lcd_y = LCDTiming.LCDV - 1;
+  uint32_t x, y, i;
+  uint16_t div          = LCDTiming.LCDH / level;
+  //uint16_t mod          = LCDTiming.LCDH % level;
+  uint16_t color_factor = 256 / level;
+  uint16_t color        = 0;
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
-    w = (y * 255) / (lcd_y);
-    for (x = 0; x < LCDTiming.LCDH; x++)
+    for (x = 0; x < div * level; x += div)
     {
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(w);
+      color = x / div * color_factor;
+
+      for (i = 0; i < div; i++)
+      {
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+      }
+    }
+    for (x = div * level; x < LCDTiming.LCDH; x++)
+    {
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
+      LcdDrvWriteData(color);
     }
   }
 }
@@ -464,7 +485,7 @@ void Img_ColorBar(void)
   uint32_t i, j, x;
   uint8_t mod;
 
-  x = LCDTiming.LCDH / 8;
+  x   = LCDTiming.LCDH / 8;
   mod = LCDTiming.LCDH % 8;
 
   for (j = 0; j < LCDTiming.LCDV; j++)
@@ -730,7 +751,7 @@ void RGBBar(void)
 {
   uint32_t i, j, y, mod;
 
-  y = LCDTiming.LCDV / 3;
+  y   = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
 
   for (i = 0; i < y; i++)
@@ -777,7 +798,7 @@ void RGBLevel(void)
 {
   uint32_t i, j, y, mod, color = 0;
 
-  y = LCDTiming.LCDV / 3;
+  y   = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
 
   for (i = 0; i < y; i++)

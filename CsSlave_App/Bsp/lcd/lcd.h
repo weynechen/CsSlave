@@ -12,10 +12,11 @@
 #include "stm32f1xx_hal.h"
 #include "power.h"
 
-#define RESET_PINA GPIO_PIN_2
-#define RESET_PORTA GPIOA
+#define RESET_PINA     GPIO_PIN_2
+#define RESET_PORTA    GPIOA
 
-typedef enum {
+typedef enum
+{
   MIPI_START,
   MIPI_DCS,
   MIPI_GP,
@@ -25,7 +26,8 @@ typedef enum {
   MIPI_END
 } MipiTypeDef;
 
-typedef enum {
+typedef enum
+{
   RGB_START,
   RGB_SPI_RISING,
   RGB_SPI_FALLING,
@@ -35,13 +37,15 @@ typedef enum {
   RGB_END
 } RGBTypeDef;
 
-typedef enum {
+typedef enum
+{
   NO_PACKAGE,
   GP,
   DCS
 } MipiPackageDef;
 
-typedef enum {
+typedef enum
+{
   PATTERN_START,
   RGB,
   FLICKERV,
@@ -61,7 +65,9 @@ typedef enum {
   SHOW_ID,
   SLEEP_IN,
   SLEEP_OUT,
-  FLICKER_DOT,  
+  FLICKER_DOT,
+  GRAYLEVEL_V_USER,
+  GRAYLEVEL_H_USER,
   PATTERN_END
 } PatternTypeDef;
 
@@ -71,12 +77,14 @@ typedef struct
   uint32_t Fore;
 } FontColorTypeDef;
 
-typedef enum {
+typedef enum
+{
   PAGE_UP,
   PAGE_DOWN,
 } PageTurningTypeDef;
 
-typedef enum {
+typedef enum
+{
   MIPI_LCD,
   RGB_SPI16BIT,
   RGB_SPI8BIT,
@@ -93,7 +101,7 @@ typedef enum
   F_COLUMN,
   F_DOT,
   F_ROW,
-}FlickertypeDef;
+} FlickertypeDef;
 
 void Lcd_ReInit(void);
 uint8_t IsStayTimeOver(uint8_t frame);
@@ -116,7 +124,7 @@ void LCD_SetFlickerType(FlickertypeDef type);
 void LCD_EraseFlickerString(void);
 void SetFontColor(uint32_t color);
 void SetBgColor(uint32_t color);
-void  OpInLPMode(void);
+void OpInLPMode(void);
 
 extern FontColorTypeDef FontColor;
 

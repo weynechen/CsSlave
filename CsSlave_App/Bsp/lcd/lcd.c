@@ -506,6 +506,7 @@ void SetPattern(void)
   uint8_t *p    = &SystemConfig.Pattern[2];
   uint16_t i    = 0;
   uint8_t r, g, b;
+  uint16_t level;
   uint16_t stay_time;
 
   memset(&PatternProperty, 0, sizeof(PatternProperty));
@@ -596,14 +597,14 @@ void SetPattern(void)
       break;
 
     case GRAYLEVEL_V:
-      Img_Gray256_V();
+      Img_Gray256_V(256);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical gray level", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
 
     case GRAYLEVEL_H:
-      Img_Gray256_H();
+      Img_Gray256_H(256);
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal gray level", PatternProperty.Counter);
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
@@ -682,6 +683,26 @@ void SetPattern(void)
       PatternProperty.Data[PatternProperty.Counter] = 0xff000001;
       PatternProperty.Counter++;
       is_pattern = 0;
+      break;
+
+    case GRAYLEVEL_V_USER:
+      level = *(uint16_t *)(p + i);
+      i    += 2;
+      UserPrintf("V level : %d\n", level);
+      Img_Gray256_V(level);
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,vertical gray level,%d", PatternProperty.Counter, level);
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
+      break;
+
+    case GRAYLEVEL_H_USER:
+      level = *(uint16_t *)(p + i);
+      i    += 2;
+      UserPrintf("H level : %d\n", level);
+      Img_Gray256_H(level);
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,horizontal gray level,%d", PatternProperty.Counter, level);
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
       break;
 
     default:

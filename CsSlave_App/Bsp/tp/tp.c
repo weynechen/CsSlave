@@ -10,8 +10,9 @@
 
 #include "tp.h"
 #include "lcd.h"
-#include "fsmc.h"
+#include "fpga.h"
 #include "math.h"
+#include "string.h"
 
 static uint16_t HeartBeats = 0;
 static uint8_t WaitTest    = 0;
@@ -62,13 +63,85 @@ __packed typedef struct
   uint8_t yl;
 } TPCoorTypeDef;
 
-static TPCoorTypeDef Coordinate[5];
-static bool TPToggle = false;
+#define FINGER_AMOUNT    5
+
+typedef struct
+{
+  TPCoorTypeDef coor[FINGER_AMOUNT];
+} FingerCoorTypeDef;
+
+#define QUEUE_AMOUNT    10
+static FingerCoorTypeDef *Coordinate;
+static FingerCoorTypeDef FingerCoor[QUEUE_AMOUNT];
+
+typedef struct
+{
+  FingerCoorTypeDef *head;
+  FingerCoorTypeDef *tail;
+  FingerCoorTypeDef *pool_head;
+  FingerCoorTypeDef *pool_tail;
+} FingerCoorQueueTypeDef;
+
+FingerCoorQueueTypeDef FingerCoorQueue = { NULL, NULL, NULL, NULL };
+
+void QueueInit(void)
+{
+  FingerCoorQueue.pool_head = FingerCoor;
+  FingerCoorQueue.pool_tail = &FingerCoor[QUEUE_AMOUNT];
+  FingerCoorQueue.head      = FingerCoorQueue.tail = FingerCoorQueue.pool_head;
+}
+
+
+bool Enqueue(FingerCoorTypeDef finger_coor)
+{
+  if (FingerCoorQueue.tail == NULL)
+  {
+    QueueInit();
+  }
+  //circle
+  if (FingerCoorQueue.tail == FingerCoorQueue.pool_tail)
+  {
+    FingerCoorQueue.tail = FingerCoorQueue.pool_head;
+  }
+
+  *FingerCoorQueue.tail++ = finger_coor;
+
+  return true;
+}
+
+
+FingerCoorTypeDef *Dequeue(void)
+{
+  FingerCoorTypeDef *finger_coor;
+
+  if (FingerCoorQueue.head == NULL)
+  {
+    QueueInit();
+  }
+
+  if (FingerCoorQueue.head == FingerCoorQueue.tail)
+  {
+    finger_coor = NULL;
+  }
+  else
+  {
+    if (FingerCoorQueue.head == FingerCoorQueue.pool_tail)
+    {
+      FingerCoorQueue.head = FingerCoorQueue.pool_head;
+    }
+    finger_coor = FingerCoorQueue.head;
+    FingerCoorQueue.head++;
+  }
+
+  return finger_coor;
+}
+
 
 void TP_Callback(PproTypeDef *data)
 {
   char s[2];
   uint8_t echo;
+  FingerCoorTypeDef finger_coor;
 
   switch (data->PackageID)
   {
@@ -100,8 +173,8 @@ void TP_Callback(PproTypeDef *data)
     break;
 
   case TP_COORDINATE:
-    memcpy(Coordinate, data->Data - 1, sizeof(Coordinate));
-    TPToggle = true;
+    memcpy(&finger_coor, data->Data - 1, sizeof(finger_coor));
+    Enqueue(finger_coor);
     break;
 
   default:
@@ -112,15 +185,17 @@ void TP_Callback(PproTypeDef *data)
 
 bool IsTPToggle(void)
 {
-  if (TPToggle)
-  {
-    TPToggle = false;
-    return true;
-  }
-  else
+  FingerCoorTypeDef *x = Dequeue();
+
+  if (x == NULL)
   {
     return false;
   }
+  else
+  {
+    Coordinate = x;
+  }
+  return true;
 }
 
 
@@ -184,7 +259,7 @@ static void LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uin
   int xerr = 0, yerr = 0, delta_x, delta_y, distance;
   int incx, incy, uRow, uCol;
 
-  delta_x = x2 - x1; //计算坐标增量
+  delta_x = x2 - x1;
   delta_y = y2 - y1;
   uRow    = x1;
   uCol    = y1;
@@ -353,8 +428,6 @@ static void DrawCellFrameArrayV(uint8_t index)
 
 void TP_DrawBG(void)
 {
-  Point p;
-
   CellCounter  = 0;
   CellStepH    = LCDTiming.LCDH / CELL_DIV_H;
   CellStepV    = LCDTiming.LCDV / CELL_DIV_V;
@@ -379,15 +452,15 @@ void TP_DrawBG(void)
 
 void TP_DrawLine(void)
 {
-  volatile uint16_t x;
-  volatile uint16_t y;
+  uint16_t x;
+  uint16_t y;
 
   for (int i = 0; i < 5; i++)
   {
-    if (Coordinate[i].event == 2)
+    if (Coordinate->coor[i].event == 2)
     {
-      x = (uint16_t)Coordinate[i].xh << 8 | Coordinate[i].xl;
-      y = (uint16_t)Coordinate[i].yh << 8 | Coordinate[i].yl;
+      x = (uint16_t)(Coordinate->coor[i].xh) << 8 | (Coordinate->coor[i].xl);
+      y = (uint16_t)(Coordinate->coor[i].yh) << 8 | (Coordinate->coor[i].yl);
 
       if ((abs(LastCoor[i].x - x) < CellStepH / 2) && (abs(LastCoor[i].y - y) < CellStepV / 2))
       {

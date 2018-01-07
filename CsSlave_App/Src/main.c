@@ -138,7 +138,7 @@ void OpInLPMode(void)
   SendOTPTimesToFlickerSensor(GetOTPTimes());
 }
 
-
+#ifdef FUN_MTP
 static uint8_t CheckResult(void)
 {
   uint8_t buffer[3];
@@ -216,7 +216,7 @@ static uint8_t MTP(void)
 
   return result;
 }
-
+#endif
 
 static void TuningVcom(KeyTypeDef key)
 {
@@ -378,7 +378,8 @@ int main(void)
   uint8_t power_on       = 1;
   uint8_t mtp_mode       = 0;
   uint32_t power_on_time = 0;
-  bool tp_draw_line  = false;
+  bool tp_draw_line      = false;
+
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
 
@@ -411,7 +412,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n--CD310--\n");
-	UserPrintf("Info:build time:%d-%d-%d %d:%d:%d\n", CURR_YEAR, CURR_MONTH, CURR_DAY, CURR_HOUR, CURR_MIN, CURR_SEC);
+  UserPrintf("Info:build time:%d-%d-%d %d:%d:%d\n", CURR_YEAR, CURR_MONTH, CURR_DAY, CURR_HOUR, CURR_MIN, CURR_SEC);
   GetFirmwareVersion();
   InitSystemConfig();
   SDCardCheck();
@@ -433,9 +434,9 @@ int main(void)
     ScanKey();
     SwitchTask();
 
-    if(tp_draw_line)
+    if (tp_draw_line)
     {
-      if((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
+      if ((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
       {
         CtrlKey = KEY_NULL;
       }
@@ -468,9 +469,9 @@ int main(void)
       break;
 
     case KEY_POWER:
-      key_control = 0;
-      mtp_mode    = 0;
-      tp_draw_line = false;      
+      key_control  = 0;
+      mtp_mode     = 0;
+      tp_draw_line = false;
       if (power_on == 1)
       {
         GREEN_LIGHT_OFF;
@@ -500,7 +501,7 @@ int main(void)
       break;
 
     case KEY_MTP:
-			break;
+#ifdef FUN_MTP
       if (mtp_mode == 0)
       {
         LcdDrvSetCharIndex(PatternProperty.Data[PatternProperty.CurrentPattern]);
@@ -525,15 +526,16 @@ int main(void)
         }
         mtp_mode = 0;
       }
+#endif
       break;
 
     case KEY_TP:
-			//break;
-      key_control = 1;      
+      //break;
+      key_control = 1;
       PrepareBg();
       TP_DrawBG();
       //LCD_ShowString(0, 0, "TP Testing...");
-      
+
       tp_draw_line = true;
       // if (TP_StartTest() == 1)
       // {
@@ -563,9 +565,9 @@ int main(void)
       BLWatchDog();
     }
 
-    if(tp_draw_line)
+    if (tp_draw_line)
     {
-      if(IsTPToggle())
+      if (IsTPToggle())
       {
         TP_DrawLine();
       }

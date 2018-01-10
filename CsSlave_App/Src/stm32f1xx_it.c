@@ -292,7 +292,7 @@ void USART3_IRQHandler(void)
     if (Ppro_ParseData(Uart3RxBuffer) == 1)
     {
       PproTypeDef data = *(PproTypeDef *)Uart3RxBuffer;
-      data.Data = (Uart3RxBuffer+4);
+      data.Data = (Uart3RxBuffer+5);
       switch(data.DeviceID)
       {
         case TP:

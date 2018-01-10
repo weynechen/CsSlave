@@ -887,6 +887,9 @@ void Lcd_ReInit(void)
   //	LcdDrvShowPattern(1);
 }
 
+__weak void OpInLPMode(void)
+{
+}
 
 void Lcd_LightOn(void)
 {

@@ -83,7 +83,7 @@ extern PCD_HandleTypeDef hpcd_USB_FS;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+#ifdef FUN_MTP
 #define VCOM_VALUE    0x8B
 
 static int16_t Vcom = VCOM_VALUE;
@@ -135,10 +135,12 @@ static uint8_t GetOTPTimes(void)
 
 void OpInLPMode(void)
 {
+  #ifdef FUN_MTP
   SendOTPTimesToFlickerSensor(GetOTPTimes());
+  #endif
 }
 
-#ifdef FUN_MTP
+
 static uint8_t CheckResult(void)
 {
   uint8_t buffer[3];
@@ -216,7 +218,7 @@ static uint8_t MTP(void)
 
   return result;
 }
-#endif
+
 
 static void TuningVcom(KeyTypeDef key)
 {
@@ -367,7 +369,7 @@ uint8_t AutoTuningVcom(void)
 
   return 0;
 }
-
+#endif
 
 /* USER CODE END 0 */
 
@@ -452,7 +454,9 @@ int main(void)
       }
       else
       {
+				#ifdef FUN_MTP
         TuningVcom(KEY_UP);
+				#endif
       }
       break;
 
@@ -464,7 +468,9 @@ int main(void)
       }
       else
       {
+				#ifdef FUN_MTP
         TuningVcom(KEY_DOWN);
+				#endif
       }
       break;
 

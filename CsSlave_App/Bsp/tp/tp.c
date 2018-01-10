@@ -454,7 +454,9 @@ void TP_DrawLine(void)
 {
   uint16_t x;
   uint16_t y;
-
+	static bool draw_over = true;
+	UserPrintf("%d\n",Coordinate->coor[0].event);
+	
   for (int i = 0; i < 5; i++)
   {
     if (Coordinate->coor[i].event == 2)
@@ -462,29 +464,44 @@ void TP_DrawLine(void)
       x = (uint16_t)(Coordinate->coor[i].xh) << 8 | (Coordinate->coor[i].xl);
       y = (uint16_t)(Coordinate->coor[i].yh) << 8 | (Coordinate->coor[i].yl);
 
-      if ((abs(LastCoor[i].x - x) < CellStepH / 2) && (abs(LastCoor[i].y - y) < CellStepV / 2))
+      if(!draw_over)
       {
         LineWeight = 4;
         LCD_DrawLine(x, y, LastCoor[i].x, LastCoor[i].y, Palette[i]);
         LineWeight = 1;
       }
+			else
+			{
+				draw_over = false;
+			}
 
       LastCoor[i].x = x;
       LastCoor[i].y = y;
 
-      x = (x > (CellStepH * (CELL_DIV_H - 1))) ? LCDTiming.LCDH : (x / CellStepH + 1) * CellStepH;
-      y = (y > CellStepV * (CELL_DIV_V - 1)) ? LCDTiming.LCDV : (y / CellStepV + 1) * CellStepV;
-      for (int n = 0; n < CELL_AMOUNT; n++)
-      {
-        if ((x == CellArrayCoor[n].x) && (y == CellArrayCoor[n].y))
-        {
-          FillCell(CellArrayCoor[n]);
-          CellArrayCoor[n].x = 0;
-          CellArrayCoor[n].y = 0;
-          break;
-        }
-      }
+//      x = (x > (CellStepH * (CELL_DIV_H - 1))) ? LCDTiming.LCDH : (x / CellStepH + 1) * CellStepH;
+//      y = (y > CellStepV * (CELL_DIV_V - 1)) ? LCDTiming.LCDV : (y / CellStepV + 1) * CellStepV;
+//      for (int n = 0; n < CELL_AMOUNT; n++)
+//      {
+//        if ((x == CellArrayCoor[n].x) && (y == CellArrayCoor[n].y))
+//        {
+//          FillCell(CellArrayCoor[n]);
+//          CellArrayCoor[n].x = 0;
+//          CellArrayCoor[n].y = 0;
+//          break;
+//        }
+//      }
     }
+		else if (Coordinate->coor[i].event == 0)
+		{
+			x = (uint16_t)(Coordinate->coor[i].xh) << 8 | (Coordinate->coor[i].xl);
+			y = (uint16_t)(Coordinate->coor[i].yh) << 8 | (Coordinate->coor[i].yl);
+			LastCoor[i].x = x;
+			LastCoor[i].y = y;
+		}
+		else if (Coordinate->coor[i].event == 1)
+		{
+			draw_over = true;
+		}
   }
 }
 

@@ -294,32 +294,47 @@ void Img_Box(void)
 
 void Img_Gray256_H(uint16_t level)
 {
-  uint32_t x, y;
+  uint32_t x, y, i;
   uint16_t div          = LCDTiming.LCDV / level;
- // uint16_t mod          = LCDTiming.LCDV % level;
+  uint16_t mod          = LCDTiming.LCDV % level;
   uint16_t color_factor = 256 / level;
   uint16_t color        = 0;
+  uint16_t line         = 0;
+  uint16_t n            = 0;
 
-  for (y = 0; y < div * level; y += div)
+  for (y = 0; y < mod; y++)
   {
-    for (x = 0; x < LCDTiming.LCDH; x++)
+    for (i = 0; i < div + 1; i++)
     {
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
+      for (x = 0; x < LCDTiming.LCDH; x++)
+      {
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+      }
+      line++;
     }
-    color = y / div * color_factor;
+    n++;
+    color = n * color_factor;
   }
 
-  for (y = div * level; y < LCDTiming.LCDV; y++)
+  for (y = 0; y < level - mod; y++)
   {
-    for (x = 0; x < LCDTiming.LCDH; x++)
+    for (i = 0; i < div; i++)
     {
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
+      for (x = 0; x < LCDTiming.LCDH; x++)
+      {
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+        LcdDrvWriteData(color);
+      }
+      line++;
     }
+    n++;
+    color = n * color_factor;
   }
+
+  UserPrintf("line:%d\n", line);
 }
 
 
@@ -389,7 +404,7 @@ void Img_BLUE256_H(void)
 void Img_Gray256_V(uint16_t level)
 {
   uint32_t x, y, i;
-  uint16_t div          = LCDTiming.LCDH / level;
+  uint16_t div = LCDTiming.LCDH / level;
   //uint16_t mod          = LCDTiming.LCDH % level;
   uint16_t color_factor = 256 / level;
   uint16_t color        = 0;

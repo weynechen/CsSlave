@@ -70,7 +70,7 @@ void SetBgColor(uint32_t color)
 void SetLcdPower(StateTypeDef state)
 {
   uint8_t i = 0;
-
+  SSD2828_SetReset(0);
   if (state == ON)
   {
     //顺序开启电源
@@ -107,6 +107,8 @@ void SetLcdPower(StateTypeDef state)
 void SetLcdPowerByUser(StateTypeDef state)
 {
   uint8_t *p;
+
+  SSD2828_SetReset(0);
 
   if (state == ON)
   {
@@ -887,9 +889,11 @@ void Lcd_ReInit(void)
   //	LcdDrvShowPattern(1);
 }
 
+
 __weak void OpInLPMode(void)
 {
 }
+
 
 void Lcd_LightOn(void)
 {

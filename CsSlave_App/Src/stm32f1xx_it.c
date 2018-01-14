@@ -307,6 +307,7 @@ void USART3_IRQHandler(void)
         break;
       }
     }
+    if(huart3.RxXferSize - huart3.hdmarx->Instance->CNDTR>34)
     UART3_RestartDMA();
     //RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
   }

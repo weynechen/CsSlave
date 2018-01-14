@@ -15,7 +15,7 @@
 
 void TP_Callback(PproTypeDef *data);
 uint8_t TP_StartTest(void);
-void TP_DrawLine(void);
+bool TP_DrawLine(void);
 bool IsTPToggle(void);
 void TP_DrawBG(void);
 typedef enum {

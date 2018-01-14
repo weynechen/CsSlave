@@ -575,7 +575,14 @@ int main(void)
     {
       if (IsTPToggle())
       {
-        TP_DrawLine();
+        if(TP_DrawLine()==true)
+        {
+          //ok
+          tp_draw_line = false;
+          PrepareBg();
+          SetFontColor(0xff00);
+          LCD_ShowString(0,0,"TP Test OK!");
+        }
       }
     }
 

@@ -32,7 +32,7 @@
  * @brief 系统缓冲区的长度
  */
 #define BUFFER_SIZE                           8192 //在SD卡DMA模式时，必须为512的倍数
-#define  UART3_BUFFER_SIZE                     128
+#define  UART3_BUFFER_SIZE                     1024
 
 /**
  * @brief  系统配置数据长度

@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "sysconfig.h"
 #include "fpga.h"
+#include "stdbool.h"
 
 void Img_CT(void)
 {
@@ -299,26 +300,11 @@ void Img_Gray256_H(uint16_t level)
   uint16_t mod          = LCDTiming.LCDV % level;
   uint16_t color_factor = 256 / level;
   uint16_t color        = 0;
-  uint16_t line         = 0;
   uint16_t n            = 0;
+  uint16_t base         = (mod > level - mod) ? mod : (level - mod);
+  uint16_t less         = (mod > level - mod) ? (level - mod) : mod;
 
-  for (y = 0; y < mod; y++)
-  {
-    for (i = 0; i < div + 1; i++)
-    {
-      for (x = 0; x < LCDTiming.LCDH; x++)
-      {
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
-      }
-      line++;
-    }
-    n++;
-    color = n * color_factor;
-  }
-
-  for (y = 0; y < level - mod; y++)
+  for (y = 0; y < base; y++)
   {
     for (i = 0; i < div; i++)
     {
@@ -328,13 +314,26 @@ void Img_Gray256_H(uint16_t level)
         LcdDrvWriteData(color);
         LcdDrvWriteData(color);
       }
-      line++;
     }
     n++;
     color = n * color_factor;
-  }
 
-  UserPrintf("line:%d\n", line);
+    if (less != 0)
+    {
+      for (i = 0; i < div + 1; i++)
+      {
+        for (x = 0; x < LCDTiming.LCDH; x++)
+        {
+          LcdDrvWriteData(color);
+          LcdDrvWriteData(color);
+          LcdDrvWriteData(color);
+        }
+      }
+      n++;
+      color = n * color_factor;
+      less--;
+    }
+  }
 }
 
 
@@ -404,30 +403,53 @@ void Img_BLUE256_H(void)
 void Img_Gray256_V(uint16_t level)
 {
   uint32_t x, y, i;
-  uint16_t div = LCDTiming.LCDH / level;
-  //uint16_t mod          = LCDTiming.LCDH % level;
+  uint16_t div          = LCDTiming.LCDH / level;
+  uint16_t mod          = LCDTiming.LCDH % level;
   uint16_t color_factor = 256 / level;
   uint16_t color        = 0;
+  uint16_t n            = 0;
+  uint16_t base         = (mod > level - mod) ? mod : (level - mod);
+  uint16_t less         = (mod > level - mod) ? (level - mod) : mod;
+  uint16_t less_tmp;
+  bool once             = false;
+  uint16_t row1         = 0, row2 = 0;
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
-    for (x = 0; x < div * level; x += div)
+    less_tmp = less;
+    row1 = 0;
+    row2 = 0;
+    n = 0;
+    color = 0;
+    for (x = 0; x < base; x++)
     {
-      color = x / div * color_factor;
-
       for (i = 0; i < div; i++)
       {
         LcdDrvWriteData(color);
         LcdDrvWriteData(color);
         LcdDrvWriteData(color);
+        row1++;
+      }
+      n++;
+      color = n * color_factor;
+
+      if (less_tmp != 0)
+      {
+        for (i = 0; i < div + 1; i++)
+        {
+          LcdDrvWriteData(color);
+          LcdDrvWriteData(color);
+          LcdDrvWriteData(color);
+          row2++;
+        }
+        n++;
+        color = n * color_factor;
+        less_tmp--;
       }
     }
-    for (x = div * level; x < LCDTiming.LCDH; x++)
-    {
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
-      LcdDrvWriteData(color);
-    }
+
+        if(row1+row2 != LCDTiming.LCDH)
+        UserPrintf("row1:%d,row2:%d,sum:%d\n", row1, row2, row1 + row2);
   }
 }
 

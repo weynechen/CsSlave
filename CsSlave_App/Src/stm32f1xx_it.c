@@ -292,7 +292,7 @@ void USART3_IRQHandler(void)
     if (Ppro_ParseData(Uart3RxBuffer) == 1)
     {
       PproTypeDef data = *(PproTypeDef *)Uart3RxBuffer;
-      data.Data = (Uart3RxBuffer+5);
+      data.Data = (Uart3RxBuffer+4);
       switch(data.DeviceID)
       {
         case TP:
@@ -307,7 +307,7 @@ void USART3_IRQHandler(void)
         break;
       }
     }
-    if(huart3.RxXferSize - huart3.hdmarx->Instance->CNDTR>34)
+   // if(huart3.RxXferSize - huart3.hdmarx->Instance->CNDTR>34)
     UART3_RestartDMA();
     //RecPackage.DataInLen = huart1.RxXferSize - huart1.hdmarx->Instance->CNDTR;
   }

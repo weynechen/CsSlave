@@ -135,9 +135,9 @@ static uint8_t GetOTPTimes(void)
 
 void OpInLPMode(void)
 {
-  #ifdef FUN_MTP
+#ifdef FUN_MTP
   SendOTPTimesToFlickerSensor(GetOTPTimes());
-  #endif
+#endif
 }
 
 
@@ -381,6 +381,7 @@ int main(void)
   uint8_t mtp_mode       = 0;
   uint32_t power_on_time = 0;
   bool tp_draw_line      = false;
+  bool tp_is_cell        = false;
 
   SCB->VTOR = APP_BASE_ADDRESS;
   /* USER CODE END 1 */
@@ -454,9 +455,9 @@ int main(void)
       }
       else
       {
-				#ifdef FUN_MTP
+#ifdef FUN_MTP
         TuningVcom(KEY_UP);
-				#endif
+#endif
       }
       break;
 
@@ -468,9 +469,9 @@ int main(void)
       }
       else
       {
-				#ifdef FUN_MTP
+#ifdef FUN_MTP
         TuningVcom(KEY_DOWN);
-				#endif
+#endif
       }
       break;
 
@@ -482,6 +483,9 @@ int main(void)
       {
         GREEN_LIGHT_OFF;
         RED_LIGHT_ON;
+#ifdef FUN_TP
+        TP_SendData(TP_POWER_OFF, 0);
+#endif
         if (SystemConfig.LcdType == MIPI_LCD)
         {
           MipiLcdSleepIn();
@@ -495,6 +499,9 @@ int main(void)
       {
         RED_LIGHT_OFF;
         GREEN_LIGHT_ON;
+#ifdef FUN_TP
+        TP_SendData(TP_POWER_OFF, 1);
+#endif
         Lcd_LightOn();
         PatternProperty.CurrentPattern = 0;
         LcdDrvShowPattern(PatternProperty.Data[PatternProperty.CurrentPattern]);
@@ -535,23 +542,36 @@ int main(void)
 #endif
       break;
 
+#ifdef FUN_TP
     case KEY_TP:
       //break;
       key_control = 1;
       PrepareBg();
-      TP_DrawBG();
-      //LCD_ShowString(0, 0, "TP Testing...");
+      SetFontColor(0);
+      LCD_ShowString(0, 0, "TP Testing...");
 
-      tp_draw_line = true;
-      // if (TP_StartTest() == 1)
-      // {
-      //   LCD_ShowString(0, 64, "TP OK");
-      // }
-      // else
-      // {
-      //   LCD_ShowString(0, 64, "TP NG");
-      // }
+      if (TP_StartTest() == 1)
+      {
+        uint16_t x = LCDTiming.LCDH / CELL_DIV_H;
+        uint16_t y = LCDTiming.LCDV / CELL_DIV_V;
+
+        LCD_ShowString(0, 0, "              ");
+        LCD_ShowString(0, 32, "                     ");
+        SetFontColor(0xff00);
+        LCD_ShowString(x + 2, y + 1, "Donwload OK");
+        SetFontColor(0);
+        TP_DrawBG();
+        tp_draw_line = true;
+        tp_is_cell   = true;
+      }
+      else
+      {
+        SetFontColor(0xff0000);
+        LCD_ShowString(0, 64, "TP NG");
+        SetFontColor(0);
+      }
       break;
+#endif
 
     default:
       break;
@@ -571,20 +591,28 @@ int main(void)
       BLWatchDog();
     }
 
+#ifdef FUN_TP
     if (tp_draw_line)
     {
       if (IsTPToggle())
       {
-        if(TP_DrawLine()==true)
+        SetCellOrLine(tp_is_cell);
+        if ((TP_DrawLine() == true) && (tp_is_cell))
         {
           //ok
-          tp_draw_line = false;
+//          tp_draw_line = false;
+          tp_is_cell = false;
           PrepareBg();
+          for (int i = 0; i < 10; i++)
+          {
+            IsTPToggle();
+          }
           SetFontColor(0xff00);
-          LCD_ShowString(0,0,"TP Test OK!");
+          LCD_ShowString(0, 0, "TP Test OK!");
         }
       }
     }
+#endif
 
     /* USER CODE END WHILE */
 

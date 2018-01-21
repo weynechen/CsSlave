@@ -13,18 +13,24 @@
 #include "ppro.h"
 #include "stdbool.h"
 
+#define CELL_DIV_H    9
+#define CELL_DIV_V    13
+
 void TP_Callback(PproTypeDef *data);
 uint8_t TP_StartTest(void);
 bool TP_DrawLine(void);
 bool IsTPToggle(void);
 void TP_DrawBG(void);
+void SetCellOrLine(bool is_cell);
+void TP_SendData(uint8_t pid, uint16_t data);
 typedef enum {
     TP_START,  /*开始测试*/
     TP_ECHO,   /*测试开始后的心跳信号*/
 		TP_NO_FILE,
-    TP_WAKUP,  /*唤醒USART1*/
-    TP_SLEEP,  /*关闭USART1*/
-    TP_COORDINATE = 0x87,
+    TP_COORDINATE,
+    TP_FIRMWARE_VERSION,  
+    TP_POWER_OFF,  
+    TP_PROGRESS,  
     TP_RESULT = 128, /*测试结果*/
 } TPPIDTypeDef;
 

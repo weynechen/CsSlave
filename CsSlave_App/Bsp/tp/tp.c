@@ -15,17 +15,15 @@
 #include "string.h"
 
 static uint16_t HeartBeats = 0;
-static uint8_t WaitTest    = 0;
+static uint8_t QuitTest    = 0;
 static uint8_t TestResult  = 0;
+static bool IsCell          = true;
 
 typedef struct
 {
   uint16_t x;
   uint16_t y;
 } Point;
-
-#define CELL_DIV_H    9
-#define CELL_DIV_V    13
 
 static uint32_t CellStepH;
 static uint32_t CellStepV;
@@ -139,24 +137,18 @@ FingerCoorTypeDef *Dequeue(void)
 
 void TP_Callback(PproTypeDef *data)
 {
-  char s[2];
-  uint8_t echo;
+  char s[128];
+  uint8_t byte;
   FingerCoorTypeDef finger_coor;
 
   switch (data->PackageID)
   {
   case TP_ECHO:
-    echo = *data->Data;
-    s[1] = echo % 10 + '0';
-    s[0] = echo / 10 + '0';
-    //LCD_ShowString(0, 32, s);
-    LCD_ShowChar(0, 32, s[0]);
-    LCD_ShowChar(16, 32, s[1]);
     HeartBeats = 1;
     break;
 
   case TP_RESULT:
-    WaitTest   = 1;
+    QuitTest   = 1;
     TestResult = 0;
     if (*data->Data == 'O')
     {
@@ -168,13 +160,28 @@ void TP_Callback(PproTypeDef *data)
     break;
 
   case TP_NO_FILE:
-    WaitTest   = 1;
+    QuitTest   = 1;
     TestResult = 0;
     break;
 
   case TP_COORDINATE:
-    memcpy(&finger_coor, data->Data - 1, sizeof(finger_coor));
+    memcpy(&finger_coor, data->Data, sizeof(finger_coor));
     Enqueue(finger_coor);
+    break;
+
+  case TP_PROGRESS:
+    byte = *data->Data;
+    memset(s,0,sizeof(s));
+    sprintf(s,"Downloading:%d%%",byte);
+    LCD_ShowString(0,32,s);  
+    break;
+
+  case TP_FIRMWARE_VERSION:
+    byte = *data->Data;
+    memset(s,0,sizeof(s));
+    sprintf(s,"FW:0x%X",byte);
+    SetFontColor(0);
+    LCD_ShowString(CellStepH+2,CellStepV+33,s);    
     break;
 
   default:
@@ -199,7 +206,7 @@ bool IsTPToggle(void)
 }
 
 
-static void TP_SendData(uint8_t pid, uint16_t data)
+void TP_SendData(uint8_t pid, uint16_t data)
 {
   Ppro_SendData(TP, pid, data);
 }
@@ -208,15 +215,19 @@ static void TP_SendData(uint8_t pid, uint16_t data)
 uint8_t TP_StartTest(void)
 {
   /*定义总的测试时间，不能测试太久(ms)*/
-  uint16_t timeout = 60000;
+  uint16_t timeout = 30000;
 
   /*心跳超时时间(ms)*/
   HeartBeats = 1500;
-  WaitTest   = 0;
+  QuitTest   = 0;
   TP_SendData(TP_START, 0x5453);
+  CellStepH    = LCDTiming.LCDH / CELL_DIV_H;
+  CellStepV    = LCDTiming.LCDV / CELL_DIV_V;
+  LCD_ShowString(CellStepH,CellStepV,"        ");    
+  LCD_ShowString(0,32,"                ");    
 
   /*等待测试结果*/
-  while (WaitTest == 0)
+  while (QuitTest == 0)
   {
     /*若收到echo，HeartBeats会刷新*/
     HeartBeats--;
@@ -236,6 +247,7 @@ uint8_t TP_StartTest(void)
 
   if (TestResult == 1)
   {
+    TP_SendData(TP_FIRMWARE_VERSION, 4);    
     return 1;
   }
   else
@@ -453,6 +465,10 @@ void TP_DrawBG(void)
   }
 }
 
+void SetCellOrLine(bool is_cell)
+{
+  IsCell = is_cell;
+}
 
 bool TP_DrawLine(void)
 {
@@ -460,7 +476,6 @@ bool TP_DrawLine(void)
   uint16_t y, y1;
   static bool draw_over = true;
   bool result           = true;
-  bool is_cell          = true;
 
   //UserPrintf("%d\n",Coordinate->coor[0].event);
 
@@ -474,17 +489,20 @@ bool TP_DrawLine(void)
 
       x1 = (x > (CellStepH * (CELL_DIV_H - 1))) ? LCDTiming.LCDH : (x / CellStepH + 1) * CellStepH;
       y1 = (y > CellStepV * (CELL_DIV_V - 1)) ? LCDTiming.LCDV : (y / CellStepV + 1) * CellStepV;
-      for (int n = 0; n < CELL_AMOUNT; n++)
+      if(IsCell)
       {
-        if ((x1 == CellArrayCoor[n].x) && (y1 == CellArrayCoor[n].y))
+        for (int n = 0; n < CELL_AMOUNT; n++)
         {
-          FillCell(CellArrayCoor[n]);
-          CellArrayCoor[n].x = 0;
-          CellArrayCoor[n].y = 0;
-          break;
+          if ((x1 == CellArrayCoor[n].x) && (y1 == CellArrayCoor[n].y))
+          {
+            FillCell(CellArrayCoor[n]);
+            CellArrayCoor[n].x = 0;
+            CellArrayCoor[n].y = 0;
+            break;
+          }
         }
       }
-      if (is_cell == false)
+      if (IsCell == false)
       {
         if (!draw_over)
         {

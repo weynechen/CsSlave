@@ -414,7 +414,18 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-  UserPrintf("\n--CD310--\n");
+  UserPrintf("\n-- CD310 --\n");
+  UserPrintf("|----------------|\n");
+  UserPrintf("| 当前版本支持功能: |\n");
+  UserPrintf("| 点屏        [√] |\n");
+#ifdef FUN_TP
+  UserPrintf("| TP测试      [√] |\n");
+#endif
+
+#ifdef FUN_MTP
+  UserPrintf("| 自动OTP     [√] |\n");
+#endif
+  UserPrintf("|----------------|\n");  
   UserPrintf("Info:build time:%d-%d-%d %d:%d:%d\n", CURR_YEAR, CURR_MONTH, CURR_DAY, CURR_HOUR, CURR_MIN, CURR_SEC);
   GetFirmwareVersion();
   InitSystemConfig();

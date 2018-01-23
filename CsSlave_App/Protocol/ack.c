@@ -101,6 +101,7 @@ void UserPrintf(char *fmt, ...)
     CDC_Transmit_FS((uint8_t *)SystemBuf, out_len);
   }
   HAL_UART_Transmit(&huart1, SystemBuf, out_len, 10);
+  HAL_Delay(10);
 }
 
 

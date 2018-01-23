@@ -76,6 +76,7 @@ void ReadSystemConfig(void)
   SystemConfig = *((ConfigTypeDef *)CONFIG_BASE_ADDRESS);
   if (SystemConfig.Backlight < 200)
   {
+    UserPrintf("Project:%s\n",SystemConfig.ProjectName);
     TaskID = ACT_RE_INIT_START;
   }
   else

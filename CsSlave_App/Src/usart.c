@@ -252,20 +252,20 @@ void UART_SetDMA(void)
 {
 	if(HAL_UART_Receive_DMA(&huart1,RecBuffer,BUFFER_SIZE) == HAL_OK)
 	{
-		UserPrintf("Info:Com1 OK\n");
+		UserPrintf("Info:debug com OK\n");
 	}
 	else
 	{
-		UserPrintf("Error:Com1 NG\n");
+		UserPrintf("Error:debug com NG\n");
 	}
 
 	if(HAL_UART_Receive_DMA(&huart3,Uart3RxBuffer,UART3_BUFFER_SIZE) == HAL_OK)
 	{
-		UserPrintf("Info:Com3 OK\n");
+		UserPrintf("Info:device com OK\n");
 	}
 	else
 	{
-		UserPrintf("Error:Com3 NG\n");
+		UserPrintf("Error:device com NG\n");
 	}	
 }
 
@@ -295,7 +295,7 @@ void UART3_RestartDMA(void)
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	UserPrintf("Error:Com1 overflow,please check serial port\n");
+	UserPrintf("Error:debug com overflow,please check serial port\n");
 	UART1_RestartDMA();
 }
 /* USER CODE END 1 */

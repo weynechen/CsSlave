@@ -442,7 +442,7 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
 	SSD2828_Reset();
   if (SSD2828ReadReg(0xB0) == 0x2828)
   {
-    UserPrintf("Info:SSD2828 OK %d\n",SSD2828ReadReg(0xB7));
+    UserPrintf("Info:SSD2828 OK 0xB7:%04x\n",SSD2828ReadReg(0xB7));
   }
   else
   {

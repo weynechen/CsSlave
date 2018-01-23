@@ -303,10 +303,12 @@ void Img_Gray256_H(uint16_t level)
   uint16_t n            = 0;
   uint16_t base         = (mod > level - mod) ? mod : (level - mod);
   uint16_t less         = (mod > level - mod) ? (level - mod) : mod;
+  uint16_t mod_div      = (base == mod) ? (div + 1) : div;
+  uint16_t remain_div   = (base == mod) ? div : (div + 1);
 
   for (y = 0; y < base; y++)
   {
-    for (i = 0; i < div; i++)
+    for (i = 0; i < mod_div; i++)
     {
       for (x = 0; x < LCDTiming.LCDH; x++)
       {
@@ -320,7 +322,7 @@ void Img_Gray256_H(uint16_t level)
 
     if (less != 0)
     {
-      for (i = 0; i < div + 1; i++)
+      for (i = 0; i < remain_div; i++)
       {
         for (x = 0; x < LCDTiming.LCDH; x++)
         {
@@ -411,45 +413,38 @@ void Img_Gray256_V(uint16_t level)
   uint16_t base         = (mod > level - mod) ? mod : (level - mod);
   uint16_t less         = (mod > level - mod) ? (level - mod) : mod;
   uint16_t less_tmp;
-  bool once             = false;
-  uint16_t row1         = 0, row2 = 0;
+  uint16_t mod_div    = (base == mod) ? (div + 1) : div;
+  uint16_t remain_div = (base == mod) ? div : (div + 1);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     less_tmp = less;
-    row1 = 0;
-    row2 = 0;
-    n = 0;
-    color = 0;
+    n        = 0;
+    color    = 0;
     for (x = 0; x < base; x++)
     {
-      for (i = 0; i < div; i++)
+      for (i = 0; i < mod_div; i++)
       {
         LcdDrvWriteData(color);
         LcdDrvWriteData(color);
         LcdDrvWriteData(color);
-        row1++;
       }
       n++;
       color = n * color_factor;
 
       if (less_tmp != 0)
       {
-        for (i = 0; i < div + 1; i++)
+        for (i = 0; i < remain_div; i++)
         {
           LcdDrvWriteData(color);
           LcdDrvWriteData(color);
           LcdDrvWriteData(color);
-          row2++;
         }
         n++;
         color = n * color_factor;
         less_tmp--;
       }
     }
-
-        if(row1+row2 != LCDTiming.LCDH)
-        UserPrintf("row1:%d,row2:%d,sum:%d\n", row1, row2, row1 + row2);
   }
 }
 

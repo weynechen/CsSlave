@@ -502,8 +502,9 @@ int main(void)
           MipiLcdSleepIn();
           SSD2828_SetReset(0);
         }
-        PowerOff();
         Power_SetBLCurrent(0);
+        HAL_Delay(10);
+        PowerOff();
         power_on = 0;
       }
       else

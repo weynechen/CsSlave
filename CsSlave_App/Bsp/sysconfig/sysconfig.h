@@ -26,7 +26,7 @@
 #define CDC_USB 0
 #define COMPOSITE_USB 1
 
-#define USB_TYPE CDC_USB
+#define USB_TYPE COMPOSITE_USB
 
 /**
  * @brief 系统缓冲区的长度

@@ -408,7 +408,7 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   MX_ADC1_Init();
-  //MX_USB_DEVICE_Init();
+  MX_USB_DEVICE_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();

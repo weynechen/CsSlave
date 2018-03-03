@@ -81,7 +81,7 @@ void MX_GPIO_Init(void)
                           |EN_2V8_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, MIPIRESET_Pin|DIR_CTRL1_Pin|LS245_OE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, MIPIRESET_Pin|DIR_CTRL1_Pin|LS245_OE_Pin|GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, EN_1V8_Pin|EN_VSN_Pin|EN_VCOM_Pin|EN_AVDD_Pin|EN_VGH_Pin|TP_RESET_Pin|TP_SCL_Pin 
@@ -130,7 +130,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(TF_DET_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin PAPin */
-  GPIO_InitStruct.Pin = MIPIRESET_Pin|DIR_CTRL1_Pin|LS245_OE_Pin;
+  GPIO_InitStruct.Pin = MIPIRESET_Pin|DIR_CTRL1_Pin|LS245_OE_Pin|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

@@ -95,7 +95,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC1_MspInit 1 */
-
+    HAL_ADCEx_Calibration_Start(&hadc1);
   /* USER CODE END ADC1_MspInit 1 */
   }
 }

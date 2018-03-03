@@ -39,11 +39,16 @@
 
 /* USER CODE BEGIN 0 */
 #include "sysconfig.h"
+#include "sys.h"
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
+DMA_HandleTypeDef hdma_tim4_up;
+
+uint32_t SrcAddress[2] = {(uint32_t)0x01<<15,(uint32_t)0x01<<31};
 
 /* TIM1 init function */
 void MX_TIM1_Init(void)
@@ -54,7 +59,7 @@ void MX_TIM1_Init(void)
   TIM_OC_InitTypeDef sConfigOC;
 
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 36;
+  htim1.Init.Prescaler = 18;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = BL_MAX;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -190,6 +195,37 @@ void MX_TIM3_Init(void)
 
 }
 
+void MX_TIM4_Init(void)
+{
+  TIM_ClockConfigTypeDef sClockSourceConfig;
+  TIM_MasterConfigTypeDef sMasterConfig;
+
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 72;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 30;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+}
+
+
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 {
 
@@ -240,6 +276,40 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE BEGIN TIM3_MspInit 1 */
 		  __HAL_TIM_ENABLE(tim_baseHandle);
   /* USER CODE END TIM3_MspInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM4)
+  {
+  /* USER CODE BEGIN TIM4_MspInit 0 */
+
+  /* USER CODE END TIM4_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_TIM4_CLK_ENABLE();
+
+    /* Peripheral DMA init*/
+  
+    hdma_tim4_up.Instance = DMA1_Channel7;
+    hdma_tim4_up.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_tim4_up.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_tim4_up.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_tim4_up.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+    hdma_tim4_up.Init.MemDataAlignment = DMA_PDATAALIGN_WORD;
+    hdma_tim4_up.Init.Mode = DMA_CIRCULAR;
+    hdma_tim4_up.Init.Priority = DMA_PRIORITY_LOW;
+    if (HAL_DMA_Init(&hdma_tim4_up) != HAL_OK)
+    {
+      Error_Handler();
+    }
+
+    __HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_UPDATE],hdma_tim4_up);
+
+  /* USER CODE BEGIN TIM4_MspInit 1 */
+    hdma_tim4_up.Instance->CPAR = (uint32_t)(GPIOA->BSRR);
+    hdma_tim4_up.Instance->CMAR = (uint32_t)SrcAddress;
+    hdma_tim4_up.Instance->CNDTR = 2;
+    __HAL_DMA_ENABLE(&hdma_tim4_up);
+    __HAL_TIM_ENABLE_DMA(tim_baseHandle, TIM_DMA_UPDATE);
+    __HAL_TIM_ENABLE(tim_baseHandle);
+  /* USER CODE END TIM4_MspInit 1 */
   }
 }
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
@@ -312,6 +382,20 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE BEGIN TIM3_MspDeInit 1 */
 
   /* USER CODE END TIM3_MspDeInit 1 */
+  }
+  else if(tim_baseHandle->Instance==TIM4)
+  {
+  /* USER CODE BEGIN TIM4_MspDeInit 0 */
+
+  /* USER CODE END TIM4_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_TIM4_CLK_DISABLE();
+
+    /* Peripheral DMA DeInit*/
+    HAL_DMA_DeInit(tim_baseHandle->hdma[TIM_DMA_ID_UPDATE]);
+  /* USER CODE BEGIN TIM4_MspDeInit 1 */
+
+  /* USER CODE END TIM4_MspDeInit 1 */
   }
 } 
 

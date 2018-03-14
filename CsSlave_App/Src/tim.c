@@ -48,7 +48,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 DMA_HandleTypeDef hdma_tim4_up;
 
-uint32_t SrcAddress[2] = {(uint32_t)0x01<<15,(uint32_t)0x01<<31};
+uint32_t SrcAddress[2] = {(uint32_t)GPIO_PIN_15,(uint32_t)GPIO_PIN_15};
 
 /* TIM1 init function */
 void MX_TIM1_Init(void)
@@ -203,7 +203,7 @@ void MX_TIM4_Init(void)
   htim4.Instance = TIM4;
   htim4.Init.Prescaler = 72;
   htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = 30;
+  htim4.Init.Period = 1000;
   htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
@@ -284,7 +284,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM4_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_TIM4_CLK_ENABLE();
-
     /* Peripheral DMA init*/
   
     hdma_tim4_up.Instance = DMA1_Channel7;
@@ -292,7 +291,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     hdma_tim4_up.Init.PeriphInc = DMA_PINC_DISABLE;
     hdma_tim4_up.Init.MemInc = DMA_MINC_ENABLE;
     hdma_tim4_up.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
-    hdma_tim4_up.Init.MemDataAlignment = DMA_PDATAALIGN_WORD;
+    hdma_tim4_up.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
     hdma_tim4_up.Init.Mode = DMA_CIRCULAR;
     hdma_tim4_up.Init.Priority = DMA_PRIORITY_LOW;
     if (HAL_DMA_Init(&hdma_tim4_up) != HAL_OK)
@@ -303,12 +302,12 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     __HAL_LINKDMA(tim_baseHandle,hdma[TIM_DMA_ID_UPDATE],hdma_tim4_up);
 
   /* USER CODE BEGIN TIM4_MspInit 1 */
-    hdma_tim4_up.Instance->CPAR = (uint32_t)(GPIOA->BSRR);
-    hdma_tim4_up.Instance->CMAR = (uint32_t)SrcAddress;
-    hdma_tim4_up.Instance->CNDTR = 2;
-    __HAL_DMA_ENABLE(&hdma_tim4_up);
-    __HAL_TIM_ENABLE_DMA(tim_baseHandle, TIM_DMA_UPDATE);
-    __HAL_TIM_ENABLE(tim_baseHandle);
+  
+    HAL_DMA_Start(&hdma_tim4_up,(uint32_t)SrcAddress,(uint32_t)GPIOA->BSRR,2);
+  /* Enable the TIM Update DMA request */
+  __HAL_TIM_ENABLE_DMA(tim_baseHandle, TIM_DMA_UPDATE);
+  /* Enable the Peripheral */
+  __HAL_TIM_ENABLE(tim_baseHandle);
   /* USER CODE END TIM4_MspInit 1 */
   }
 }

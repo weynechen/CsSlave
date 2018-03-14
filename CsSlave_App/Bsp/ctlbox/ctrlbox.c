@@ -30,7 +30,13 @@ void ScanKey(void)
     {
       times++;
       HAL_Delay(1);
+      if(times>2000)
+      {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);        
+      }
     }
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);    
+
     if(times > 2000)
     {
       CtrlKey = KEY_TP;

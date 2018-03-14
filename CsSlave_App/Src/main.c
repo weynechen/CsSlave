@@ -406,7 +406,7 @@ int main(void)
   MX_FATFS_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-	//MX_TIM4_Init();
+	//MX_TIM4_Init();//beep music use,not success yet
   MX_SPI2_Init();
   MX_ADC1_Init();
   MX_USB_DEVICE_Init();

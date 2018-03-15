@@ -48,7 +48,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 DMA_HandleTypeDef hdma_tim4_up;
 
-uint32_t SrcAddress[2] = {(uint32_t)GPIO_PIN_15,(uint32_t)GPIO_PIN_15};
+uint32_t SrcAddress[2] = {(uint32_t)GPIO_PIN_15,(uint32_t)(GPIO_PIN_15<<16)};
 
 /* TIM1 init function */
 void MX_TIM1_Init(void)
@@ -303,7 +303,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 
   /* USER CODE BEGIN TIM4_MspInit 1 */
   
-    HAL_DMA_Start(&hdma_tim4_up,(uint32_t)SrcAddress,(uint32_t)GPIOA->BSRR,2);
+    HAL_DMA_Start(&hdma_tim4_up,(uint32_t)SrcAddress,(uint32_t)&GPIOA->BSRR,2);
   /* Enable the TIM Update DMA request */
   __HAL_TIM_ENABLE_DMA(tim_baseHandle, TIM_DMA_UPDATE);
   /* Enable the Peripheral */

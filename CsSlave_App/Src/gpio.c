@@ -85,7 +85,7 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, EN_1V8_Pin|EN_VSN_Pin|EN_VCOM_Pin|EN_AVDD_Pin|EN_VGH_Pin|TP_RESET_Pin|TP_SCL_Pin 
-                          |TP_SDA_Pin|CDCE_SCL_Pin|CDCE_SDA_Pin, GPIO_PIN_RESET);
+                          |CDCE_SCL_Pin|CDCE_SDA_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, RST_24LCD_Pin|RS_24LCD_Pin|EN_MTP_Pin, GPIO_PIN_RESET);
@@ -154,8 +154,8 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = TP_SCL_Pin|TP_SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pin = TP_SDA_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 

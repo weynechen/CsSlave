@@ -380,6 +380,7 @@ int main(void)
   uint8_t power_on       = 1;
   uint8_t mtp_mode       = 0;
   uint32_t power_on_time = 0;
+  uint32_t power_off_time = 0;
   bool tp_draw_line      = false;
   bool tp_is_cell        = false;
 
@@ -444,6 +445,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     ScanKey();
@@ -455,6 +457,19 @@ int main(void)
       {
         CtrlKey = KEY_NULL;
       }
+    }
+
+  //跑机模式
+    if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7)==GPIO_PIN_SET)
+    {
+      if ((power_on==1)&&((HAL_GetTick() - power_on_time) > 3000) ||\
+          (power_on==0)&&((HAL_GetTick() - power_off_time) > 1000)\
+      )
+      {
+        CtrlKey = KEY_POWER;
+      }
+
+
     }
 
     switch (CtrlKey)
@@ -507,6 +522,7 @@ int main(void)
         HAL_Delay(10);
         PowerOff();
         power_on = 0;
+        power_off_time = HAL_GetTick();
       }
       else
       {

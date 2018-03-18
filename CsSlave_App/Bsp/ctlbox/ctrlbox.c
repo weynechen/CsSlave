@@ -12,6 +12,8 @@
 
 KeyTypeDef CtrlKey = KEY_NULL;
 
+#define KEY_DELAY 1000
+
 void ScanKey(void)
 {
   if (HAL_GPIO_ReadPin(GPIOE, KEY_POWER_Pin) == GPIO_PIN_RESET)
@@ -30,14 +32,14 @@ void ScanKey(void)
     {
       times++;
       HAL_Delay(1);
-      if(times>2000)
+      if(times>KEY_DELAY)
       {
         HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);        
       }
     }
       HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);    
 
-    if(times > 2000)
+    if(times > KEY_DELAY)
     {
       CtrlKey = KEY_TP;
     }
@@ -48,8 +50,24 @@ void ScanKey(void)
   }
   else if (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET)
   {
+    uint32_t times = 0;
     HAL_Delay(30);
     while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_RESET)
+    {
+      times++;
+      HAL_Delay(1);
+      if(times>KEY_DELAY)
+      {
+        HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);        
+      }
+    }
+      HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);    
+
+    if(times > KEY_DELAY)
+    {
+      CtrlKey = KEY_DRAW_LINE;
+    }
+    else
     {
       CtrlKey = KEY_DOWN;
     }

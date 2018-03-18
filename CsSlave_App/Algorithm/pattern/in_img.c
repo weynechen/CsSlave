@@ -13,13 +13,14 @@ void Img_CT(void)
   uint32_t mod;
 
   mod = LCDTiming.LCDV % 4;
+  FPGA_WRITE_ENABLE(0);
   for (v1_4 = 0; v1_4 < LCDTiming.LCDV / 4; v1_4++)
   {
     for (h = 0; h < LCDTiming.LCDH; h++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
   }
 
@@ -27,25 +28,25 @@ void Img_CT(void)
   {
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
 
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
   }
 
@@ -53,25 +54,25 @@ void Img_CT(void)
   {
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
 
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
   }
 
@@ -79,11 +80,12 @@ void Img_CT(void)
   {
     for (h = 0; h < LCDTiming.LCDH; h++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
     }
   }
+  FPGA_WRITE_ENABLE(1);
 }
 
 
@@ -91,19 +93,21 @@ void Flicker(void)
 {
   uint16_t i, j;
   uint16_t half_lcd_h = LCDTiming.LCDH / 2;
-
+  FPGA_WRITE_ENABLE(0);  
   for (j = 0; j < LCDTiming.LCDV; j++)
   {
     for (i = 0; i < half_lcd_h; i++)
     {
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x7f);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x7f);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x7f);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x7f);
+      FPGA_WRITE_FAST(0x00);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -112,45 +116,51 @@ void Flicker2Dot(void)
   uint16_t i, j;
   uint16_t half_lcd_h = LCDTiming.LCDH / 2;
   uint16_t half_lcd_v = LCDTiming.LCDV / 2;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < half_lcd_v; j++)
   {
     for (i = 0; i < half_lcd_h; i++)
     {
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x00);
     }
 
     for (i = 0; i < half_lcd_h; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x80);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x80);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x80);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
 void Img_Full(uint8_t r, uint8_t g, uint8_t b)
 {
   uint32_t i, j;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < LCDTiming.LCDV; j++)
   {
     for (i = 0; i < LCDTiming.LCDH; i++)
     {
-      LcdDrvWriteData(r);
-      LcdDrvWriteData(g);
-      LcdDrvWriteData(b);
+      FPGA_WRITE_FAST(r);
+      FPGA_WRITE_FAST(g);
+      FPGA_WRITE_FAST(b);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -160,6 +170,7 @@ void Img_Chcker58()
   uint16_t j;
   uint16_t y;
   uint16_t mod = LCDTiming.LCDV % 8;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < 4; j++)
   {
@@ -167,33 +178,33 @@ void Img_Chcker58()
     {
       for (i = 0; i < LCDTiming.LCDH / 5; i++)
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
       for ( ; i < LCDTiming.LCDH * 2 / 5; i++)
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
       }
       for ( ; i < LCDTiming.LCDH * 3 / 5; i++)
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
       for ( ; i < LCDTiming.LCDH * 4 / 5; i++)
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
       }
       for ( ; i < LCDTiming.LCDH; i++)
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
     }
 
@@ -201,33 +212,33 @@ void Img_Chcker58()
     {
       for (i = 0; i < LCDTiming.LCDH / 5; i++)
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
       }
       for ( ; i < LCDTiming.LCDH * 2 / 5; i++)
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
       for ( ; i < LCDTiming.LCDH * 3 / 5; i++)
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
       }
       for ( ; i < LCDTiming.LCDH * 4 / 5; i++)
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
       for ( ; i < LCDTiming.LCDH; i++)
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xff);
       }
     }
   }
@@ -236,41 +247,44 @@ void Img_Chcker58()
   {
     for (i = 0; i < LCDTiming.LCDH / 5; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
     for ( ; i < LCDTiming.LCDH * 2 / 5; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for ( ; i < LCDTiming.LCDH * 3 / 5; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
     for ( ; i < LCDTiming.LCDH * 4 / 5; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for ( ; i < LCDTiming.LCDH; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
 void Img_Box(void)
 {
   uint32_t x, y;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
@@ -278,18 +292,20 @@ void Img_Box(void)
     {
       if ((x == 0) || (x == LCDTiming.LCDH - 1) || (y == 0) || (y == LCDTiming.LCDV - 1))
       {
-        LcdDrvWriteData(0xff);
-        LcdDrvWriteData(0xFF);
-        LcdDrvWriteData(0xFF);
+        FPGA_WRITE_FAST(0xff);
+        FPGA_WRITE_FAST(0xFF);
+        FPGA_WRITE_FAST(0xFF);
       }
       else
       {
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
-        LcdDrvWriteData(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
+        FPGA_WRITE_FAST(0x00);
       }
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -305,6 +321,7 @@ void Img_Gray256_H(uint16_t level)
   uint16_t less         = (mod > level - mod) ? (level - mod) : mod;
   uint16_t mod_div      = (base == mod) ? (div + 1) : div;
   uint16_t remain_div   = (base == mod) ? div : (div + 1);
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < base; y++)
   {
@@ -312,9 +329,9 @@ void Img_Gray256_H(uint16_t level)
     {
       for (x = 0; x < LCDTiming.LCDH; x++)
       {
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
+        FPGA_WRITE_FAST(color);
+        FPGA_WRITE_FAST(color);
+        FPGA_WRITE_FAST(color);
       }
     }
     n++;
@@ -326,9 +343,9 @@ void Img_Gray256_H(uint16_t level)
       {
         for (x = 0; x < LCDTiming.LCDH; x++)
         {
-          LcdDrvWriteData(color);
-          LcdDrvWriteData(color);
-          LcdDrvWriteData(color);
+          FPGA_WRITE_FAST(color);
+          FPGA_WRITE_FAST(color);
+          FPGA_WRITE_FAST(color);
         }
       }
       n++;
@@ -336,6 +353,8 @@ void Img_Gray256_H(uint16_t level)
       less--;
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -346,17 +365,20 @@ void Img_RED256_H(void)
   uint8_t w;
 
   lcd_h = LCDTiming.LCDH - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
       w = (x * 255) / (lcd_h);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
+      FPGA_WRITE_FAST(w);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -367,17 +389,20 @@ void Img_GREEN256_H(void)
   uint8_t w;
 
   lcd_h = LCDTiming.LCDH - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
       w = (x * 255) / (lcd_h);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(w);
+      FPGA_WRITE_FAST(0);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -388,17 +413,20 @@ void Img_BLUE256_H(void)
   uint8_t w;
 
   lcd_h = LCDTiming.LCDH - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
       w = (x * 255) / (lcd_h);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(w);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(w);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -415,6 +443,7 @@ void Img_Gray256_V(uint16_t level)
   uint16_t less_tmp;
   uint16_t mod_div    = (base == mod) ? (div + 1) : div;
   uint16_t remain_div = (base == mod) ? div : (div + 1);
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
@@ -425,9 +454,9 @@ void Img_Gray256_V(uint16_t level)
     {
       for (i = 0; i < mod_div; i++)
       {
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
-        LcdDrvWriteData(color);
+        FPGA_WRITE_FAST(color);
+        FPGA_WRITE_FAST(color);
+        FPGA_WRITE_FAST(color);
       }
       n++;
       color = n * color_factor;
@@ -436,9 +465,9 @@ void Img_Gray256_V(uint16_t level)
       {
         for (i = 0; i < remain_div; i++)
         {
-          LcdDrvWriteData(color);
-          LcdDrvWriteData(color);
-          LcdDrvWriteData(color);
+          FPGA_WRITE_FAST(color);
+          FPGA_WRITE_FAST(color);
+          FPGA_WRITE_FAST(color);
         }
         n++;
         color = n * color_factor;
@@ -446,6 +475,8 @@ void Img_Gray256_V(uint16_t level)
       }
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -456,17 +487,20 @@ void Img_RED256_V(void)
   uint8_t w;
 
   lcd_y = LCDTiming.LCDV - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     w = (y * 255) / (lcd_y);
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
+      FPGA_WRITE_FAST(w);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -477,17 +511,20 @@ void Img_GREEN256_V(void)
   uint8_t w;
 
   lcd_y = LCDTiming.LCDV - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     w = (y * 255) / (lcd_y);
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(w);
-      LcdDrvWriteData(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(w);
+      FPGA_WRITE_FAST(0);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -498,17 +535,20 @@ void Img_BLUE256_V(void)
   uint8_t w;
 
   lcd_y = LCDTiming.LCDV - 1;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV; y++)
   {
     w = (y * 255) / (lcd_y);
     for (x = 0; x < LCDTiming.LCDH; x++)
     {
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(w);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(w);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -519,64 +559,67 @@ void Img_ColorBar(void)
 
   x   = LCDTiming.LCDH / 8;
   mod = LCDTiming.LCDH % 8;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < LCDTiming.LCDV; j++)
   {
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
     for (i = 0; i < x; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
     for (i = 0; i < mod; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -585,77 +628,78 @@ void Img_ColorBarV(void)
   uint32_t i, j, y;
 
   y = LCDTiming.LCDV / 8;
+  FPGA_WRITE_ENABLE(0);
 
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   y = LCDTiming.LCDV % 8;
@@ -663,25 +707,28 @@ void Img_ColorBarV(void)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
 void two_windows(void)
 {
   uint32_t i, j;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < 128; j++)
   {
     for (i = 0; i < LCDTiming.LCDH; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
   }
 
@@ -689,21 +736,21 @@ void two_windows(void)
   {
     for (i = 0; i < 108; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
     for (i = 0; i < 216; i++)
     {
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
-      LcdDrvWriteData(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
+      FPGA_WRITE_FAST(0);
     }
     for (i = 0; i < 396; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
   }
 
@@ -711,9 +758,9 @@ void two_windows(void)
   {
     for (i = 0; i < LCDTiming.LCDH; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
   }
 
@@ -721,21 +768,21 @@ void two_windows(void)
   {
     for (i = 0; i < 396; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
     for (i = 0; i < 216; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
     }
     for (i = 0; i < 108; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
   }
 
@@ -743,39 +790,44 @@ void two_windows(void)
   {
     for (i = 0; i < LCDTiming.LCDH; i++)
     {
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
-      LcdDrvWriteData(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
+      FPGA_WRITE_FAST(127);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
 void MAX_Current(void)
 {
   uint32_t i, j;
+  FPGA_WRITE_ENABLE(0);
 
   for (j = 0; j < LCDTiming.LCDV / 2; j++)
   {
     for (i = 0; i < LCDTiming.LCDH / 2; i++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
     for (i = 0; i < LCDTiming.LCDH / 2; i++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -786,31 +838,33 @@ void RGBBar(void)
   y   = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
 
+  FPGA_WRITE_ENABLE(0);
+
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
   }
 
@@ -818,11 +872,13 @@ void RGBBar(void)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
@@ -832,15 +888,16 @@ void RGBLevel(void)
 
   y   = LCDTiming.LCDV / 3;
   mod = LCDTiming.LCDV % 3;
+  FPGA_WRITE_ENABLE(0);
 
   for (i = 0; i < y; i++)
   {
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
       color = j * 255 / LCDTiming.LCDH;
-      LcdDrvWriteData(0xff - color);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0xff - color);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
@@ -848,9 +905,9 @@ void RGBLevel(void)
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
       color = j * 255 / LCDTiming.LCDH;
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff - color);
-      LcdDrvWriteData(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff - color);
+      FPGA_WRITE_FAST(0x00);
     }
   }
   for (i = 0; i < y; i++)
@@ -858,9 +915,9 @@ void RGBLevel(void)
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
       color = j * 255 / LCDTiming.LCDH;
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff - color);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff - color);
     }
   }
 
@@ -869,28 +926,33 @@ void RGBLevel(void)
     for (j = 0; j < LCDTiming.LCDH; j++)
     {
       color = j * 255 / LCDTiming.LCDH;
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0x00);
-      LcdDrvWriteData(0xff - color);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff - color);
     }
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }
 
 
 void Img_NG(void)
 {
   uint32_t y;
+  FPGA_WRITE_ENABLE(0);
 
   for (y = 0; y < LCDTiming.LCDV / 2; y++)
   {
-    LcdDrvWriteData(0xff);
-    LcdDrvWriteData(0xFF);
-    LcdDrvWriteData(0xFF);
+    FPGA_WRITE_FAST(0xff);
+    FPGA_WRITE_FAST(0xFF);
+    FPGA_WRITE_FAST(0xFF);
   }
   for ( ; y < LCDTiming.LCDV; y++)
   {
-    LcdDrvWriteData(0xff);
-    LcdDrvWriteData(0x00);
-    LcdDrvWriteData(0x00);
+    FPGA_WRITE_FAST(0xff);
+    FPGA_WRITE_FAST(0x00);
+    FPGA_WRITE_FAST(0x00);
   }
+  FPGA_WRITE_ENABLE(1);
+  
 }

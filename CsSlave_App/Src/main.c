@@ -584,6 +584,14 @@ int main(void)
         SetFontColor(0);
       }
       break;
+
+      case KEY_DRAW_LINE:
+      key_control = 1;
+      PrepareBg();
+      tp_draw_line = true;
+      tp_is_cell   = false;
+      break;
+
 #endif
 
     default:

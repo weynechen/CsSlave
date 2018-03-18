@@ -32,8 +32,8 @@ do {\
 
 /* 当NE使能以后，可以使用下面的简化操作*/
 //#define FPGA_WRITE_CMD(x) *(__IO uint8_t *)FSMC_LCD_CMD = x
-//#define FPGA_WRITE_DATA(x) *(__IO uint8_t *)FSMC_LCD_DATA = x
-
+#define FPGA_WRITE_FAST(x) *(__IO uint8_t *)FSMC_LCD_DATA = x
+#define FPGA_WRITE_ENABLE(x) FSMC_NE1 = x
 
 #define FPGA_READ_DATA()\
 do {\

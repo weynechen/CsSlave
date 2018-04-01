@@ -22,7 +22,7 @@
 #include "font.h"
 
 FontColorTypeDef FontColor = { 0xffffff, 0 };
-
+uint8_t FontScale = 1;
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
 
@@ -455,7 +455,7 @@ void SetMipiLcdInitCode(void)
           ReadBackTemp[ReadBackAmount++] = para_amount + 1; //len
           ReadBackTemp[ReadBackAmount++] = para;            //register
           memcpy(ReadBackTemp + ReadBackAmount, buffer, para_amount);
-          ReadBackAmount++;
+          ReadBackAmount+=para_amount;
         }
 
         for (j = 0; j < para_amount; j++)
@@ -476,6 +476,28 @@ void SetMipiLcdInitCode(void)
   }
 }
 
+static void EraseIDString(void)
+{
+  uint16_t i, j;
+  uint16_t x = (FontScale==1)?LCDTiming.LCDH/2:LCDTiming.LCDH;
+  uint16_t y = LCDTiming.LCDV/4;
+  uint8_t amount = FindSDRAMPatternAmount();
+
+  LcdDrvShowPattern(amount);
+  LcdDrvSetCharIndex(amount);
+
+  for (j = 0; j < y; j++)
+  {
+    LcdDrvSetXY(0, j);
+    for (i = 0; i < x; i++)
+    {
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+    }
+  }
+  LcdDrvSetCharIndex(amount);
+}
 
 static void ShowID(void)
 {
@@ -483,7 +505,8 @@ static void ShowID(void)
   char temp[16];
   uint8_t amount = FindSDRAMPatternAmount();
 
-  PrepareBg();
+  UserPrintf("FontScale:%d\n",FontScale);
+  EraseIDString();
   while (j < ReadBackAmount)
   {
     uint8_t len = ReadBackTemp[j++];
@@ -493,11 +516,11 @@ static void ShowID(void)
     {
       memset(temp, 0, sizeof(temp));
       sprintf(temp, "0x%02X ", ReadBackTemp[j++]);
-      x += 16 * n * 5;
+      x = 16 * n * 5*FontScale;
       LCD_ShowString(x, y, temp);
     }
     x  = 0;
-    y += 32;
+    y += 32*FontScale;
   }
 }
 
@@ -812,6 +835,11 @@ void Lcd_ReInit(void)
   HAL_GPIO_WritePin(MIPIRESET_GPIO_Port, MIPIRESET_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(LS245_OE_GPIO_Port, LS245_OE_Pin, GPIO_PIN_RESET);
   SetLcdTiming();
+  FontScale = SystemConfig.FontScale;
+  if((FontScale<1)||(FontScale>10))
+  {
+    FontScale = 1;
+  }
 
   if (SystemConfig.LcdType == MIPI_LCD)
   {
@@ -939,7 +967,7 @@ void Lcd_LightOn(void)
     while (HAL_GPIO_ReadPin(GPIOE, KEY_DOWN_Pin) == GPIO_PIN_SET)
     {
       times++;
-      if (times > 10000)
+      if (times > 1000)
       {
         break;
       }
@@ -989,7 +1017,7 @@ void MipiLcdSleepOut(void)
  * }
  */
 
-static uint8_t FontScale = 1;
+
 void LCD_SetFontScale(uint8_t scale)
 {
   FontScale = scale;
@@ -999,7 +1027,7 @@ void LCD_SetFontScale(uint8_t scale)
 void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
 {
   uint8_t temp = 0x01;
-  uint8_t pos, t, i;
+  uint8_t pos, t, i,j;
 
   chars = chars - ' ';
 
@@ -1007,41 +1035,48 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
   {
     for (i = 0; i < FontScale; i++)
     {
-      LcdDrvSetXY(x, y + (pos >> 1) + i);
+      LcdDrvSetXY(x, y);
       temp = asc2_3216[chars][pos];
       for (t = 0; t < 8; t++)
       {
-        if (temp & 0x01)
+        for (j = 0; j < FontScale; j++)
         {
-          LcdDrvWriteData(FontColor.Fore >> 16);
-          LcdDrvWriteData(FontColor.Fore >> 8);
-          LcdDrvWriteData(FontColor.Fore);
-        }
-        else
-        {
-          LcdDrvWriteData(FontColor.Background >> 16);
-          LcdDrvWriteData(FontColor.Background >> 8);
-          LcdDrvWriteData(FontColor.Background);
+          if (temp & 0x01)
+          {
+            LcdDrvWriteData(FontColor.Fore >> 16);
+            LcdDrvWriteData(FontColor.Fore >> 8);
+            LcdDrvWriteData(FontColor.Fore);
+          }
+          else
+          {
+            LcdDrvWriteData(FontColor.Background >> 16);
+            LcdDrvWriteData(FontColor.Background >> 8);
+            LcdDrvWriteData(FontColor.Background);
+          }
         }
         temp >>= 1;
       }
       temp = asc2_3216[chars][pos + 1];
       for (t = 8; t < 16; t++)
       {
-        if (temp & 0x01)
+        for (j = 0; j < FontScale; j++)
         {
-          LcdDrvWriteData(FontColor.Fore >> 16);
-          LcdDrvWriteData(FontColor.Fore >> 8);
-          LcdDrvWriteData(FontColor.Fore);
-        }
-        else
-        {
-          LcdDrvWriteData(FontColor.Background >> 16);
-          LcdDrvWriteData(FontColor.Background >> 8);
-          LcdDrvWriteData(FontColor.Background);
-        }
+          if (temp & 0x01)
+          {
+            LcdDrvWriteData(FontColor.Fore >> 16);
+            LcdDrvWriteData(FontColor.Fore >> 8);
+            LcdDrvWriteData(FontColor.Fore);
+          }
+          else
+          {
+            LcdDrvWriteData(FontColor.Background >> 16);
+            LcdDrvWriteData(FontColor.Background >> 8);
+            LcdDrvWriteData(FontColor.Background);
+          }
+        }       
         temp >>= 1;
       }
+      y++;
     }
   }
 }
@@ -1052,7 +1087,7 @@ void LCD_ShowString(uint16_t x, uint16_t y, const char *p)
   while (*p != '\0')
   {
     LCD_ShowChar(x, y, *p);
-    x = x + 16;
+    x = x + 16*FontScale;
     p++;
   }
 }

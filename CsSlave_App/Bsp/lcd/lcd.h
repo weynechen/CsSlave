@@ -127,6 +127,8 @@ void SetBgColor(uint32_t color);
 void OpInLPMode(void);
 
 extern FontColorTypeDef FontColor;
+extern uint8_t FontScale;
+
 
 #endif
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

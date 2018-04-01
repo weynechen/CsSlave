@@ -585,7 +585,7 @@ int main(void)
         uint16_t y = LCDTiming.LCDV / CELL_DIV_V;
 
         LCD_ShowString(0, 0, "              ");
-        LCD_ShowString(0, 32, "                     ");
+        LCD_ShowString(0, 32*FontScale, "                     ");
         SetFontColor(0xff00);
         LCD_ShowString(x + 2, y + 1, "Donwload OK");
         SetFontColor(0);
@@ -596,7 +596,7 @@ int main(void)
       else
       {
         SetFontColor(0xff0000);
-        LCD_ShowString(0, 64, "TP NG");
+        LCD_ShowString(0, 64*FontScale, "TP NG");
         SetFontColor(0);
       }
       break;

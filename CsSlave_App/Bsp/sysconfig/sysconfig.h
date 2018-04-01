@@ -61,6 +61,7 @@ typedef struct
   uint8_t PowerOffSequence[POWER_LEN]; /*< 自定义下电时序*/
   uint8_t ConfigVersion;
   uint8_t Checksum;
+  uint8_t FontScale;
 } ConfigTypeDef;
 
 

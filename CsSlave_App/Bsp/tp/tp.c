@@ -173,7 +173,7 @@ void TP_Callback(PproTypeDef *data)
     byte = *data->Data;
     memset(s,0,sizeof(s));
     sprintf(s,"Downloading:%d%%",byte);
-    LCD_ShowString(0,32,s);  
+    LCD_ShowString(0,32*FontScale,s);  
     break;
 
   case TP_FIRMWARE_VERSION:
@@ -181,7 +181,7 @@ void TP_Callback(PproTypeDef *data)
     memset(s,0,sizeof(s));
     sprintf(s,"FW:0x%X",byte);
     SetFontColor(0);
-    LCD_ShowString(CellStepH+2,CellStepV+33,s);    
+    LCD_ShowString(CellStepH+2,CellStepV+33*FontScale,s);    
     break;
 
   default:
@@ -224,7 +224,7 @@ uint8_t TP_StartTest(void)
   CellStepH    = LCDTiming.LCDH / CELL_DIV_H;
   CellStepV    = LCDTiming.LCDV / CELL_DIV_V;
   LCD_ShowString(CellStepH,CellStepV,"        ");    
-  LCD_ShowString(0,32,"                ");    
+  LCD_ShowString(0,32*FontScale,"                ");    
 
   /*等待测试结果*/
   while (QuitTest == 0)

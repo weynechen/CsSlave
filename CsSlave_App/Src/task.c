@@ -19,8 +19,9 @@
 #include "ssd2828.h"
 #include "ctrlbox.h"
 
+static const uint16_t ReserveBytes = 1;
 static const uint16_t SysConfigSize0 = sizeof(SystemConfig);
-static const uint16_t SysConfigSize1 = sizeof(SystemConfig) - (POWER_LEN * 2 + 2);
+static const uint16_t SysConfigSize1 = sizeof(SystemConfig) - (POWER_LEN * 2 + 2)+ ReserveBytes;
 
 void SwitchTask(void)
 {

@@ -297,6 +297,7 @@ void USART3_IRQHandler(void)
       {
         case TP:
         TP_Callback(&data);
+        //UserSendArray("x",Uart3RxBuffer,7);
         break;
 
         case FLCIKER_SENSOR:

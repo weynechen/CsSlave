@@ -577,10 +577,12 @@ int main(void)
       key_control = 1;
       PrepareBg();
       SetFontColor(0);
+      #ifdef FUN_DRAW_LINE
       LCD_ShowString(0, 0, "TP Testing...");
-
+      #endif
       if (TP_StartTest() == 1)
       {
+      #ifdef FUN_DRAW_LINE        
         uint16_t x = LCDTiming.LCDH / CELL_DIV_H;
         uint16_t y = LCDTiming.LCDV / CELL_DIV_V;
 
@@ -592,12 +594,24 @@ int main(void)
         TP_DrawBG();
         tp_draw_line = true;
         tp_is_cell   = true;
+      #else
+        SetFontColor(0xff00);        
+        LCD_Printf("\nTP Test OK");
+        tp_draw_line = true;
+        tp_is_cell   = false;
+      #endif
+        
       }
       else
       {
+      #ifdef FUN_DRAW_LINE        
         SetFontColor(0xff0000);
         LCD_ShowString(0, 64*FontScale, "TP NG");
         SetFontColor(0);
+      #else
+        SetFontColor(0xff0000);        
+        LCD_Printf("\nTP Test NG");
+      #endif  
       }
       break;
 

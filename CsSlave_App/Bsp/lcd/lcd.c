@@ -20,6 +20,8 @@
 #include "ack.h"
 #include "rgbif.h"
 #include "font.h"
+#include <stdarg.h>
+
 
 FontColorTypeDef FontColor = { 0xffffff, 0 };
 uint8_t FontScale = 1;
@@ -1079,6 +1081,93 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
       y++;
     }
   }
+}
+
+
+static uint16_t CurrX = 0,CurrY = 0;
+static uint16_t StartX = 0,StartY = 0;
+static char StrBuffer[64];
+static uint8_t MaxCharLen = 0;
+
+void LCD_PrintfSetAddress(uint16_t x , uint16_t y)
+{
+  CurrX = x;
+  CurrY = y;
+  StartX = x;
+  StartY = y;
+  MaxCharLen = 0;
+}
+
+void LCD_GetCurrAddress(uint16_t *x , uint16_t *y)
+{
+  *x = CurrX;
+  *y = CurrY;
+}
+
+void LCD_SetCurrAddress(uint16_t x , uint16_t y)
+{
+  CurrX = x;
+  CurrY = y;
+}
+
+void LCD_ClearLine(void)
+{
+  CurrX = 0;
+}
+
+int LCD_Printf(char *fmt, ...)
+{
+  va_list args;
+  uint32_t len;
+  char *p = StrBuffer;
+  memset(StrBuffer,0,sizeof(StrBuffer));
+
+  va_start(args, fmt);
+  len = vsnprintf(StrBuffer, sizeof(StrBuffer), fmt, args);
+  va_end(args);
+
+  while (*p != '\0')
+  {
+    if(*p == '\n')
+    {
+      CurrY += 32*FontScale;
+      CurrX = StartX;
+    }
+    else
+    {
+      LCD_ShowChar(CurrX, CurrY, *p);
+      CurrX = CurrX + 16*FontScale;
+    }
+		p++;
+  }
+  if(len > MaxCharLen)
+  {
+    MaxCharLen = len;
+  }
+
+  return len;
+}
+
+void LCD_ClearPrintf(void)
+{
+  uint16_t i, j;
+  uint8_t amount = FindSDRAMPatternAmount();
+  uint8_t max_line = MaxCharLen*16*FontScale;
+
+  LcdDrvShowPattern(amount);
+  LcdDrvSetCharIndex(amount);
+  for (j = StartY; j < CurrY; j++)
+  {
+    LcdDrvSetXY(StartX, j);
+    for (i = StartX; i < max_line; i++)
+    {
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+      LcdDrvWriteData(0xff);
+    }
+  }
+  LcdDrvSetCharIndex(amount);
+  LCD_PrintfSetAddress(0,0);
 }
 
 

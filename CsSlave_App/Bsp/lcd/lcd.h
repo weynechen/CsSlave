@@ -126,6 +126,13 @@ void SetFontColor(uint32_t color);
 void SetBgColor(uint32_t color);
 void OpInLPMode(void);
 
+void LCD_PrintfSetAddress(uint16_t x , uint16_t y);
+int LCD_Printf(char *fmt, ...);
+void LCD_ClearPrintf(void);
+void LCD_GetCurrAddress(uint16_t *x , uint16_t *y);
+void LCD_SetCurrAddress(uint16_t x , uint16_t y);
+void LCD_ClearLine(void);
+
 extern FontColorTypeDef FontColor;
 extern uint8_t FontScale;
 

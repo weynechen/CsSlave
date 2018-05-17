@@ -382,6 +382,7 @@ int main(void)
   uint32_t power_on_time = 0;
   uint32_t power_off_time = 0;
   bool tp_draw_line      = false;
+  bool lock_switch       = false;
   bool tp_is_cell        = false;
 
   SCB->VTOR = APP_BASE_ADDRESS;
@@ -434,6 +435,7 @@ int main(void)
   SDCardCheck();
   UART_SetDMA();
   CDCE_Init(30);
+  BLAndIDInit();
 
   /*@TODO
    * W25Nxx_Init();
@@ -451,7 +453,7 @@ int main(void)
     ScanKey();
     SwitchTask();
 
-    if (tp_draw_line)
+    if (tp_draw_line || lock_switch)
     {
       if ((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
       {
@@ -539,6 +541,17 @@ int main(void)
         ResetStayTimeCounter();
         // LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
         // LCD_EraseFlickerString();
+        UserPrintf("ID voltage is:%d\n",GetIDVol());
+        if(InspectionAfterPowerOn() == false)
+        {
+          lock_switch = true;
+          key_control = 1;
+        }
+        else
+        {
+          lock_switch = false;
+          
+        }
       }
       break;
 

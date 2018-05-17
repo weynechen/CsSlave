@@ -62,6 +62,9 @@ typedef struct
   uint8_t ConfigVersion;
   uint8_t Checksum;
   uint8_t FontScale;
+  uint16_t HardwareID[2];
+  uint16_t TE[2];
+  uint32_t PWM[2];
 } ConfigTypeDef;
 
 

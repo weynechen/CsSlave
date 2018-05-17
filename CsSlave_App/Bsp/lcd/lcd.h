@@ -11,6 +11,7 @@
 #define _LCD_H_
 #include "stm32f1xx_hal.h"
 #include "power.h"
+#include <stdbool.h>
 
 #define RESET_PINA     GPIO_PIN_2
 #define RESET_PORTA    GPIOA
@@ -132,6 +133,7 @@ void LCD_ClearPrintf(void);
 void LCD_GetCurrAddress(uint16_t *x , uint16_t *y);
 void LCD_SetCurrAddress(uint16_t x , uint16_t y);
 void LCD_ClearLine(void);
+bool InspectionAfterPowerOn(void);
 
 extern FontColorTypeDef FontColor;
 extern uint8_t FontScale;

@@ -34,7 +34,7 @@ static const uint8_t Version[4] =
 {
   [3] = 2,
   [2] = 2,
-  [0] = 1,
+  [0] = 2,
 };
 ConfigTypeDef SystemConfig =
 {

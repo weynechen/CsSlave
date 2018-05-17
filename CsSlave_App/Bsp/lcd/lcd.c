@@ -1332,5 +1332,71 @@ void LCD_EraseFlickerString(void)
   }
 }
 
+uint16_t GetTE(void)
+{
+  return 60;
+}
+
+uint16_t GetPWM(void)
+{
+  return 55000;
+}
+
+bool InspectionAfterPowerOn(void)
+{
+  bool result[3] = {true,true,true};
+  bool total_result = true;
+
+  if((SystemConfig.HardwareID[0] != 0) || (SystemConfig.HardwareID[1] != 0))
+  {
+    if((GetIDVol() < SystemConfig.HardwareID[0]) || (GetIDVol() > SystemConfig.HardwareID[1]))
+    {
+        result[0] = false;
+        total_result  = false;
+    }
+  }
+
+  if((SystemConfig.TE[0] != 0) || (SystemConfig.TE[1] != 0))
+  {
+    if((GetTE() < SystemConfig.TE[0]) || (GetTE() > SystemConfig.TE[1]))
+    {
+        result[0] = false;
+        total_result = false;
+    }
+  }
+
+  if((SystemConfig.PWM[0] != 0) || (SystemConfig.PWM[1] != 0))
+  {
+    if((GetPWM() < SystemConfig.PWM[0]) || (GetPWM() > SystemConfig.PWM[1]))
+    {
+        total_result = false;
+        result[0] = false;
+    }
+  }
+
+  if(total_result == false)
+  {
+    PrepareBg();
+    SetFontColor(0xff0000);
+    
+    if(result[0] == false)
+    {
+        LCD_Printf("ID error");
+    }
+    if(result[1] == false)
+    {
+        LCD_Printf("TE error");
+
+    }
+    if(result[2] == false)
+    {
+        LCD_Printf("PWM error");
+    }
+  }
+
+  return total_result;
+
+}
+
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

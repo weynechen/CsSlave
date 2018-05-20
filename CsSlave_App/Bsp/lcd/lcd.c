@@ -1332,14 +1332,83 @@ void LCD_EraseFlickerString(void)
   }
 }
 
-uint16_t GetTE(void)
+
+extern TIM_HandleTypeDef htim2;
+static uint8_t uhCaptureIndex = 0;
+static uint32_t uwIC2Value1 ,uwIC2Value2 , uwDiffCapture = 1,uwFrequency;
+static bool IsCaptureFinish = false;
+static uint32_t OverflowTimes = 0;
+uint32_t AvgData[10];
+uint16_t GetFrequence(void)
 {
-  return 60;
+  uint32_t avg = 0;
+  uint32_t times = 0;
+  uint32_t tick = HAL_GetTick();
+  while(HAL_GetTick() - tick < 500)
+  {
+    if(IsCaptureFinish)
+    {
+      IsCaptureFinish = false;
+      OverflowTimes = 0;
+      AvgData[times] = uwFrequency;
+      avg+=uwFrequency;
+      times++;
+      if(times == 10)
+      {
+        return avg/times;
+      }
+    }
+  }
+  return 0;
 }
 
-uint16_t GetPWM(void)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  return 55000;
+  OverflowTimes++;
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+  {
+    if(uhCaptureIndex == 0)
+    {
+      uwIC2Value1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+      uhCaptureIndex = 1;
+    }
+    else if(uhCaptureIndex == 1)
+    {
+      uwIC2Value2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); 
+      if (uwIC2Value2 > uwIC2Value1)
+      {
+        uwDiffCapture = (uwIC2Value2 - uwIC2Value1); 
+      }
+      else if (uwIC2Value2 < uwIC2Value1)
+      {
+        uwDiffCapture = ((0xFFFF - uwIC2Value1) + uwIC2Value2) + 1;
+      }   
+      uwFrequency = HAL_RCC_GetHCLKFreq() / uwDiffCapture;
+			IsCaptureFinish = true;
+      uhCaptureIndex = 0;
+    }
+  }
+  else
+  {
+    if(uhCaptureIndex == 0)
+    {
+      uwIC2Value1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+      uhCaptureIndex = 1;
+      OverflowTimes = 0;
+    }
+    else if(uhCaptureIndex == 1)
+    {
+      uwIC2Value2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); 
+      uwDiffCapture = ((0xFFFF*OverflowTimes - uwIC2Value1) + uwIC2Value2) + 1;
+      uwFrequency = HAL_RCC_GetHCLKFreq() / uwDiffCapture;
+			IsCaptureFinish = true;
+      uhCaptureIndex = 0;
+    }
+  }
 }
 
 bool InspectionAfterPowerOn(void)
@@ -1354,26 +1423,45 @@ bool InspectionAfterPowerOn(void)
         result[0] = false;
         total_result  = false;
     }
+		UserPrintf("ID voltage is:%d\n",GetIDVol());
   }
 
+	uhCaptureIndex = 0;
+  OverflowTimes = 0;
+  __HAL_TIM_ENABLE_IT(&htim2, TIM_IT_UPDATE);
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
+	HAL_Delay(100);
+	IsCaptureFinish = false;
   if((SystemConfig.TE[0] != 0) || (SystemConfig.TE[1] != 0))
   {
-    if((GetTE() < SystemConfig.TE[0]) || (GetTE() > SystemConfig.TE[1]))
+    uint32_t te = GetFrequence();
+    if(( te< SystemConfig.TE[0]) || (te> SystemConfig.TE[1]))
     {
-        result[0] = false;
+        result[1] = false;
         total_result = false;
     }
+		UserPrintf("TE:%d HZ \n",te);
   }
+  __HAL_TIM_DISABLE_IT(&htim2, TIM_IT_UPDATE);
+	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_1);
 
+	uhCaptureIndex = 0;
+  OverflowTimes = 0;
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+	HAL_Delay(100);
+	IsCaptureFinish = false;
   if((SystemConfig.PWM[0] != 0) || (SystemConfig.PWM[1] != 0))
   {
-    if((GetPWM() < SystemConfig.PWM[0]) || (GetPWM() > SystemConfig.PWM[1]))
+    uint32_t pwm = GetFrequence();
+    if((pwm < SystemConfig.PWM[0]) || (pwm > SystemConfig.PWM[1]))
     {
         total_result = false;
-        result[0] = false;
+        result[2] = false;
     }
+		UserPrintf("PWM:%d HZ \n",pwm);		
   }
-
+	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_2);
+	
   if(total_result == false)
   {
     //PrepareBg();
@@ -1383,18 +1471,19 @@ bool InspectionAfterPowerOn(void)
     
     if(result[0] == false)
     {
-        LCD_Printf("ID error");
+        LCD_Printf("ID error\n");
     }
     if(result[1] == false)
     {
-        LCD_Printf("TE error");
+        LCD_Printf("TE error\n");
 
     }
     if(result[2] == false)
     {
-        LCD_Printf("PWM error");
+        LCD_Printf("PWM error\n");
     }
   }
+	
 
   return total_result;
 

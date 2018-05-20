@@ -382,7 +382,7 @@ int main(void)
   uint32_t power_on_time = 0;
   uint32_t power_off_time = 0;
   bool tp_draw_line      = false;
-  bool lock_switch       = false;
+  bool lock_key       = false;
   bool tp_is_cell        = false;
 
   SCB->VTOR = APP_BASE_ADDRESS;
@@ -453,7 +453,7 @@ int main(void)
     ScanKey();
     SwitchTask();
 
-    if (tp_draw_line || lock_switch)
+    if (tp_draw_line || lock_key)
     {
       if ((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
       {
@@ -541,15 +541,14 @@ int main(void)
         ResetStayTimeCounter();
         // LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
         // LCD_EraseFlickerString();
-        UserPrintf("ID voltage is:%d\n",GetIDVol());
         if(InspectionAfterPowerOn() == false)
         {
-          lock_switch = true;
+          lock_key = true;
           key_control = 1;
         }
         else
         {
-          lock_switch = false;
+          lock_key = false;
           
         }
       }
@@ -736,6 +735,7 @@ void SystemClock_Config(void)
  */
 static void MX_NVIC_Init(void)
 {
+	
   /* DMA1_Channel5_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
@@ -756,6 +756,10 @@ static void MX_NVIC_Init(void)
   /* USB_LP_CAN1_RX0_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(USB_LP_CAN1_RX0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USB_LP_CAN1_RX0_IRQn);
+	
+	HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(TIM2_IRQn);
+
 }
 
 
@@ -769,13 +773,13 @@ int fputc(int ch, FILE *file)
 }
 
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if (htim == &htim2)
-  {
-    SendHeartBeat();
-  }
-}
+// void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+// {
+//   if (htim == &htim2)
+//   {
+//     SendHeartBeat();
+//   }
+// }
 
 
 /* USER CODE END 4 */

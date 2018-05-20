@@ -12,7 +12,8 @@
 #include "adc.h"
 #include "ack.h"
 
-static uint16_t ADC_Buffer[2];
+#define ADC_AMOUNT 8
+static uint16_t ADC_Buffer[8];
 
 void Power_SetState(PowerTypeDef power, StateTypeDef state)
 {
@@ -32,15 +33,23 @@ void BLWatchDog(void)
   static uint16_t tmp[SAMPLE_AMOUNT];
   static uint8_t amount = 0;
   static uint32_t time = 0;
-
+	uint32_t avg = 0;
   if ((HAL_GetTick() - time) < 10)
   {
     return;
   }
 
+	
+	for(int i=1;i<ADC_AMOUNT;i+=2)
+	{
+		avg += ADC_Buffer[i];
+	}
+	
+	avg/=(ADC_AMOUNT/2);
+
   time = HAL_GetTick();
 
-  tmp[amount] = ADC_Buffer[1];
+  tmp[amount] = avg;
   if (amount == (SAMPLE_AMOUNT - 1))
   {
     uint16_t data = tmp[0];
@@ -66,12 +75,21 @@ void BLWatchDog(void)
 
 void BLAndIDInit(void)
 {
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Buffer, 2);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)ADC_Buffer, ADC_AMOUNT);
 }
 
 uint32_t GetIDVol(void)
 {
-  return (uint32_t)ADC_Buffer[0]*3300/4096;
+	uint32_t avg = 0;
+	
+	for(int i=0;i<ADC_AMOUNT;i+=2)
+	{
+		avg += ADC_Buffer[i];
+	}
+	
+	avg/=(ADC_AMOUNT/2);
+	
+  return (uint32_t)avg*3300/4096;
 }
 
 /************************ (C) COPYRIGHT WEYNE *****END OF FILE****/

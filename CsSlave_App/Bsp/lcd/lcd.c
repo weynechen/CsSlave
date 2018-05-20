@@ -1346,7 +1346,7 @@ bool InspectionAfterPowerOn(void)
 {
   bool result[3] = {true,true,true};
   bool total_result = true;
-
+	
   if((SystemConfig.HardwareID[0] != 0) || (SystemConfig.HardwareID[1] != 0))
   {
     if((GetIDVol() < SystemConfig.HardwareID[0]) || (GetIDVol() > SystemConfig.HardwareID[1]))
@@ -1376,8 +1376,10 @@ bool InspectionAfterPowerOn(void)
 
   if(total_result == false)
   {
-    PrepareBg();
+    //PrepareBg();
+		LcdDrvSetCharIndex(FindSDRAMPatternAmount());
     SetFontColor(0xff0000);
+		LCD_ClearPrintf();
     
     if(result[0] == false)
     {

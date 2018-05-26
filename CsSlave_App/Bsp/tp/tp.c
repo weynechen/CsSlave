@@ -167,7 +167,8 @@ static struct ECHOLIST
 }
 EchoList[ECHO_AMOUNT];
 
-static uint8_t EchoNumber;
+static uint8_t EchoToShow;
+static uint8_t EchoAmount;
 
 static void InitEcho()
 {
@@ -219,11 +220,24 @@ static void InitEcho()
   {
     EchoList[i].result = true;
   }
-  EchoNumber = 1;
+  EchoToShow = 1;
 }
 
+static uint16_t EchoTemp[ECHO_AMOUNT*2];
+static bool IsShowEnable = false;
+static bool IsTPParallelStart = false;
 
-uint16_t EchoCharLen = 0;
+void TP_ParallelStart(void)
+{
+  TP_SendData(TP_START, 0x5453);
+  IsTPParallelStart = true;
+  IsShowEnable = false;
+  EchoAmount = 0;
+  QuitTest = 0;  
+  memset(EchoTemp,0,sizeof(EchoTemp));
+}
+
+static uint16_t EchoCharLen = 0;
 
 void ShowEcho(uint16_t data)
 {
@@ -237,21 +251,21 @@ void ShowEcho(uint16_t data)
       if (result == 0x80)
       {
         SetFontColor(0xff0000);
-        LCD_Printf("%d,%s -- NG\n", EchoNumber, EchoList[i].text);
+        LCD_Printf("%d,%s -- NG\n", EchoToShow, EchoList[i].text);
       }
       else if (result == 0x00)
       {
-        LCD_Printf("%d,%s -- OK\n", EchoNumber, EchoList[i].text);
+        LCD_Printf("%d,%s -- OK\n", EchoToShow, EchoList[i].text);
       }
-      else
+      else//处理progress，最后不显示OK、NG，而是显示百分比
       {
-        EchoCharLen = LCD_Printf("%d,%s",EchoNumber, EchoList[i].text);
+        EchoCharLen = LCD_Printf("%d,%s",EchoToShow, EchoList[i].text);
         LCD_ClearLine();
       }
 
       if(result != 0x01)
       {
-        EchoNumber++;
+        EchoToShow++;
       }
 
       SetFontColor(0);
@@ -278,7 +292,14 @@ void TP_Callback(PproTypeDef *data)
     HeartBeats = 1;
 #else
     HeartBeats = HEART_BEATS_TIME;
-    ShowEcho(*(uint16_t *)data->Data);
+    if(IsShowEnable)
+    {
+      ShowEcho(*(uint16_t *)data->Data);
+    }
+    else if(IsTPParallelStart)
+    {
+      EchoTemp[EchoAmount++] =  (*(uint16_t *)data->Data);
+    }
 #endif
     break;
 
@@ -311,11 +332,14 @@ void TP_Callback(PproTypeDef *data)
     sprintf(s, "Downloading:%d%%", byte);
     LCD_ShowString(0, 32 * FontScale, s);
 #else
-    LCD_GetCurrAddress(&x, &y);
-    byte = *data->Data;
-    memset(s, 0, sizeof(s));
-    sprintf(s, ":%d%%", byte);
-    LCD_ShowString(EchoCharLen * 16 * FontScale, y, s);
+    if(IsShowEnable)
+    {
+      LCD_GetCurrAddress(&x, &y);
+      byte = *data->Data;
+      memset(s, 0, sizeof(s));
+      sprintf(s, ":%d%%", byte);
+      LCD_ShowString(EchoCharLen * 16 * FontScale, y, s);
+    }
 #endif
     HeartBeats = HEART_BEATS_TIME;
     break;
@@ -328,12 +352,14 @@ void TP_Callback(PproTypeDef *data)
     SetFontColor(0);
     LCD_ShowString(CellStepH + 2, CellStepV + 33 * FontScale, s);
 #else
-    //SetFontColor(0);
-    LCD_GetCurrAddress(&x, &y);
-    byte = *data->Data;
-    memset(s, 0, sizeof(s));
-    sprintf(s, "FW:0x%X", byte);
-    LCD_ShowString(EchoCharLen * 16 * FontScale, y, s);
+    if(IsShowEnable)
+    {
+      LCD_GetCurrAddress(&x, &y);
+      byte = *data->Data;
+      memset(s, 0, sizeof(s));
+      sprintf(s, "FW:0x%X", byte);
+      LCD_ShowString(EchoCharLen * 16 * FontScale, y, s);
+    }
 #endif
     break;
 
@@ -365,19 +391,29 @@ void TP_SendData(uint8_t pid, uint16_t data)
 }
 
 
-uint8_t TP_StartTest(void)
+bool TP_Test(void)
 {
 #ifdef FUN_DRAW_LINE
   /*定义总的测试时间，不能测试太久(ms)*/
   uint16_t timeout = 30000;
 #else
-  uint16_t timeout = 60000;
+  uint16_t timeout = 30000;
   LCD_PrintfSetAddress(1, 0);
 #endif
+
   /*心跳超时时间(ms)*/
   HeartBeats = HEART_BEATS_TIME;
-  QuitTest   = 0;
-  TP_SendData(TP_START, 0x5453);
+  if(!IsTPParallelStart)
+  {
+    QuitTest   = 0;
+    IsShowEnable = true;
+    TP_SendData(TP_START, 0x5453);
+  }
+  else
+  {
+    timeout = 15000;
+  }
+
   CellStepH = LCDTiming.LCDH / CELL_DIV_H;
   CellStepV = LCDTiming.LCDV / CELL_DIV_V;
 #ifdef FUN_DRAW_LINE
@@ -387,8 +423,18 @@ uint8_t TP_StartTest(void)
 
   InitEcho();
 
+  if(IsTPParallelStart)
+  {
+    for(int i=0; i<EchoAmount; i++)
+    {
+      ShowEcho(EchoTemp[i]);
+    }
+  }
+
+  IsShowEnable = true;
+  IsTPParallelStart = false;
   /*等待测试结果*/
-  while (QuitTest == 0)
+  do
   {
     /*若收到echo，HeartBeats会刷新*/
     HeartBeats--;
@@ -407,7 +453,7 @@ uint8_t TP_StartTest(void)
     {
       return 0;
     }
-  }
+  }while (QuitTest == 0);
 
   if (TestResult == 1)
   {

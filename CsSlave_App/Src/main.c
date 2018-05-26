@@ -408,7 +408,7 @@ int main(void)
   MX_FATFS_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-	//MX_TIM4_Init();//beep music use,not success yet
+	//MX_TIM4_Init();//beep music,not be use yet
   MX_SPI2_Init();
   MX_ADC1_Init();
   MX_USB_DEVICE_Init();
@@ -551,6 +551,7 @@ int main(void)
           lock_key = false;
           
         }
+        TP_ParallelStart();//concurrent tp test
       }
       break;
 
@@ -592,7 +593,7 @@ int main(void)
       #ifdef FUN_DRAW_LINE
       LCD_ShowString(0, 0, "TP Testing...");
       #endif
-      if (TP_StartTest() == 1)
+      if (TP_Test() == true)
       {
       #ifdef FUN_DRAW_LINE        
         uint16_t x = LCDTiming.LCDH / CELL_DIV_H;

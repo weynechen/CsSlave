@@ -27,6 +27,8 @@ FontColorTypeDef FontColor = { 0xffffff, 0 };
 uint8_t FontScale = 1;
 uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
+uint8_t ReadBackValue[16];
+uint8_t ReadBackValueAmount = 0;
 
 static uint8_t ShowIDPattern = 0xff;
 static uint8_t FlickerIndex  = 0xff;
@@ -369,6 +371,7 @@ void SetMipiLcdInitCode(void)
   uint8_t buffer[32];
 
   ReadBackAmount = 0;
+  ReadBackValueAmount = 0;
   SSD2828_SetMode(LP);
 
   while (i < code_size)
@@ -458,6 +461,8 @@ void SetMipiLcdInitCode(void)
           ReadBackTemp[ReadBackAmount++] = para;            //register
           memcpy(ReadBackTemp + ReadBackAmount, buffer, para_amount);
           ReadBackAmount+=para_amount;
+          memcpy(ReadBackValue + ReadBackValueAmount, buffer, para_amount);
+          ReadBackValueAmount+=para_amount;
         }
 
         for (j = 0; j < para_amount; j++)
@@ -507,7 +512,7 @@ static void ShowID(void)
   char temp[16];
   uint8_t amount = FindSDRAMPatternAmount();
 
-  UserPrintf("FontScale:%d\n",FontScale);
+  //UserPrintf("FontScale:%d\n",FontScale);
   EraseIDString();
   while (j < ReadBackAmount)
   {
@@ -1413,7 +1418,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 bool InspectionAfterPowerOn(void)
 {
-  bool result[3] = {true,true,true};
+  bool result[4] = {true,true,true,true};
   bool total_result = true;
 	
   if((SystemConfig.HardwareID[0] != 0) || (SystemConfig.HardwareID[1] != 0))
@@ -1461,27 +1466,57 @@ bool InspectionAfterPowerOn(void)
 		UserPrintf("PWM:%d HZ \n",pwm);		
   }
 	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_2);
+
+  if(SystemConfig.ReadBack[0] != 0)
+  {
+    for(int i=0;i<SystemConfig.ReadBack[0];i++)
+    {
+      if(SystemConfig.ReadBack[i+1] > 0xff)
+      {
+        uint8_t low = SystemConfig.ReadBack[i+1] & 0xff;
+        uint8_t high = (SystemConfig.ReadBack[i+1] >> 8) & 0xff;
+        if((ReadBackValue[i] < low) || (ReadBackValue[i] > high)) 
+        {
+          result[3] = false;
+          total_result = false;
+        }
+      }
+      else if(SystemConfig.ReadBack[i+1] != ReadBackValue[i])
+      {
+        result[3] = false;
+				total_result = false;
+      }
+    }
+  }
 	
   if(total_result == false)
   {
     //PrepareBg();
 		LcdDrvSetCharIndex(FindSDRAMPatternAmount());
     SetFontColor(0xff0000);
-		LCD_ClearPrintf();
+    if(ShowIDPattern!=0xff)
+    {
+      EraseIDString();      
+    }
+    LCD_ClearPrintf();
     
     if(result[0] == false)
     {
-        LCD_Printf("ID error\n");
+        LCD_Printf("ID NG\n");
     }
     if(result[1] == false)
     {
-        LCD_Printf("TE error\n");
-
+        LCD_Printf("TE NG\n");
     }
     if(result[2] == false)
     {
-        LCD_Printf("PWM error\n");
+        LCD_Printf("PWM NG\n");
     }
+    if(result[3] == false)
+    {
+        LCD_Printf("Read NG\n");
+    }
+    SetFontColor(0);    
   }
 	
 

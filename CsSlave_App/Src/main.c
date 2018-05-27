@@ -533,12 +533,12 @@ int main(void)
 #ifdef FUN_TP
         TP_SendData(TP_POWER_OFF, 1);
 #endif
+				PatternProperty.CurrentPattern = 0;
+				LcdDrvShowPattern(PatternProperty.Data[PatternProperty.CurrentPattern]);
         Lcd_LightOn();
-        PatternProperty.CurrentPattern = 0;
-        LcdDrvShowPattern(PatternProperty.Data[PatternProperty.CurrentPattern]);
         power_on      = 1;
         power_on_time = HAL_GetTick();
-        ResetStayTimeCounter();
+				ResetStayTimeCounter();
         // LCD_SetFlickerType(F_DOT);//F_DOT or F_COLUMN
         // LCD_EraseFlickerString();
         if(InspectionAfterPowerOn() == false)
@@ -548,10 +548,10 @@ int main(void)
         }
         else
         {
+					TP_ParallelStart();//concurrent tp test
           lock_key = false;
-          
         }
-        TP_ParallelStart();//concurrent tp test
+
       }
       break;
 

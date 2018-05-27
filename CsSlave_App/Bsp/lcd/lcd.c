@@ -29,6 +29,7 @@ uint8_t ReadBackAmount = 0;
 uint8_t ReadBackTemp[32];
 uint8_t ReadBackValue[16];
 uint8_t ReadBackValueAmount = 0;
+bool IsNeedClearBg = false;
 
 static uint8_t ShowIDPattern = 0xff;
 static uint8_t FlickerIndex  = 0xff;
@@ -483,37 +484,14 @@ void SetMipiLcdInitCode(void)
   }
 }
 
-static void EraseIDString(void)
-{
-  uint16_t i, j;
-  uint16_t x = (FontScale==1)?LCDTiming.LCDH/2:LCDTiming.LCDH;
-  uint16_t y = LCDTiming.LCDV/4;
-  uint8_t amount = FindSDRAMPatternAmount();
-
-  LcdDrvShowPattern(amount);
-  LcdDrvSetCharIndex(amount);
-
-  for (j = 0; j < y; j++)
-  {
-    LcdDrvSetXY(0, j);
-    for (i = 0; i < x; i++)
-    {
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-      LcdDrvWriteData(0xff);
-    }
-  }
-  LcdDrvSetCharIndex(amount);
-}
 
 static void ShowID(void)
 {
   uint16_t j = 0, x = 0, y = 0;
   char temp[16];
-  uint8_t amount = FindSDRAMPatternAmount();
 
-  //UserPrintf("FontScale:%d\n",FontScale);
-  EraseIDString();
+  EnterBg();
+  SetFontColor(0);
   while (j < ReadBackAmount)
   {
     uint8_t len = ReadBackTemp[j++];
@@ -529,6 +507,7 @@ static void ShowID(void)
     x  = 0;
     y += 32*FontScale;
   }
+  IsNeedClearBg = true;
 }
 
 
@@ -1086,6 +1065,7 @@ void LCD_ShowChar(uint16_t x, uint16_t y, uint8_t chars)
       y++;
     }
   }
+  IsNeedClearBg = true;
 }
 
 
@@ -1249,6 +1229,13 @@ static uint8_t FindSDRAMPatternAmount(void)
   return counter;
 }
 
+void EnterBg(void)
+{
+  uint8_t amount = FindSDRAMPatternAmount();
+
+  LcdDrvShowPattern(amount);
+  LcdDrvSetCharIndex(amount);
+}
 
 void PrepareBg(void)
 {
@@ -1491,13 +1478,9 @@ bool InspectionAfterPowerOn(void)
 	
   if(total_result == false)
   {
-    //PrepareBg();
+    EnterBg();
 		LcdDrvSetCharIndex(FindSDRAMPatternAmount());
     SetFontColor(0xff0000);
-    if(ShowIDPattern!=0xff)
-    {
-      EraseIDString();      
-    }
     LCD_ClearPrintf();
     
     if(result[0] == false)

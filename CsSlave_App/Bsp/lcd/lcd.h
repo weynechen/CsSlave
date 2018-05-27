@@ -126,7 +126,7 @@ void LCD_EraseFlickerString(void);
 void SetFontColor(uint32_t color);
 void SetBgColor(uint32_t color);
 void OpInLPMode(void);
-
+void EnterBg(void);
 void LCD_PrintfSetAddress(uint16_t x , uint16_t y);
 int LCD_Printf(char *fmt, ...);
 void LCD_ClearPrintf(void);

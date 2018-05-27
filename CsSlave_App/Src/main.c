@@ -80,6 +80,7 @@ static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
+extern bool IsNeedClearBg;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -511,7 +512,7 @@ int main(void)
       if (power_on == 1)
       {
         GREEN_LIGHT_OFF;
-        RED_LIGHT_ON;
+        RED_LIGHT_OFF;
 #ifdef FUN_TP
         TP_SendData(TP_POWER_OFF, 0);
 #endif
@@ -523,6 +524,12 @@ int main(void)
         Power_SetBLCurrent(0);
         HAL_Delay(10);
         PowerOff();
+        if(IsNeedClearBg)
+        {
+          PrepareBg();
+          IsNeedClearBg = false;
+        }
+        RED_LIGHT_ON;        
         power_on = 0;
         power_off_time = HAL_GetTick();
       }
@@ -588,7 +595,7 @@ int main(void)
     case KEY_TP:
       //break;
       key_control = 1;
-      PrepareBg();
+      EnterBg();
       SetFontColor(0);
       #ifdef FUN_DRAW_LINE
       LCD_ShowString(0, 0, "TP Testing...");

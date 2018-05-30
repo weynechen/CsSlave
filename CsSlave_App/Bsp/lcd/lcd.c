@@ -673,6 +673,11 @@ void SetPattern(void)
     case PATTERN_STAY:
       stay_time = *(p + i++);
       stay_time = (stay_time << 8) | *(p + i++);
+
+      PatternProperty.ForceStay[PatternProperty.Counter - 1] = (bool)(stay_time>>15);
+
+      stay_time &= 0x7fff;
+
       if (PatternProperty.Counter != 0)
       {
         PatternProperty.StayTime[PatternProperty.Counter - 1] = stay_time;

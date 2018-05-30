@@ -454,7 +454,7 @@ int main(void)
     ScanKey();
     SwitchTask();
 
-    if (tp_draw_line || lock_key)
+    if (tp_draw_line || lock_key || PatternProperty.ForceStay[PatternProperty.CurrentPattern])
     {
       if ((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
       {

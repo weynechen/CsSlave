@@ -12,6 +12,7 @@
 #include "stm32f1xx_hal.h"
 #include "rec.h"
 #include "flash_if.h"
+#include "stdbool.h"
 
 #define APP_BASE_ADDRESS                      0x0801C800
 #define VERSION_ADDRESS                       0x0803F800
@@ -102,6 +103,7 @@ typedef struct
   uint8_t  CurrentPattern;
 	uint8_t  SDRAMCounter;
 	uint32_t Data[PATTERN_AMOUNT];
+  bool     ForceStay[PATTERN_AMOUNT];
 } PatternPropertyTypeDef;
 
 /**

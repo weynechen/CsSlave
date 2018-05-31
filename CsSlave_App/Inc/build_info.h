@@ -5,10 +5,10 @@
 
 #define CURR_YEAR 2018
 #define CURR_MONTH 5
-#define CURR_DAY 30
-#define CURR_HOUR 22
-#define CURR_MIN 58
-#define CURR_SEC 18
+#define CURR_DAY 31
+#define CURR_HOUR 20
+#define CURR_MIN 53
+#define CURR_SEC 19
 
 #define COMPUTER_NAME "WEYNE"
 #define USER_NAME "weyne"

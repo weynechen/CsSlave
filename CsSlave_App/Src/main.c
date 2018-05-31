@@ -649,6 +649,17 @@ int main(void)
     }
     CtrlKey = KEY_NULL;
 
+    
+    if((key_control==1) && (PatternProperty.ForceStay[PatternProperty.CurrentPattern]) && (power_on == 1))
+    {
+      if(SystemConfig.IsAutoRun == 0)
+      {
+        UserPrintf("Error:force stay 只能用于auto run模式");
+      }
+      key_control = 0;
+      ResetStayTimeCounter();
+    }
+
     if ((SystemConfig.IsAutoRun == 1) && (key_control == 0) && (power_on == 1))
     {
       if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)

@@ -384,6 +384,7 @@ int main(void)
   uint32_t power_off_time = 0;
   bool tp_draw_line      = false;
   bool lock_key       = false;
+  bool lock_power = false;
   bool tp_is_cell        = false;
 
   SCB->VTOR = APP_BASE_ADDRESS;
@@ -457,6 +458,14 @@ int main(void)
     if (tp_draw_line || lock_key || PatternProperty.ForceStay[PatternProperty.CurrentPattern])
     {
       if ((CtrlKey == KEY_DOWN) || (CtrlKey == KEY_UP))
+      {
+        CtrlKey = KEY_NULL;
+      }
+    }
+
+    if(lock_power)
+    {
+      if((CtrlKey == KEY_POWER))
       {
         CtrlKey = KEY_NULL;
       }
@@ -555,8 +564,11 @@ int main(void)
         }
         else
         {
+#ifdef FUN_TP          
 					TP_ParallelStart();//concurrent tp test
+          lock_power = true;
           lock_key = false;
+#endif          
         }
 
       }
@@ -633,6 +645,7 @@ int main(void)
         LCD_Printf("\nTP Test NG");
       #endif  
       }
+      lock_power = false;      
       break;
 
       case KEY_DRAW_LINE:

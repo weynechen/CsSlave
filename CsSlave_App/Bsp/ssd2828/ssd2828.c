@@ -508,7 +508,7 @@ void SSD2828_Init(uint8_t lane, uint16_t data_rate)
   {
     SSD2828WriteReg(0x00ba, 0xc1, data_rate / 24);
   }
-  SSD2828WriteReg(0x00bb, 0x00, 0x06);
+  SSD2828WriteReg(0x00bb, 0x00, data_rate/64+1);
   SSD2828WriteReg(0x00b8, 0x00, 0x00);
   SSD2828WriteReg(0x00c9, 0x23, 0x02);
 	//SSD2828WriteReg(0x00c9, 0x25, 0x09);

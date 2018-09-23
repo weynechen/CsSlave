@@ -285,7 +285,7 @@ void CDCE_Init(uint16_t f_out)
 
   if (!result)
   {
-    UserPrintf("Error:unsupport pclk\n");
+    UserPrintf("Error:unsupport pclk frequence\n");
     return;
   }
 

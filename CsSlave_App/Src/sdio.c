@@ -167,7 +167,7 @@ void SDCardCheck(void)
   sd_init_status = HAL_SD_GetStatus(&hsd);
   if(sd_init_status == SD_TRANSFER_OK) 
 	{    
-		UserPrintf( "Info:SD card initial success\n");
+		UserPrintf( "Info:SDcard initial success\n");
 
 		sd_read_status=HAL_SD_Get_CardInfo(&hsd,&SDCardInfo);
 		if(sd_read_status==SD_OK)
@@ -181,7 +181,7 @@ void SDCardCheck(void)
 	}
 	else
 	{
-		UserPrintf("Error:SD card not found\n" );
+		UserPrintf("Error:SDcard not found\n" );
 		//while(1); // 停机
 	}
 

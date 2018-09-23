@@ -36,16 +36,16 @@ void SwitchTask(void)
     if ((RecCounter - SysConfigSize0 < 5) || (RecCounter - SysConfigSize1 < 5))
     {
       Lcd_ReInit();
-      UserPrintf("Info: ReInit complete!\n");
+      UserPrintf("Info: re-init complete!\n");
     }
     else if (RecCounter == 0)
     {
       Lcd_ReInit();
-      UserPrintf("Info: System initialize complete!\n");
+      UserPrintf("Info: system initialize complete!\n");
     }
     else
     {
-      UserPrintf("Error: Init para error!\n");
+      UserPrintf("Error: init param error,upgrade your firmware\n");
     }
     break;
 

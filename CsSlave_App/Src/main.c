@@ -419,7 +419,7 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
-  UserPrintf("\n-- CD310 --\n");
+  UserPrintf("\n\n");
   UserPrintf("|----------------|\n");
   UserPrintf("| 当前版本支持功能: |\n");
   UserPrintf("| 点屏        [√] |\n");

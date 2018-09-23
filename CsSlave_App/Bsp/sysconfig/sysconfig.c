@@ -34,7 +34,7 @@ static const uint8_t Version[4] =
 {
   [3] = 2,
   [2] = 3,
-  [0] = 3,
+  [0] = 5,
 };
 ConfigTypeDef SystemConfig =
 {
@@ -62,11 +62,11 @@ void FlashConfig(void)
     uint16_t config_size = sizeof(SystemConfig) / sizeof(uint32_t) + 1; // 防止不能被4整除
     if (FLASH_If_Write(CONFIG_BASE_ADDRESS, (uint32_t *)&SystemConfig, config_size) == 0)
     {
-      UserPrintf("Info:Flash success\n");
+      UserPrintf("Info:flash success\n");
     }
     else
     {
-      UserPrintf("Error:Flash error!Please retry\n");
+      UserPrintf("Error:flash error,please retry\n");
     }
   }
 }
@@ -132,7 +132,7 @@ void InitSystemConfig(void)
   if (CheckSecurity() == 0)
   {
     Security = 0;
-    UserPrintf("Error: bad firmware \n");
+    UserPrintf("Error: authentication failure ,contact us \n");
     while (1)
       ;
   }
@@ -154,7 +154,7 @@ void GetFirmwareVersion(void)
   {
     p = Version;
   }
-  UserPrintf("Info:Version--v%d.%d.%d\n", *(p + 3), *(p + 2), *p);
+  UserPrintf("Info:firmware version -- v%d.%d.%d\n", *(p + 3), *(p + 2), *p);
 }
 
 void CacheData(void)

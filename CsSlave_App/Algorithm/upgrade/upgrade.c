@@ -29,7 +29,7 @@ void UpgradeFirmwareData(void)
 
   if (FLASH_If_Erase(FIRMWARE_BASE_ADDRESS, NUMBER_OF_UPGRADE_PAGES) == FLASHIF_ERASEKO)
   {
-    UserPrintf("Error:upgrade error , system will reboot\n");
+    UserPrintf("Error:upgrade failed , system will reboot\n");
     HAL_Delay(1000);
     SoftwareReset();
   }

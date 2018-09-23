@@ -46,7 +46,7 @@ void Res_ReadPic(char *file_name)
 
   if (pic_size != (uint32_t)LCDTiming.LCDH * LCDTiming.LCDV * 3)
   {
-    UserPrintf("Error:picture size %d\n", pic_size);
+    UserPrintf("Error:picture size mismatch %d\n", pic_size);
   }
 
   f_close(&fsrc);

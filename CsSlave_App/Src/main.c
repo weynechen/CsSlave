@@ -420,17 +420,17 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   UserPrintf("\n\n");
-  UserPrintf("|----------------|\n");
-  UserPrintf("| 当前版本支持功能: |\n");
-  UserPrintf("| 点屏        [√] |\n");
+  //UserPrintf("|----------------|\n");
+  // UserPrintf("| 当前版本支持功能: |\n");
+  // UserPrintf("| 点屏        [√] |\n");
 #ifdef FUN_TP
-  UserPrintf("| TP测试      [√] |\n");
+  //UserPrintf("| TP测试      [√] |\n");
 #endif
 
 #ifdef FUN_MTP
-  UserPrintf("| 自动OTP     [√] |\n");
+  //UserPrintf("| 自动OTP     [√] |\n");
 #endif
-  UserPrintf("|----------------|\n");  
+  //UserPrintf("|----------------|\n");  
   UserPrintf("Info:build time:%d-%d-%d %d:%d:%d\n", CURR_YEAR, CURR_MONTH, CURR_DAY, CURR_HOUR, CURR_MIN, CURR_SEC);
   GetFirmwareVersion();
   InitSystemConfig();
@@ -463,13 +463,15 @@ int main(void)
       }
     }
 
-    if(lock_power)
-    {
-      if((CtrlKey == KEY_POWER))
-      {
-        CtrlKey = KEY_NULL;
-      }
-    }
+#ifdef FUN_TP
+    // if(lock_power)
+    // {
+    //   if((CtrlKey == KEY_POWER))
+    //   {
+    //     CtrlKey = KEY_NULL;
+    //   }
+    // }
+#endif
 
   //跑机模式
     if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_7)==GPIO_PIN_SET)

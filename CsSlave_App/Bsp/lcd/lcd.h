@@ -69,6 +69,7 @@ typedef enum
   FLICKER_DOT,
   GRAYLEVEL_V_USER,
   GRAYLEVEL_H_USER,
+  CROSSTALK_WHITE,
   PATTERN_END
 } PatternTypeDef;
 

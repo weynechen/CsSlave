@@ -2,6 +2,7 @@
 #define _IN_IMG_H_
 #include "stdint.h"
 void Img_CT(void);
+void Img_CT_White(void);
 void Img_Full(unsigned char r, unsigned char g, unsigned char b);
 void Img_Chcker58(void);
 void Img_Box(void);

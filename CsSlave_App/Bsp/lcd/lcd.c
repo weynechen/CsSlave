@@ -628,6 +628,13 @@ void SetPattern(void)
       PatternProperty.Counter++;
       break;
 
+    case CROSSTALK_WHITE:
+      Img_CT_White();
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,crosstalk white", PatternProperty.Counter);
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
+      break;
+
     case CHESSBOARD:
       Img_Chcker58();
       sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,chessboard", PatternProperty.Counter);

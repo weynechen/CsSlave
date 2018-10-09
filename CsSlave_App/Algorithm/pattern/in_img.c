@@ -89,6 +89,91 @@ void Img_CT(void)
 }
 
 
+
+void Img_CT_White(void)
+{
+  uint32_t h;
+  uint32_t v1_2;
+  uint32_t v1_4, h1_4;
+  uint32_t mod;
+
+  mod = LCDTiming.LCDV % 4;
+  FPGA_WRITE_ENABLE(0);
+  for (v1_4 = 0; v1_4 < LCDTiming.LCDV / 4; v1_4++)
+  {
+    for (h = 0; h < LCDTiming.LCDH; h++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+  }
+
+  for (v1_2 = 0; v1_2 < LCDTiming.LCDV / 4; v1_2++)
+  {
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+    }
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+  }
+
+  for (v1_2 = 0; v1_2 < LCDTiming.LCDV / 4; v1_2++)
+  {
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+    }
+    for (h1_4 = 0; h1_4 < LCDTiming.LCDH / 4; h1_4++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+  }
+
+  for (v1_4 = 0; v1_4 < LCDTiming.LCDV / 4 + mod; v1_4++)
+  {
+    for (h = 0; h < LCDTiming.LCDH; h++)
+    {
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+      FPGA_WRITE_FAST(0x80);
+    }
+  }
+  FPGA_WRITE_ENABLE(1);
+}
+
+
 void Flicker(void)
 {
   uint16_t i, j;

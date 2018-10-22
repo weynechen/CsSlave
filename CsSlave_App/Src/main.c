@@ -452,7 +452,8 @@ int main(void)
 
   while (1)
   {
-    ScanKey();
+    if(CtrlKey == KEY_NULL)
+      ScanKey();
     SwitchTask();
 
     if (tp_draw_line || lock_key || PatternProperty.ForceStay[PatternProperty.CurrentPattern])
@@ -679,7 +680,14 @@ int main(void)
     {
       if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)
       {
-        PageTurning(PAGE_UP);
+        if(SystemConfig.autoPowerOff == 1)
+          if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
+          {
+              UserPrintf("auto power off\n");
+              CtrlKey = KEY_POWER;
+          }
+          else
+            PageTurning(PAGE_UP);
       }
     }
 

@@ -33,8 +33,8 @@ uint8_t Security = 0x18;
 static const uint8_t Version[4] = 
 {
   [3] = 2,
-  [2] = 3,
-  [0] = 5,
+  [2] = 4,
+  [0] = 0,
 };
 ConfigTypeDef SystemConfig =
 {

@@ -680,8 +680,9 @@ int main(void)
     {
       if (IsStayTimeOver(PatternProperty.CurrentPattern) == 1)
       {
-        if(SystemConfig.autoPowerOff == 1)
-          if (PatternProperty.CurrentPattern == PatternProperty.Counter - 1)
+          if ((PatternProperty.CurrentPattern == PatternProperty.Counter - 1)&&\
+              (SystemConfig.autoPowerOff == 1)
+             )
           {
               UserPrintf("auto power off\n");
               CtrlKey = KEY_POWER;

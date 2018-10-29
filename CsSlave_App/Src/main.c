@@ -81,6 +81,7 @@ static void MX_NVIC_Init(void);
 /* Private function prototypes -----------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
 extern bool IsNeedClearBg;
+extern bool IsReInit;
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -455,6 +456,13 @@ int main(void)
     if(CtrlKey == KEY_NULL)
       ScanKey();
     SwitchTask();
+
+    if(IsReInit)
+    {
+      IsReInit = false;
+      power_on = 1;
+      key_control = 0;
+    }
 
     if (tp_draw_line || lock_key || PatternProperty.ForceStay[PatternProperty.CurrentPattern])
     {

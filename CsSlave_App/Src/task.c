@@ -23,6 +23,8 @@ static const uint16_t ReserveBytes = 1;
 static const uint16_t SysConfigSize0 = sizeof(SystemConfig);
 static const uint16_t SysConfigSize1 = sizeof(SystemConfig) - (POWER_LEN * 2 + 2)+ ReserveBytes;
 
+bool IsReInit = false;
+
 void SwitchTask(void)
 {
   uint8_t data8;
@@ -36,6 +38,7 @@ void SwitchTask(void)
     if ((RecCounter - SysConfigSize0 < 5) || (RecCounter - SysConfigSize1 < 5))
     {
       Lcd_ReInit();
+      IsReInit = true;
       UserPrintf("Info: re-init complete!\n");
     }
     else if (RecCounter == 0)

@@ -725,6 +725,13 @@ void SetPattern(void)
       PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
       PatternProperty.Counter++;
       break;
+		
+		case RGB_WHITE:
+			RGBWhite();
+      sprintf(PatternProperty.Name[PatternProperty.Counter], "%d,rgbwhite", PatternProperty.Counter);
+      PatternProperty.Data[PatternProperty.Counter] = PatternProperty.SDRAMCounter++;
+      PatternProperty.Counter++;
+			break;
 
     default:
       UserPrintf("Error:pattern syntax error\n");

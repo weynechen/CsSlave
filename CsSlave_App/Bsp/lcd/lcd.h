@@ -70,6 +70,7 @@ typedef enum
   GRAYLEVEL_V_USER,
   GRAYLEVEL_H_USER,
   CROSSTALK_WHITE,
+	RGB_WHITE,
   PATTERN_END
 } PatternTypeDef;
 

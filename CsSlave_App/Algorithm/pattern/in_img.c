@@ -966,6 +966,67 @@ void RGBBar(void)
   
 }
 
+void RGBWhite(void)
+{
+  uint32_t i, j, y, mod;
+
+  y   = LCDTiming.LCDV / 4;
+  mod = LCDTiming.LCDV % 4;
+
+  FPGA_WRITE_ENABLE(0);
+
+  for (i = 0; i < y; i++)
+  {
+    for (j = 0; j < LCDTiming.LCDH; j++)
+    {
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+    }
+  }
+  for (i = 0; i < y; i++)
+  {
+    for (j = 0; j < LCDTiming.LCDH; j++)
+    {
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0x00);
+    }
+  }
+  for (i = 0; i < y; i++)
+  {
+    for (j = 0; j < LCDTiming.LCDH; j++)
+    {
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0x00);
+      FPGA_WRITE_FAST(0xff);
+    }
+  }
+	
+	for (i = 0; i < y; i++)
+  {
+    for (j = 0; j < LCDTiming.LCDH; j++)
+    {
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+    }
+  }
+
+  for (i = 0; i < mod; i++)
+  {
+    for (j = 0; j < LCDTiming.LCDH; j++)
+    {
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+      FPGA_WRITE_FAST(0xff);
+    }
+  }
+  FPGA_WRITE_ENABLE(1);
+  
+}
+
+
 
 void RGBLevel(void)
 {

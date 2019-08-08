@@ -23,4 +23,5 @@ void Img_NG(void);
 void RGBBar(void);
 void RGBLevel(void);
 void Flicker2Dot(void);
+void RGBWhite(void);
 #endif
